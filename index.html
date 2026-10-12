@@ -1588,7 +1588,7 @@
     ['Text','plain',G.sms,(u,t)=>'sms:?&body='+encodeURIComponent(t+' '+u)],
     ['Email','plain',G.mail,(u,t)=>'mailto:?subject='+encodeURIComponent('EgoAgent')+'&body='+encodeURIComponent(t+'\n\n'+u)]
   ];
-  const ASK='I learned about EgoAgent, including its informed consent and privacy. Could we discuss how it could be part of my treatment? Here is the page for therapists.';
+  const ASK='I learned about EgoAgent, including its informed consent and privacy. Could we discuss how you could make it part of my treatment? Here is the page for therapists.';
   function openSheet(kind){
     const url=location.origin+location.pathname+(kind==='share'?'':'#therapists');
     const ask=kind==='everyone'||kind==='therapists';
