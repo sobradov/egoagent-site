@@ -1433,18 +1433,20 @@
     list.innerHTML='';
     const GROUPS={everyone:[['The proposition',['e-home']],['What happens',['e-film','e-gain','e-what-happens','e-not']],['Your choice',['e-decide']],['The invitation',['e-ask']]],
                   therapists:[['The proposition',['t-open']],['The argument',['t-field','t-mind']],['The boundary',['t-privacy']],['The decision',['t-account','t-faq']]]};
+    const SHORT={'e-decide':'Your questions','e-ask':'Ask your therapist','t-open':'Home','t-mind':'Another perspective'};  /* v199: flat menu, short names, no group headings */
     (GROUPS[v]||[]).forEach(([g,ids])=>{
       const items=ids.map(id=>document.getElementById(id)).filter(s=>s&&getComputedStyle(s).display!=='none');
       if(!items.length)return;
-      const gh=document.createElement('li');gh.className='gh';gh.textContent=g;list.appendChild(gh);
-      items.forEach(s=>{const li=document.createElement('li');li.dataset.sec=s.id;li.innerHTML=`<a href="#${v}/${s.id}">${s.dataset.name}</a>`;list.appendChild(li);});
+      
+      items.forEach(s=>{const li=document.createElement('li');li.dataset.sec=s.id;li.innerHTML=`<a href="#${v}/${s.id}">${SHORT[s.id]||s.dataset.name}</a>`;list.appendChild(li);});
     });
     const el = target && document.getElementById(target);
     if(el){
       if(el.tagName==='DETAILS') el.open=true;
       let d=el.parentElement&&el.parentElement.closest('details');
       while(d){d.open=true;d=d.parentElement&&d.parentElement.closest('details');}
-      el.scrollIntoView({block:'start'});
+      const align=()=>{const hb=document.querySelector('header.top').getBoundingClientRect().bottom; window.scrollTo(0,Math.max(0,el.getBoundingClientRect().top+window.scrollY-hb-8));};
+      align(); setTimeout(align,320); setTimeout(align,700);  /* land just below the pinned top bar, whatever its height */
     } else { window.scrollTo(0, posBy[v]||0); }
     explore.removeAttribute('open');
     const ct=document.getElementById('clintools'); if(ct)ct.removeAttribute('open');
