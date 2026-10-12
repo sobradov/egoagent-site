@@ -1581,6 +1581,27 @@
       horiz=false;
     },{passive:true});
   })();
+  /* v230: safe swipe between the patient and therapist pages. It listens passively and acts only after
+     the finger lifts, so it never interferes with scrolling. Starts near the screen edges are left to the browser. */
+  (function(){
+    let sx=0,sy=0,st=0,ok=false;
+    document.addEventListener('touchstart',e=>{
+      ok=false;
+      if(e.touches.length!==1)return;
+      if(view!=='everyone'&&view!=='therapists')return;
+      if(e.target.closest('a,button,summary,input,textarea,select,label,.sheetwrap,details[open]'))return;
+      const t=e.touches[0]; if(t.clientX<28||t.clientX>innerWidth-28)return;
+      sx=t.clientX;sy=t.clientY;st=Date.now();ok=true;
+    },{passive:true});
+    document.addEventListener('touchend',e=>{
+      if(!ok)return; ok=false;
+      const t=e.changedTouches[0]; const dx=t.clientX-sx, dy=t.clientY-sy;
+      if(Date.now()-st>700||Math.abs(dx)<70||Math.abs(dx)<2*Math.abs(dy))return;
+      const v=dx<0?'therapists':'everyone';
+      if(v===view)return;
+      show(v); setHash('#'+v);
+    },{passive:true});
+  })();
   /* v115: receding mobile header */
   (function(){
     const hd=document.querySelector('header.top');if(!hd)return;
