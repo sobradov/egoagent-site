@@ -374,7 +374,7 @@
   .guidep{margin-top:.6em;border-top:1px solid #1C2B3D;padding-top:.6em}
   .gp-note{margin:0 0 .55em;font-size:.85em;color:#7E96A9}
   .gp-in{width:100%;box-sizing:border-box;font-family:inherit;font-size:.92em;color:#EAF0F4;background:rgba(14,26,40,.8);border:1px solid #24384C;border-radius:8px;padding:.5em .7em}
-  html,body{overflow-x:hidden}
+  html{overflow-x:hidden}body{overflow-x:clip}  /* clip, not hidden, on body: hidden broke the sticky top bar */
   .invited{color:var(--ochre);font-size:.92em;letter-spacing:.02em;margin:0 0 1.2em}
   .t-argwrap{position:relative}
   .trace{position:absolute;pointer-events:none;z-index:0}
