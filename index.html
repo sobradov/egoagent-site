@@ -288,6 +288,7 @@
   .faq details.strip > summary::after{content:"";flex:none;width:15px;height:15px;background:var(--madder-lit);-webkit-mask:var(--chev) center/contain no-repeat;mask:var(--chev) center/contain no-repeat;transition:transform .28s ease}
   .faq details.strip[open] > summary::after{content:"";transform:rotate(180deg)}
   .qs0{padding-bottom:.6em}
+  @media(max-width:600px){.top .wrap{height:92px}}  /* room for a three-line tagline on phones */
   /* receding mobile header */
   .top .wrap{transition:height .25s ease}
   .top.mini .wrap{height:46px}
@@ -1421,7 +1422,7 @@
     document.body.classList.toggle('wview', v==='casebook'||v==='case'||v==='hour');
     document.body.classList.toggle('authed', v==='profile'||v==='casebook'||v==='case'||v==='hour');
     document.querySelectorAll('.top .acts[data-for]').forEach(a=>a.hidden=a.dataset.for!==v);
-    const tg=document.getElementById('tagline'); if(tg) tg.textContent=(v==='everyone')?'AI to help your therapist help you.':'AI to help you see more.';
+    const tg=document.getElementById('tagline'); if(tg) tg.textContent=(v==='everyone')?'AI to help your therapist help you.':'Theory-grounded AI for deeper meaning.';
     list.innerHTML='';
     const GROUPS={everyone:[['The proposition',['e-home']],['What happens',['e-gain','e-what-happens','e-not']],['Your choice',['e-decide']],['The invitation',['e-ask']]],
                   therapists:[['The proposition',['t-open']],['The argument',['t-field','t-mind']],['The boundary',['t-privacy']],['The decision',['t-account','t-faq']]]};
