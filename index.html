@@ -363,6 +363,7 @@
   .clintools summary::after{content:"";display:inline-block;width:10px;height:10px;margin-left:.35em;background:#7FA3C4;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease;vertical-align:-1px}
   .clintools[open] summary::after{transform:rotate(180deg)}
   .clintools .ct-short{display:none}
+  @media(min-width:601px){.clintools{position:relative}.clintools .ct-panel{right:auto;left:0}}
   @media(max-width:600px){.clintools .ct-long{display:none}.clintools .ct-short{display:inline}.clintools{margin-left:.6em}}
   @media(max-width:400px){.seg button{padding:.45em .62em .5em}.crumbs .wrap{gap:6px}.explore summary{font-size:.98em}}
   @media(max-width:370px){.seg button{padding:.42em .5em .48em;font-size:.82em}.clintools{margin-left:.45em}}
