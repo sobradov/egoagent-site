@@ -363,6 +363,25 @@
   .clintools summary::after{content:"";display:inline-block;width:10px;height:10px;margin-left:.35em;background:#7FA3C4;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease;vertical-align:-1px}
   .clintools[open] summary::after{transform:rotate(180deg)}
   .clintools .ct-short{display:none}
+  /* v208: language menu, styled as a sibling of Sign in and Register */
+  .top .brand{margin-right:auto}
+  .lang{position:relative;margin-left:10px}
+  body.rview .lang,body.wview .lang{display:none}
+  .lang summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:.45em;font-size:.95em;padding:.75em 1em;border:1px solid #24384C;border-radius:.6em;color:#7FA3C4;white-space:nowrap;transition:.18s}
+  .lang summary::-webkit-details-marker{display:none}
+  .lang summary:hover,.lang[open] summary{border-color:var(--indigo-lit);color:#C7D6E1}
+  .lang summary::after{content:"";display:inline-block;width:9px;height:9px;background:currentColor;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease}
+  .lang[open] summary::after{transform:rotate(180deg)}
+  .globe{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.5}
+  .lang-cur{letter-spacing:.06em;font-weight:500}
+  .lang-list{position:absolute;right:0;top:calc(100% + 6px);background:#0E1A28;border:1px solid #1C2B3D;border-radius:.6em;list-style:none;margin:0;padding:.35em 0;min-width:11em;z-index:40}
+  .lang-list button{display:block;width:100%;text-align:left;font:inherit;font-size:1em;color:var(--paper);background:none;border:0;padding:.55em 1.1em;cursor:pointer}
+  .lang-list button:hover:not(:disabled){background:rgba(63,115,162,.15)}
+  .lang-list button.on{color:#F0C46A}
+  .lang-list button:disabled{opacity:.55;cursor:default}
+  .lang-list em{font-style:normal;font-size:.78em;color:var(--muted);margin-left:.4em}
+  @media(max-width:600px){.lang{margin-left:5px}.lang summary{font-size:.85em;padding:.8em .62em}.lang summary::after,.lang-cur{display:none}.top .acts .btn.keep{padding:.62em .66em}.top .acts{gap:5px}}
+  @media(max-width:370px){.top .wordmark{font-size:1.15em}.top .acts .btn.keep{padding:.6em .55em}.lang summary{padding:.82em .5em}}
   @media(min-width:601px){.clintools{position:relative}.clintools .ct-panel{right:auto;left:0}}
   @media(max-width:600px){.clintools .ct-long{display:none}.clintools .ct-short{display:inline}.clintools{margin-left:.6em}}
   @media(max-width:400px){.seg button{padding:.45em .62em .5em}.crumbs .wrap{gap:6px}.explore summary{font-size:.98em}}
@@ -835,6 +854,16 @@
       <a class="btn keep" href="#signin">Sign in</a>
       <a class="btn fill keep" href="#register">Register</a>
     </div>
+    <!-- v208: language menu, same place on the patient and therapist pages. Translations: patient page first (pinned: therapist page, forms). -->
+    <details class="lang" id="lang">
+      <summary aria-label="Language"><svg class="globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9s1.3-6.2 3.9-9z"/></svg><span class="lang-cur">EN</span></summary>
+      <ul class="lang-list">
+        <li><button type="button" data-lang="en" class="on" lang="en">English</button></li>
+        <li><button type="button" data-lang="es" lang="es" disabled>Español <em>soon</em></button></li>
+        <li><button type="button" data-lang="fr" lang="fr" disabled>Français <em>soon</em></button></li>
+        <li><button type="button" data-lang="sr" lang="sr" disabled>Srpski <em>soon</em></button></li>
+      </ul>
+    </details>
   </div>
   <div class="crumbs">
     <div class="wrap">
@@ -1535,7 +1564,7 @@
   /* v119: transient menus — one at a time, outside dismissal, Escape */
   (function(){
     const ct=document.getElementById('clintools');
-    const pops=[explore,ct].filter(Boolean);
+    const pops=[explore,ct,document.getElementById('lang')].filter(Boolean);
     document.addEventListener('click',e=>{
       pops.forEach(p=>{ if(p.open && !p.contains(e.target)) p.removeAttribute('open'); });
     });
