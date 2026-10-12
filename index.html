@@ -68,14 +68,14 @@
   @media(max-width:600px){.brand .tag{font-size:.9em;padding-left:1.55em}}
   .top .acts{display:flex;align-items:center;gap:10px}
   .crumbs{border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:.86em;color:var(--muted)}
-  .crumbs .wrap{display:flex;align-items:flex-end;justify-content:space-between;height:54px;gap:12px}
+  .crumbs .wrap{position:relative;display:flex;align-items:flex-end;justify-content:space-between;height:54px;gap:12px}
   .crumbs .explore{margin-bottom:.7em}
   .crumbs .path span{color:var(--paper)}
   .seg{display:inline-flex;align-items:flex-end;gap:4px;background:none;border:none;border-radius:0;padding:0;margin-bottom:-1px;align-self:flex-end}
   .seg button{white-space:nowrap;font-family:inherit;font-size:.92em;font-weight:500;color:var(--paper);opacity:.75;background:var(--sheet-2);border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;padding:.5em 1.15em .55em;cursor:pointer;position:relative;top:0}
   .seg button[aria-selected="true"]{background:var(--manila, #D6C29A);color:var(--ink);opacity:1;border-color:var(--manila, #D6C29A);padding-top:.62em;margin-top:-3px}
   .explore{position:relative}
-  .explore summary{list-style:none;cursor:pointer;color:#F0C46A;font-weight:700;font-size:1.05em;letter-spacing:.03em;text-shadow:0 0 12px rgba(240,196,106,.35)}
+  .explore summary{list-style:none;cursor:pointer;white-space:nowrap;color:#F0C46A;font-weight:700;font-size:1.05em;letter-spacing:.03em;text-shadow:0 0 12px rgba(240,196,106,.35)}
   .explore summary:hover{color:#D6B06A}
   .explore[open] summary::after{transform:rotate(180deg)}
   .explore summary::-webkit-details-marker{display:none}
@@ -356,13 +356,17 @@
   @media(prefers-reduced-motion:reduce){.steps.anim li,.steps.anim li.seen,.steps.anim li::before{opacity:1;transform:none;transition:none}.faq summary.two::after,.explore summary::after{transition:none}}
 
   /* v118 additions */
-  .clintools{display:none;position:relative;margin-left:1em}
+  .clintools{display:none;position:static;margin:0 auto .7em .9em}
   body.tview .clintools{display:block}
-  .clintools summary{list-style:none;cursor:pointer;color:#7FA3C4;font-size:.95em;letter-spacing:.02em}
+  .clintools summary{list-style:none;cursor:pointer;white-space:nowrap;color:#7FA3C4;font-size:.95em;letter-spacing:.02em}
   .clintools summary::-webkit-details-marker{display:none}
   .clintools summary::after{content:"";display:inline-block;width:10px;height:10px;margin-left:.35em;background:#7FA3C4;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease;vertical-align:-1px}
   .clintools[open] summary::after{transform:rotate(180deg)}
-  .ct-panel{position:absolute;right:0;top:130%;background:var(--sheet-2);border:1px solid #1C2B3D;border-radius:.6em;padding:.9em 1em;width:min(21em,86vw);z-index:30;box-sizing:border-box}
+  .clintools .ct-short{display:none}
+  @media(max-width:600px){.clintools .ct-long{display:none}.clintools .ct-short{display:inline}.clintools{margin-left:.6em}}
+  @media(max-width:400px){.seg button{padding:.45em .62em .5em}.crumbs .wrap{gap:6px}.explore summary{font-size:.98em}}
+  @media(max-width:370px){.seg button{padding:.42em .5em .48em;font-size:.82em}.clintools{margin-left:.45em}}
+  .ct-panel{position:absolute;right:0;top:calc(100% + 6px);background:var(--sheet-2);border:1px solid #1C2B3D;border-radius:.6em;padding:.9em 1em;width:min(21em,86vw);z-index:30;box-sizing:border-box}
   body.tview .ct-panel{background:#0E1A28}
   .ct-block{margin-top:.7em}
   .ct-row{display:flex;align-items:center;gap:.5em;flex-wrap:wrap;margin:.4em 0}
@@ -837,14 +841,10 @@
         <button role="tab" id="tab-everyone" aria-selected="true">For patients</button>
         <button role="tab" id="tab-therapists" aria-selected="false">For therapists</button>
       </div>
-      <details class="explore" id="explore">
-        <summary>Contents</summary>
-        <ul id="explore-list"></ul>
-      </details>
       <!-- PROTOTYPE, review build only: signed-in clinician utilities. In production this control
            renders only for a verified, signed-in clinician; shown here to judge placement. -->
       <details class="clintools" id="clintools">
-        <summary>Clinician tools</summary>
+        <summary><span class="ct-long">Clinician tools</span><span class="ct-short">Tools</span></summary>
         <div class="ct-panel">
           <p class="cb-tag">Prototype &middot; signed-in clinician</p>
           <div class="ct-block">
@@ -860,6 +860,10 @@
             </div>
           </div>
         </div>
+      </details>
+      <details class="explore" id="explore">
+        <summary>Contents</summary>
+        <ul id="explore-list"></ul>
       </details>
     </div>
   </div>
