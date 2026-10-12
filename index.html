@@ -268,6 +268,16 @@
   .t-secondary .lede{margin:.55em 0 0;max-width:none;font-size:clamp(.95rem,1.1vw,1.08rem)}
   @media(min-width:760px){.t-arg{grid-template-columns:1.2fr .9fr;gap:3em}.t-secondary{margin-left:0;margin-top:3.2em;padding-left:1.5em}}
   .t-threshold{border-top:1px solid #1C2B3D;border-bottom:1px solid #1C2B3D;background:rgba(8,14,22,.45)}
+  /* v222: Privacy & Security as a full panel */
+  .t-pv{max-width:56em;margin:0 auto;text-align:center;border:1px solid #2A3B50;border-radius:14px;background:rgba(14,24,36,.6);padding:clamp(22px,3.6vw,40px) clamp(18px,3.4vw,44px)}
+  #pane-therapists .t-pv h2.t-pv-title,.t-pv-title{font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:clamp(1.5rem,2.6vw,2.1rem);color:#FF4B3A;margin:0 0 .45em;letter-spacing:.01em}
+  .t-pv .t-thline{max-width:30em;margin:0 auto}
+  .t-pv-grid{list-style:none;padding:0;margin:clamp(20px,3vh,30px) 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;text-align:left}
+  .t-pv-grid li{border-top:2px solid rgba(255,75,58,.55);background:rgba(8,14,22,.5);border-radius:0 0 10px 10px;padding:.85em 1em .95em}
+  .t-pv-grid b{display:block;color:var(--paper);font-weight:600;font-size:.98em;margin-bottom:.3em}
+  .t-pv-grid span{display:block;color:#B4C4D1;font-size:.9em;line-height:1.5}
+  .t-pv .t-thdetail{margin-top:1.3em}
+  @media(max-width:640px){.t-pv-grid{grid-template-columns:1fr}}
   #pane-therapists section.t-threshold{padding:clamp(20px,3vh,34px) 0}
   .t-thin{max-width:40em;margin:0 auto;text-align:center}
   .t-eyebrow{display:block;font-size:.7em;letter-spacing:.16em;text-transform:uppercase;color:var(--ochre);margin-bottom:.55em}
@@ -1055,10 +1065,18 @@
 
   <section id="t-privacy" data-name="Privacy &amp; security" class="t-threshold">
     <div class="wrap">
-      <div class="t-thin">
-        <span class="t-eyebrow">Privacy &amp; Security</span>
+      <div class="t-pv">
+        <h2 class="t-pv-title">Privacy &amp; Security</h2>
         <p class="t-thline">Beyond a professional boundary, the working space opens only to verified clinicians.</p>
-        <p class="t-thdetail">Recording begins only with written patient permission. Details of storage, access, retention, deletion, and vendors are available on the <a class="t-quietlink" href="#privacy">Privacy &amp; Security page</a>.</p>
+        <ul class="t-pv-grid">
+          <li><b>Verified clinicians only</b><span>Access opens after your NPI is checked in the federal registry and you sign a sworn professional affirmation.</span></li>
+          <li><b>Written patient consent</b><span>Nothing is recorded until your patient signs. They can stop recording or withdraw consent at any time.</span></li>
+          <li><b>Audio deleted</b><span>Each recording becomes a transcript, and the sound file is then permanently deleted.</span></li>
+          <li><b>No human readers</b><span>No one at EgoAgent reads transcripts or analyses. The AI provider is bound by a business associate agreement.</span></li>
+          <li><b>For you alone</b><span>The analysis goes only to you. Sharing with a supervisor, a colleague, or research requires your patient&rsquo;s consent, item by item.</span></li>
+          <li><b>Deletion</b><span>A patient can have their transcripts deleted at any time. Otherwise they are deleted six months after the last session.</span></li>
+        </ul>
+        <p class="t-thdetail">Full details of storage, access, retention, deletion, and vendors are on the <a class="t-quietlink" href="#privacy">Privacy &amp; Security page</a>.</p>
       </div>
     </div>
   </section>
