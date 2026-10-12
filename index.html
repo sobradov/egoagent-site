@@ -1451,7 +1451,7 @@
   }
   function fromHash(){
     const [v,t]=location.hash.replace('#','').split('/');
-    show(panes[v]?v:'therapists', t);
+    show(panes[v]?v:'everyone', t);  /* no address mark: patients first (decision 2, Oct 11) */
     if(v==='register'||v==='signin'||v==='profile'||v==='consent'||v==='casebook'||v==='case'||v==='hour')window.scrollTo(0,0);
   }
   Object.keys(tabs).forEach(k=>tabs[k].addEventListener('click',()=>{show(k);setHash('#'+k);}));
