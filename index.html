@@ -1588,14 +1588,14 @@
     ['Text','plain',G.sms,(u,t)=>'sms:?&body='+encodeURIComponent(t+' '+u)],
     ['Email','plain',G.mail,(u,t)=>'mailto:?subject='+encodeURIComponent('EgoAgent')+'&body='+encodeURIComponent(t+'\n\n'+u)]
   ];
-  const ASK='Do you use EgoAgent? If you are open to trying it, I would like it added to your own work on my sessions. Thank you.';
+  const ASK='I learned about EgoAgent, including its informed consent and privacy. Could we discuss whether it has a place in my treatment? Here is the page for therapists.';
   function openSheet(kind){
     const url=location.origin+location.pathname+(kind==='share'?'':'#therapists');
     const ask=kind==='everyone'||kind==='therapists';
     const baseText=kind==='therapists'?'A patient has sent you the therapist page of EgoAgent, an AI analysis a therapist can consider alongside their own.':kind==='share'?'EgoAgent: after the session, a therapist can consider an AI analysis alongside their own.':ASK;
     const wrap=document.createElement('div');wrap.className='sheetwrap';
     const tile=([n,c,ic,f],i,list)=>`<a class="${c}" data-i="${i}" data-l="${list}" href="#" target="_blank" rel="noopener">${c==='plain'?ic:`<img src="${ICON}${ic}/white" alt="" onerror="this.remove()">`}<span>${n}</span></a>`;
-    const compose=ask?`<div class="compose"><div class="lab"><label for="ask-text">Your message</label><button type="button" class="done" data-done hidden>Done</button></div><textarea id="ask-text" rows="3">${baseText}</textarea><input id="ask-name" placeholder="Your name (optional)"></div>`:'';
+    const compose=ask?`<div class="compose"><div class="lab"><label for="ask-text">Your message</label><button type="button" class="done" data-done hidden>Done</button></div><textarea id="ask-text" rows="4">${baseText}</textarea><input id="ask-name" placeholder="Your name (optional)"></div>`:'';
     wrap.innerHTML=`<div class="sheet" role="dialog"><h4><span>${ask?'Send to your therapist':'Share EgoAgent'}</span><button aria-label="Close">×</button></h4>${compose}<div class="opts">${direct.map((d,i)=>tile(d,i,'d')).join('')}<button class="plain" data-copy>${G.link}<span>Copy link</span></button></div><div class="rule"></div><div class="opts">${socials.map((d,i)=>tile(d,i,'s')).join('')}${navigator.share?'<button data-more>More apps…</button>':''}</div></div>`;
     document.body.appendChild(wrap);
     const text=()=>{ if(!ask) return baseText; const t=wrap.querySelector('#ask-text').value.trim(); const n=wrap.querySelector('#ask-name').value.trim(); return n?t+'\n— '+n:t; };
