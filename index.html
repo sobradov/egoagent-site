@@ -278,6 +278,10 @@
   .t-pv-grid span{display:block;color:#B4C4D1;font-size:.9em;line-height:1.5}
   .t-pv .t-thdetail{margin-top:1.3em}
   @media(max-width:640px){.t-pv-grid{grid-template-columns:1fr}}
+  /* v224: Thoth sits on the top edge of the Privacy panel, like a shelf */
+  .t-pv{position:relative;margin-top:72px}
+  .t-pv .trace-thoth{left:28px;bottom:auto;top:-79px;height:84px}
+  @media(max-width:700px){.t-pv{margin-top:58px}.t-pv .trace-thoth{left:18px;top:-60px;height:64px}}
   #pane-therapists section.t-threshold{padding:clamp(20px,3vh,34px) 0}
   .t-thin{max-width:40em;margin:0 auto;text-align:center}
   .t-eyebrow{display:block;font-size:.7em;letter-spacing:.16em;text-transform:uppercase;color:var(--ochre);margin-bottom:.55em}
@@ -1066,6 +1070,7 @@
   <section id="t-privacy" data-name="Privacy &amp; security" class="t-threshold">
     <div class="wrap">
       <div class="t-pv">
+        <svg class="trace trace-thoth" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M8 84 L82 84 Q84 84 84 86 L84 92 Q84 94 82 94 L8 94 Z" fill="#C4553F" opacity=".8"/><path d="M14 84 C7 72 8 52 18 40 C24 30 33 22 43 20 C48 15 57 14 61 19 C63 21 63 24 62 26 L74 30 C77 31 77 36 73 37 L63 38 C61 42 60 46 60 50 C59 57 58 62 60 67 C64 71 65 76 62 80 C61 82 59 83 58 84 Z" fill="#6FB08E"/><path d="M60 26 C55 30 54 35 58 40" stroke="#0B1420" stroke-width="1.3" fill="none" opacity=".45"/><path d="M32 84 C30 74 34 66 44 62" stroke="#0B1420" stroke-width="1.2" fill="none" opacity=".35"/><path d="M51 26 L55 27" stroke="#0B1420" stroke-width="1.4" opacity=".5"/><path d="M12 82 C17 77 24 78 27 83" stroke="#6FB08E" stroke-width="2" fill="none" opacity=".9"/><path d="M44 6 A7 7 0 1 0 56 10 A5.6 5.6 0 1 1 44 6 Z" fill="#E6BC6A" opacity=".95"/></svg>
         <h2 class="t-pv-title">Privacy &amp; Security</h2>
         <p class="t-thline">Beyond a professional boundary, the working space opens only to verified clinicians.</p>
         <ul class="t-pv-grid">
@@ -1089,7 +1094,6 @@
        concrete illustration and a forward possibility for the next session, a visible memory
        trace across sessions, and consultation directions that read as editable prompts. -->
   <section id="t-account" data-name="Registration" class="t-invite">
-    <svg class="trace trace-thoth" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M8 84 L82 84 Q84 84 84 86 L84 92 Q84 94 82 94 L8 94 Z" fill="#C4553F" opacity=".8"/><path d="M14 84 C7 72 8 52 18 40 C24 30 33 22 43 20 C48 15 57 14 61 19 C63 21 63 24 62 26 L74 30 C77 31 77 36 73 37 L63 38 C61 42 60 46 60 50 C59 57 58 62 60 67 C64 71 65 76 62 80 C61 82 59 83 58 84 Z" fill="#6FB08E"/><path d="M60 26 C55 30 54 35 58 40" stroke="#0B1420" stroke-width="1.3" fill="none" opacity=".45"/><path d="M32 84 C30 74 34 66 44 62" stroke="#0B1420" stroke-width="1.2" fill="none" opacity=".35"/><path d="M51 26 L55 27" stroke="#0B1420" stroke-width="1.4" opacity=".5"/><path d="M12 82 C17 77 24 78 27 83" stroke="#6FB08E" stroke-width="2" fill="none" opacity=".9"/><path d="M44 6 A7 7 0 1 0 56 10 A5.6 5.6 0 1 1 44 6 Z" fill="#E6BC6A" opacity=".95"/></svg>
     <div class="wrap">
       <div class="centre t-invin">
         <h2>If EgoAgent belongs in your work.</h2>
