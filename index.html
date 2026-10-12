@@ -409,10 +409,10 @@
   .invited{color:var(--ochre);font-size:.92em;letter-spacing:.02em;margin:0 0 1.2em}
   .t-argwrap{position:relative}
   .trace{position:absolute;pointer-events:none;z-index:0}
-  .trace-athena{right:10px;top:-10px;height:168px;width:auto;opacity:1;transform:rotate(4deg);filter:drop-shadow(0 0 10px rgba(240,196,106,.32))}
+  .trace-athena{right:8px;top:-6px;height:132px;width:auto;opacity:.5;transform:rotate(4deg)}
   .t-invite{position:relative}
-  .trace-thoth{left:-10px;bottom:8px;height:74px;width:auto;opacity:.4;position:absolute}
-  @media(max-width:700px){.trace-athena{height:100px;right:8px;top:-22px;opacity:1}.trace-thoth{height:52px;left:-8px;opacity:.34}}
+  .trace-thoth{left:8px;bottom:8px;height:92px;width:auto;opacity:1;position:absolute;filter:drop-shadow(0 0 10px rgba(111,176,142,.35))}
+  @media(max-width:700px){.trace-athena{height:84px;right:6px;opacity:.42}.trace-thoth{height:64px;left:6px;opacity:1}}
 
   /* ---- v126: the door (registration) as a third space, rug-ground field ---- */
   body.rview{background:#301F1A}
@@ -1042,7 +1042,7 @@
     </div>
   </section>
 
-  <div class="t-argwrap"><svg class="trace trace-athena" viewBox="0 0 60 150" aria-hidden="true" focusable="false"><path d="M27 6 C24 6 21 9 21 13 C21 15 22 17 23 18 C20 19 18 22 18 25 L18 30 L36 30 L36 25 C36 22 34 19 31 18 C32 17 33 15 33 13 C33 9 30 6 27 6 Z" fill="#EBDAB0"/><path d="M23 8 C20 2 32 -2 38 4 C43 9 42 16 39 20 L35 17 C37 14 37 10 34 8 C31 6 25 6 23 8 Z" fill="#D9634B"/><path d="M20 32 L36 32 L34 96 C34 104 32 112 28 118 C25 112 22 104 22 96 Z" fill="#E3CFA2"/><rect x="45" y="2" width="1.8" height="132" fill="#8CC4A5"/><circle cx="12" cy="52" r="8" fill="#6FA88A" opacity=".85"/></svg><div class="wrap"><div class="t-arg">
+  <div class="t-argwrap"><svg class="trace trace-athena" viewBox="0 0 60 150" aria-hidden="true" focusable="false"><path d="M27 6 C24 6 21 9 21 13 C21 15 22 17 23 18 C20 19 18 22 18 25 L18 30 L36 30 L36 25 C36 22 34 19 31 18 C32 17 33 15 33 13 C33 9 30 6 27 6 Z" fill="#D6C29A" opacity=".85"/><path d="M23 8 C20 2 32 -2 38 4 C43 9 42 16 39 20 L35 17 C37 14 37 10 34 8 C31 6 25 6 23 8 Z" fill="#C4553F" opacity=".8"/><path d="M20 32 L36 32 L34 96 C34 104 32 112 28 118 C25 112 22 104 22 96 Z" fill="#D6C29A" opacity=".7"/><rect x="45" y="2" width="1.6" height="132" fill="#6FA88A" opacity=".75"/><circle cx="12" cy="52" r="8" fill="#6FA88A" opacity=".45"/></svg><div class="wrap"><div class="t-arg">
       <section id="t-field" data-name="Across the treatment" class="t-primary">
         <h2>Across the treatment.</h2>
         <p class="lede">A single session shows a moment; a treatment unfolds over many. EgoAgent reads each new session in light of the earlier ones, bringing back what returns, what shifts, and what develops. Patterns that are hard to hold in mind from week to week come into view.</p>
@@ -1070,8 +1070,8 @@
        v110 signals once-weekly work), a concise general formulation, technique review with one
        concrete illustration and a forward possibility for the next session, a visible memory
        trace across sessions, and consultation directions that read as editable prompts. -->
-  <svg class="trace trace-thoth" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M8 84 L82 84 Q84 84 84 86 L84 92 Q84 94 82 94 L8 94 Z" fill="#C4553F" opacity=".28"/><path d="M14 84 C7 72 8 52 18 40 C24 30 33 22 43 20 C48 15 57 14 61 19 C63 21 63 24 62 26 L74 30 C77 31 77 36 73 37 L63 38 C61 42 60 46 60 50 C59 57 58 62 60 67 C64 71 65 76 62 80 C61 82 59 83 58 84 Z" fill="#46705F" opacity=".88"/><path d="M60 26 C55 30 54 35 58 40" stroke="#0B1420" stroke-width="1.3" fill="none" opacity=".45"/><path d="M32 84 C30 74 34 66 44 62" stroke="#0B1420" stroke-width="1.2" fill="none" opacity=".35"/><path d="M51 26 L55 27" stroke="#0B1420" stroke-width="1.4" opacity=".5"/><path d="M12 82 C17 77 24 78 27 83" stroke="#46705F" stroke-width="2" fill="none" opacity=".6"/><path d="M44 6 A7 7 0 1 0 56 10 A5.6 5.6 0 1 1 44 6 Z" fill="#C9A05A" opacity=".45"/></svg>
   <section id="t-account" data-name="Registration" class="t-invite">
+    <svg class="trace trace-thoth" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M8 84 L82 84 Q84 84 84 86 L84 92 Q84 94 82 94 L8 94 Z" fill="#C4553F" opacity=".8"/><path d="M14 84 C7 72 8 52 18 40 C24 30 33 22 43 20 C48 15 57 14 61 19 C63 21 63 24 62 26 L74 30 C77 31 77 36 73 37 L63 38 C61 42 60 46 60 50 C59 57 58 62 60 67 C64 71 65 76 62 80 C61 82 59 83 58 84 Z" fill="#6FB08E"/><path d="M60 26 C55 30 54 35 58 40" stroke="#0B1420" stroke-width="1.3" fill="none" opacity=".45"/><path d="M32 84 C30 74 34 66 44 62" stroke="#0B1420" stroke-width="1.2" fill="none" opacity=".35"/><path d="M51 26 L55 27" stroke="#0B1420" stroke-width="1.4" opacity=".5"/><path d="M12 82 C17 77 24 78 27 83" stroke="#6FB08E" stroke-width="2" fill="none" opacity=".9"/><path d="M44 6 A7 7 0 1 0 56 10 A5.6 5.6 0 1 1 44 6 Z" fill="#E6BC6A" opacity=".95"/></svg>
     <div class="wrap">
       <div class="centre t-invin">
         <h2>If EgoAgent belongs in your work.</h2>
