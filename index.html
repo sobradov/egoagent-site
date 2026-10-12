@@ -219,7 +219,7 @@
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
   [hidden]{display:none !important}
   .btn .short{display:none}
-  @media(max-width:600px){.top .acts .btn:not(.keep){display:none}.crumbs .path{display:none}.btn .long{display:none}.btn .short{display:inline}.seg button{font-size:.85em;padding:.45em .8em .5em}.crumbs .wrap{height:50px}.top .wrap{height:76px}.wordmark{font-size:1.3em}.btn.small,.top .btn{font-size:.85em}}
+  @media(max-width:600px){.top .acts .btn:not(.keep){display:none}.crumbs .path{display:none}.btn .long{display:none}.btn .short{display:inline}.seg button{font-size:.85em;padding:.45em .8em .5em}.crumbs .wrap{height:50px}header.top > .wrap{height:76px}.wordmark{font-size:1.3em}.btn.small,.top .btn{font-size:.85em}}
   .gain-line{font-family:"Fraunces",Georgia,serif;font-weight:300;font-size:clamp(1.35rem,2.5vw,2.05rem);line-height:1.28;letter-spacing:-.01em;max-width:30em;margin:1em auto 0;color:var(--paper)}
   body.va .only-b{display:none !important}
   body.vb .only-a{display:none !important}
@@ -305,12 +305,10 @@
   .faq details.strip > summary::after{content:"";flex:none;width:15px;height:15px;background:var(--madder-lit);-webkit-mask:var(--chev) center/contain no-repeat;mask:var(--chev) center/contain no-repeat;transition:transform .28s ease}
   .faq details.strip[open] > summary::after{content:"";transform:rotate(180deg)}
   .qs0{padding-bottom:.6em}
-  @media(max-width:600px){.top .wrap{height:92px}}  /* room for a three-line tagline on phones */
+  @media(max-width:600px){header.top > .wrap{height:92px}}  /* room for a three-line tagline on phones; v229: logo row only, not the tab row */
   .books{display:block;width:100%;max-width:22em;height:auto;margin:1.6em auto 0;opacity:.9}  /* stand-in until a still of the film's books replaces it */
   .film-line{max-width:20em;margin:.9em auto 0;text-align:center;color:var(--paper);font-family:"Fraunces",Georgia,serif;font-size:1.32em;line-height:1.35;text-wrap:balance}
   /* receding mobile header */
-  .top .wrap{transition:height .25s ease}
-  .top.mini .wrap{height:46px}
   .top.mini .tag{display:none}
   .top.mini .wordmark{font-size:1.05em}
   .top.mini .acts .btn{padding:.35em .8em;font-size:.85em}
@@ -376,8 +374,6 @@
   .clintools summary::-webkit-details-marker{display:none}
   .clintools summary::after{content:"";display:inline-block;width:10px;height:10px;margin-left:.35em;background:#7FA3C4;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease;vertical-align:-1px}
   .clintools[open] summary::after{transform:rotate(180deg)}
-  /* v228: fixed top bar on phones (see script) */
-  @media(max-width:700px){header.top.fixedbar{position:fixed;left:0;right:0;top:0}}
   .clintools .ct-short{display:none}
   /* v208: language menu, styled as a sibling of Sign in and Register */
   .top .brand{margin-right:auto}
@@ -1588,24 +1584,7 @@
   /* v115: receding mobile header */
   (function(){
     const hd=document.querySelector('header.top');if(!hd)return;
-    const mq=matchMedia('(max-width:700px)');let last=scrollY;
-    /* v228: on phones the bar is fixed and a constant space is reserved under it,
-       so shrinking or growing never moves the page (the old in-flow bar caused a flicker loop near the top). */
-    const reserve=()=>{
-      if(!mq.matches){document.body.style.paddingTop='';hd.classList.remove('fixedbar');return;}
-      hd.classList.add('fixedbar');
-      if(!hd.classList.contains('mini')) document.body.style.paddingTop=hd.offsetHeight+'px';
-    };
-    reserve();
-    if(window.ResizeObserver) new ResizeObserver(reserve).observe(hd);
-    addEventListener('resize',reserve);
-    addEventListener('scroll',()=>{
-      if(!mq.matches){hd.classList.remove('mini');last=scrollY;return;}
-      const y=scrollY;
-      if(y>120)hd.classList.add('mini');
-      else if(y<60)hd.classList.remove('mini');
-      last=y;
-    },{passive:true});
+    /* v229: no shrinking on scroll; the bar keeps one size and stays pinned (resizing caused doubled drawing on iPhones) */
   })();
   /* v119: transient menus — one at a time, outside dismissal, Escape */
   (function(){
