@@ -374,6 +374,8 @@
   .clintools summary::-webkit-details-marker{display:none}
   .clintools summary::after{content:"";display:inline-block;width:10px;height:10px;margin-left:.35em;background:#7FA3C4;-webkit-mask:var(--chev1) center/contain no-repeat;mask:var(--chev1) center/contain no-repeat;transition:transform .28s ease;vertical-align:-1px}
   .clintools[open] summary::after{transform:rotate(180deg)}
+  /* v231: fixed top bar on phones, constant size (see script) */
+  @media(max-width:700px){header.top.fixedbar{position:fixed;left:0;right:0;top:0}}
   .clintools .ct-short{display:none}
   /* v208: language menu, styled as a sibling of Sign in and Register */
   .top .brand{margin-right:auto}
@@ -1606,6 +1608,12 @@
   (function(){
     const hd=document.querySelector('header.top');if(!hd)return;
     /* v229: no shrinking on scroll; the bar keeps one size and stays pinned (resizing caused doubled drawing on iPhones) */
+    /* v231: on phones the bar is fixed in place (iPhone Safari let the in-page bar slide under its address bar);
+       a constant space equal to the bar's height is reserved at the top of the page. No resizing, no animation. */
+    const mqf=matchMedia('(max-width:700px)');
+    const reserve=()=>{ if(mqf.matches){hd.classList.add('fixedbar');document.body.style.paddingTop=hd.offsetHeight+'px';} else {hd.classList.remove('fixedbar');document.body.style.paddingTop='';} };
+    reserve(); addEventListener('resize',reserve); addEventListener('load',reserve);
+    if(window.ResizeObserver) new ResizeObserver(reserve).observe(hd);
   })();
   /* v119: transient menus — one at a time, outside dismissal, Escape */
   (function(){
