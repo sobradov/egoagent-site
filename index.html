@@ -920,7 +920,7 @@
     </div>
   </section>
 
-  <section id="e-not" data-name="What the AI does not do">
+  <section id="e-not" data-name="What the AI does not do" hidden>  <!-- PIN: hidden v185; review after the designer's film is approved -->
     <div class="wrap">
       <div class="centre">
         <h2>The AI writes an analysis. Nothing more.</h2>
@@ -1400,7 +1400,7 @@
   <div class="wrap">
     <a class="wordmark" href="#everyone"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg>EgoAgent</a>
     <div class="cols">
-      <div><h5>For patients</h5><ul><li><a href="#everyone/e-gain">What it adds</a></li><li><a href="#everyone/e-what-happens">What you will notice</a></li><li><a href="#everyone/e-decide">Your choice. Your questions.</a></li><li><a href="#everyone/e-ask">When you are ready, ask</a></li></ul></div>
+      <div><h5>For patients</h5><ul><li><a href="#everyone/e-film">The film</a></li><li><a href="#everyone/e-decide">Your choice. Your questions.</a></li><li><a href="#everyone/e-ask">When you are ready, ask</a></li></ul></div>
       <div><h5>For therapists</h5><ul><li><a href="#therapists/t-field">The situation</a></li><li><a href="#therapists/t-mind">Another perspective</a></li><li><a href="#therapists/t-privacy">Privacy &amp; security</a></li><li><a href="#therapists/t-account">Registration</a></li><li><a href="#therapists/t-faq">Practical details</a></li></ul></div>
       <div><h5>Company</h5><ul><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li></ul></div>
       <div><h5>Terms</h5><ul><li><a href="#privacy">Privacy policy</a></li><li><a href="#terms">Terms of service</a></li><li><a href="#baa">Business associate agreement</a></li></ul></div>
@@ -1428,7 +1428,7 @@
     document.querySelectorAll('.top .acts[data-for]').forEach(a=>a.hidden=a.dataset.for!==v);
     const tg=document.getElementById('tagline'); if(tg) tg.textContent=(v==='everyone')?'AI to help your therapist help you.':'Theory-grounded AI for deeper meaning.';
     list.innerHTML='';
-    const GROUPS={everyone:[['The proposition',['e-home']],['What happens',['e-gain','e-what-happens','e-not']],['Your choice',['e-decide']],['The invitation',['e-ask']]],
+    const GROUPS={everyone:[['The proposition',['e-home']],['What happens',['e-film','e-gain','e-what-happens','e-not']],['Your choice',['e-decide']],['The invitation',['e-ask']]],
                   therapists:[['The proposition',['t-open']],['The argument',['t-field','t-mind']],['The boundary',['t-privacy']],['The decision',['t-account','t-faq']]]};
     (GROUPS[v]||[]).forEach(([g,ids])=>{
       const items=ids.map(id=>document.getElementById(id)).filter(s=>s&&getComputedStyle(s).display!=='none');
