@@ -797,7 +797,7 @@
   <div class="wrap">
     <div class="brand">
       <a class="wordmark" href="#everyone"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg>EgoAgent</a>
-      <span class="tag" id="tagline">AI to help your therapist see more.</span>
+      <span class="tag" id="tagline">AI to help your therapist help you.</span>
     </div>
     <div class="acts" data-for="everyone"></div>
     <div class="acts" data-for="hour" hidden>
@@ -1421,7 +1421,7 @@
     document.body.classList.toggle('wview', v==='casebook'||v==='case'||v==='hour');
     document.body.classList.toggle('authed', v==='profile'||v==='casebook'||v==='case'||v==='hour');
     document.querySelectorAll('.top .acts[data-for]').forEach(a=>a.hidden=a.dataset.for!==v);
-    const tg=document.getElementById('tagline'); if(tg) tg.textContent=(v==='everyone')?'AI to help your therapist see more.':'AI to help you see more.';
+    const tg=document.getElementById('tagline'); if(tg) tg.textContent=(v==='everyone')?'AI to help your therapist help you.':'AI to help you see more.';
     list.innerHTML='';
     const GROUPS={everyone:[['The proposition',['e-home']],['What happens',['e-gain','e-what-happens','e-not']],['Your choice',['e-decide']],['The invitation',['e-ask']]],
                   therapists:[['The proposition',['t-open']],['The argument',['t-field','t-mind']],['The boundary',['t-privacy']],['The decision',['t-account','t-faq']]]};
