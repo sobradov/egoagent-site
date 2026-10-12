@@ -1613,7 +1613,7 @@
     if(done) done.onclick=()=>{ const f=wrap.querySelector('.compose :focus'); if(f) f.blur(); done.hidden=true; setLit(wrap.querySelector('.opts a')); };
     if(ta){ fit(); requestAnimationFrame(fit); }
     let first;
-    if(ask){ first=wrap.querySelector('#ask-text'); first.classList.add('lit'); first.focus(); first.setSelectionRange(first.value.length,first.value.length); }
+    if(ask){ first=wrap.querySelector('#ask-text'); first.classList.add('lit'); if(!matchMedia('(pointer:coarse)').matches){ first.focus(); first.setSelectionRange(first.value.length,first.value.length); }  /* touch screens: no keyboard until the patient taps to edit */ }
     else { first=wrap.querySelector('.opts a'); first.classList.add('lit'); first.focus(); }
     wrap.addEventListener('pointerdown',e=>{ if(!first.contains(e.target)) first.classList.remove('lit'); });
     const close=()=>wrap.remove();
