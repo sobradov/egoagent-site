@@ -405,14 +405,14 @@
   .guidep{margin-top:.6em;border-top:1px solid #1C2B3D;padding-top:.6em}
   .gp-note{margin:0 0 .55em;font-size:.85em;color:#7E96A9}
   .gp-in{width:100%;box-sizing:border-box;font-family:inherit;font-size:.92em;color:#EAF0F4;background:rgba(14,26,40,.8);border:1px solid #24384C;border-radius:8px;padding:.5em .7em}
-  html{overflow-x:hidden}body{overflow-x:clip}  /* clip, not hidden, on body: hidden broke the sticky top bar */
+  html{overflow-x:hidden;overflow-x:clip}body{overflow-x:clip}  /* clip, not hidden, on body: hidden broke the sticky top bar */
   .invited{color:var(--ochre);font-size:.92em;letter-spacing:.02em;margin:0 0 1.2em}
   .t-argwrap{position:relative}
   .trace{position:absolute;pointer-events:none;z-index:0}
-  .trace-athena{right:-16px;top:-6px;height:132px;width:auto;opacity:.5;transform:rotate(4deg)}
+  .trace-athena{right:8px;top:-6px;height:132px;width:auto;opacity:.5;transform:rotate(4deg)}
   .t-invite{position:relative}
   .trace-thoth{left:-10px;bottom:8px;height:74px;width:auto;opacity:.4;position:absolute}
-  @media(max-width:700px){.trace-athena{height:84px;right:-14px;opacity:.42}.trace-thoth{height:52px;left:-8px;opacity:.34}}
+  @media(max-width:700px){.trace-athena{height:84px;right:6px;opacity:.42}.trace-thoth{height:52px;left:-8px;opacity:.34}}
 
   /* ---- v126: the door (registration) as a third space, rug-ground field ---- */
   body.rview{background:#301F1A}
