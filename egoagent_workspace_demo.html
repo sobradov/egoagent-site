@@ -137,6 +137,10 @@
   .uplsample { background: transparent; border: 0; color: var(--gold); text-decoration: underline; font: inherit; font-size: 15px; cursor: pointer; }
   .uplrow { border-top: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
   .uplrow input[type=date] { background: #0c1510; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 15px; color-scheme: dark; }
+  .speed { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .speed .small { margin-right: 4px; }
+  .speed button { background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 999px; padding: 7px 16px; font: inherit; font-size: 15px; cursor: pointer; }
+  .speed button.on { background: #FFFFFF; color: #0f1a14; }
   @media (min-width: 640px) { .screen { padding: 22px; } }
 </style>
 </head>
@@ -149,6 +153,7 @@
   <h1>Your EgoAgent workspace, step by step</h1>
   <p class="intro">Watch the short tour, then open any stage below and try it. Patients never enter this workspace.</p>
   <div class="tour"><video id="tourvid" src="egoagent_workspace_tour_v4.mp4" poster="egoagent_workspace_tour_v3.jpg" controls playsinline preload="metadata"></video></div>
+  <div class="speed" role="group" aria-label="Tour speed"><span class="small">Tour speed</span><button type="button" data-r="0.75">Slower</button><button type="button" data-r="1" class="on">Normal</button><button type="button" data-r="1.25">Faster</button></div>
   <div class="allctl"><button class="allbtn" type="button" id="openall">Expand all</button><button class="allbtn" type="button" id="closeall">Collapse all</button></div>
 
   <!-- SCREEN 1: ONBOARDING, REVISED -->
@@ -595,7 +600,17 @@
   function all(o){ secs.forEach(function(sec){ sec.classList.toggle('open',o); sec.querySelector('.shead').setAttribute('aria-expanded',o?'true':'false'); }); }
   document.getElementById('openall').onclick=function(){all(true);};
   /* when the tour ends, return to its first picture instead of a dark frame */
-  var tv=document.getElementById('tourvid'); if(tv){ tv.addEventListener('ended',function(){ try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){} tv.load(); }); }
+  var tv=document.getElementById('tourvid');
+  /* tour speed: slower, normal or faster, so every reader can follow; music keeps its pitch */
+  (function(){ if(!tv) return; var btns=[].slice.call(document.querySelectorAll('.speed button'));
+    function setRate(r){ tv.defaultPlaybackRate=r; tv.playbackRate=r; try{ tv.preservesPitch=true; tv.webkitPreservesPitch=true; }catch(e){}
+      btns.forEach(function(b){ b.classList.toggle('on', +b.dataset.r===r); b.setAttribute('aria-pressed', +b.dataset.r===r?'true':'false'); });
+      try{ localStorage.setItem('egoTourRate', String(r)); }catch(e){} }
+    btns.forEach(function(b){ b.onclick=function(){ setRate(+b.dataset.r); }; });
+    var saved=1; try{ saved=+(localStorage.getItem('egoTourRate')||1)||1; }catch(e){}
+    setRate(saved); tv.addEventListener('loadedmetadata', function(){ tv.playbackRate=tv.defaultPlaybackRate; });
+  })();
+  if(tv){ tv.addEventListener('ended',function(){ try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){} tv.load(); }); }
   document.getElementById('closeall').onclick=function(){all(false);};
 })();
 </script>
