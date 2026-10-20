@@ -586,6 +586,8 @@
   });
   function all(o){ secs.forEach(function(sec){ sec.classList.toggle('open',o); sec.querySelector('.shead').setAttribute('aria-expanded',o?'true':'false'); }); }
   document.getElementById('openall').onclick=function(){all(true);};
+  /* when the tour ends, return to its first picture instead of a dark frame */
+  var tv=document.getElementById('tourvid'); if(tv){ tv.addEventListener('ended',function(){ try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){} tv.load(); }); }
   document.getElementById('closeall').onclick=function(){all(false);};
 })();
 </script>
