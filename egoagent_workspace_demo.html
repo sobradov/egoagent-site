@@ -153,7 +153,7 @@
   <h1>Your EgoAgent workspace, step by step</h1>
   <p class="intro">Watch the short tour, then open any stage below and try it. Patients never enter this workspace.</p>
   <div class="tour"><video id="tourvid" src="egoagent_workspace_tour_v4.mp4" poster="egoagent_workspace_tour_v3.jpg" controls playsinline preload="metadata"></video></div>
-  <div class="speed" role="group" aria-label="Tour speed"><span class="small">Tour speed</span><button type="button" data-r="0.75">Slower</button><button type="button" data-r="1" class="on">Normal</button><button type="button" data-r="1.25">Faster</button></div>
+  <div class="speed" role="group" aria-label="Tour speed"><span class="small">Tour speed</span><button type="button" data-r="0.85">Slower</button><button type="button" data-r="1" class="on">Normal</button><button type="button" data-r="1.25">Faster</button></div>
   <div class="allctl"><button class="allbtn" type="button" id="openall">Expand all</button><button class="allbtn" type="button" id="closeall">Collapse all</button></div>
 
   <!-- SCREEN 1: ONBOARDING, REVISED -->
@@ -608,6 +608,7 @@
       try{ localStorage.setItem('egoTourRate', String(r)); }catch(e){} }
     btns.forEach(function(b){ b.onclick=function(){ setRate(+b.dataset.r); }; });
     var saved=1; try{ saved=+(localStorage.getItem('egoTourRate')||1)||1; }catch(e){}
+    if(!btns.some(function(x){return +x.dataset.r===saved;})) saved=1;  /* an older saved speed that no longer exists falls back to Normal */
     setRate(saved); tv.addEventListener('loadedmetadata', function(){ tv.playbackRate=tv.defaultPlaybackRate; });
   })();
   if(tv){ tv.addEventListener('ended',function(){ try{ if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen(); }catch(e){} tv.load(); }); }
