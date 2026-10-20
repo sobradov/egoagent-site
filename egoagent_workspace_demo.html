@@ -125,6 +125,18 @@
   .screen .sbody { display: none; margin-top: 12px; }
   .screen.open .sbody { display: block; }
   .screen { margin: 14px 0; }
+  [hidden] { display: none !important; }
+  .uplbtn { display: block; width: 100%; margin-top: 12px; background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 10px; font: inherit; font-size: 16px; cursor: pointer; }
+  .uplbtn:hover, .uplbtn:focus-visible { background: rgba(255,255,255,.10); }
+  .upl { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0f1a14; }
+  .upl p { margin: 4px 0; }
+  .uplpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; opacity: .45; pointer-events: none; }
+  .uplpick.on { opacity: 1; pointer-events: auto; }
+  .uplfile { display: inline-block; background: #2f5d48; color: var(--text); border-radius: 8px; padding: 9px 14px; cursor: pointer; font-size: 15px; }
+  .uplfile input { display: none; }
+  .uplsample { background: transparent; border: 0; color: var(--gold); text-decoration: underline; font: inherit; font-size: 15px; cursor: pointer; }
+  .uplrow { border-top: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
+  .uplrow input[type=date] { background: #0c1510; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 15px; color-scheme: dark; }
   @media (min-width: 640px) { .screen { padding: 22px; } }
 </style>
 </head>
@@ -220,6 +232,19 @@
           <span><span class="sw absent"></span>Absence</span>
         </div>
         <div class="day box" id="day"><strong>Tap a day.</strong><br><span class="small">Coloured days open their documents. An empty past day can be marked as an absence.</span></div>
+        <button class="uplbtn" type="button" id="uplopen">⤒ Upload past recordings</button>
+        <div class="upl" id="upl" hidden>
+          <p><strong>Upload past recordings for <span id="uplname">Miriam S.</span></strong></p>
+          <p class="small">Audio from your phone, iPad or computer. Each file is transcribed, filed to its day as a transcript waiting, and the audio is then deleted.</p>
+          <label class="check"><input type="checkbox" id="uplok">This patient consented to these recordings and to their transcription. Obtaining that consent is my responsibility.</label>
+          <div id="uplpick" class="uplpick">
+            <label class="uplfile">Choose audio files<input type="file" id="uplinput" accept="audio/*,.m4a,.mp3,.wav,.aac" multiple></label>
+            <button class="uplsample" type="button" id="uplsample">or try two sample files</button>
+          </div>
+          <div id="upllist"></div>
+          <button class="keep" type="button" id="uplgo" hidden>Transcribe and file</button>
+          <p class="small" style="margin-top:10px">In this demo nothing leaves your device: the files are only listed here, never uploaded or played.</p>
+        </div>
       </div>
     </div>
     <p class="small">Temporary items (gold) are deleted when the process note for that day is saved. Saved notes (green) stay private to you.</p>
@@ -407,9 +432,45 @@
     };});
   }
   [].forEach.call(document.querySelectorAll('.pt'),function(b){b.onclick=function(){
-    [].forEach.call(document.querySelectorAll('.pt'),function(q){q.classList.remove('on');}); b.classList.add('on'); cur=b.dataset.p; draw();
+    [].forEach.call(document.querySelectorAll('.pt'),function(q){q.classList.remove('on');}); b.classList.add('on'); cur=b.dataset.p; draw(); resetUpl();
   };});
   draw();
+  /* ---- upload past recordings (demo: files are only listed, never uploaded) ---- */
+  var upl=document.getElementById('upl'), ok=document.getElementById('uplok'), pickBox=document.getElementById('uplpick'),
+      list=document.getElementById('upllist'), go=document.getElementById('uplgo'), input=document.getElementById('uplinput'), files=[];
+  var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function resetUpl(){ files=[]; list.innerHTML=''; go.hidden=true; ok.checked=false; pickBox.classList.remove('on');
+    document.getElementById('uplname').textContent=data[cur].name;
+    if(cur==='a'){ ok.disabled=true; ok.parentElement.style.opacity=.5; list.innerHTML='<p class="small">Anna L. has not signed the consent form, so nothing can be uploaded for her.</p>'; }
+    else { ok.disabled=false; ok.parentElement.style.opacity=1; } }
+  function showList(){
+    list.innerHTML=files.map(function(f,i){ return '<div class="uplrow"><strong>'+f.name.replace(/</g,'&lt;')+'</strong> <span class="small">· '+f.size+'</span><br>'+
+      '<span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'"></div>'; }).join('');
+    [].forEach.call(list.querySelectorAll('input[type=date]'),function(d){d.onchange=function(){files[+d.dataset.i].date=d.value;};});
+    go.hidden=!files.length;
+  }
+  document.getElementById('uplopen').onclick=function(){ upl.hidden=!upl.hidden; if(!upl.hidden) resetUpl(); };
+  ok.onchange=function(){ pickBox.classList.toggle('on',ok.checked); };
+  input.onchange=function(){
+    files=[].map.call(input.files,function(f){ var mb=f.size/1048576; return {name:f.name,size:(mb>=1?mb.toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'),date:iso(new Date(f.lastModified))}; });
+    input.value=''; showList(); };
+  document.getElementById('uplsample').onclick=function(){
+    files=[{name:'Session recording 4 Aug.m4a',size:'38.2 MB',date:'2026-08-04'},{name:'Session recording 11 Aug.m4a',size:'41.7 MB',date:'2026-08-11'}]; showList(); };
+  go.onclick=function(){
+    var p=data[cur], out=[];
+    files.forEach(function(f){
+      var d=new Date(f.date+'T12:00:00'), label=DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();
+      if(d.getFullYear()===2026 && d.getMonth()===7 && d.getDate()<=TODAY && !p.days[d.getDate()]){
+        p.days[d.getDate()]={k:'temp',t:'<strong>'+label+'</strong><br><span class="chip temp">Transcript waiting</span> from an uploaded recording · temporary<br><span class="small">The audio file was deleted after transcription.</span><br><a class="btn" href="#">Open this day</a>'};
+        out.push('<div class="uplrow">✓ '+f.name.replace(/</g,'&lt;')+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted</span></div>');
+      } else {
+        out.push('<div class="uplrow">✓ '+f.name.replace(/</g,'&lt;')+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted. In this demo the calendar shows August 2026 only.</span></div>');
+      }
+    });
+    draw(); list.innerHTML=out.join(''); go.hidden=true; files=[];
+  };
+  resetUpl();
 })();
 </script>
 <script>
