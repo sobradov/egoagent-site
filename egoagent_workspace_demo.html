@@ -105,10 +105,16 @@
     .papers .paper { margin: 0; max-height: 68vh; overflow-y: auto; }
     .papers .paper h3 { position: sticky; top: -10px; background: #0c1510; padding: 6px 0; margin: -4px 4px 4px; z-index: 1; }
   }
+  .homebar { position: sticky; top: 0; z-index: 20; background: rgba(15,26,20,.96); border-bottom: 1px solid var(--line); }
+  .homebar .in { max-width: 760px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .homebtn { display: inline-block; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 8px 14px; text-decoration: none; font-size: 16px; }
+  .homebtn:hover, .homebtn:focus-visible { background: rgba(255,255,255,.10); }
+  .homebar .brand { color: var(--gold); font-family: var(--serif); font-size: 18px; }
   @media (min-width: 640px) { .screen { padding: 22px; } }
 </style>
 </head>
 <body>
+<nav class="homebar"><div class="in"><a class="homebtn" href="index.html#therapists">← Back to EgoAgent</a><span class="brand">Workspace demo</span></div></nav>
 <div class="wrap">
 
   <div class="banner">DEMO. Every patient, name, session and note here is fictional. Nothing is recorded, stored or sent.</div>
@@ -334,6 +340,7 @@
     <p class="small">Your process note is kept for the treatment, under the same protection as your own process notes. Its retention period is set in one place for the whole workspace.</p>
   </section>
 
+  <p style="text-align:center;margin:28px 0 8px"><a class="homebtn" href="index.html#therapists">← Back to EgoAgent</a></p>
 </div>
 <script>
 (function(){
