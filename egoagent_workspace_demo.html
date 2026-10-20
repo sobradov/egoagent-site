@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EgoAgent Workspace Demo</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --bg: #0f1a14; --panel: #15241c; --line: #2a3f33; --gold: #e0b658; --gold-soft: #b8924a;
+    --text: #efe9dc; --muted: #a9b5a9; --temp: #c98a3d; --final: #5fa67a; --dim: #5d6b61;
+    --serif: Georgia, "Times New Roman", serif; --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 48px; }
+  .banner { background: #3a2a12; color: var(--gold); border: 1px solid var(--gold-soft); padding: 12px 14px; border-radius: 8px; margin: 16px 0 8px; font-size: 15px; }
+  h1 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 30px; margin: 24px 0 6px; }
+  .intro { color: var(--muted); margin: 0 0 18px; }
+  .screen { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 22px 0; }
+  .label { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 6px; }
+  h2 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 24px; margin: 0 0 8px; }
+  h3 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 19px; margin: 16px 0 6px; }
+  p { margin: 8px 0; }
+  .muted { color: var(--muted); font-size: 15px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+  .step:first-of-type { border-top: 0; }
+  .num { min-width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .field { margin: 10px 0; }
+  .field > span { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .input, select { width: 100%; background: #0c1510; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--text); font-size: 16px; font-family: var(--sans); }
+  select option:disabled { color: var(--dim); }
+  .btn { display: inline-block; background: #2f5d48; color: var(--text); border-radius: 8px; padding: 10px 16px; margin: 6px 6px 6px 0; font-size: 16px; }
+  .btn.ghost { background: transparent; border: 1px solid var(--gold-soft); color: var(--gold); }
+  .chip { display: inline-block; font-size: 13px; padding: 3px 9px; border-radius: 999px; margin: 2px 4px 2px 0; border: 1px solid; }
+  .chip.temp { color: var(--temp); border-color: var(--temp); }
+  .chip.final { color: var(--final); border-color: var(--final); }
+  .chip.wait { color: var(--muted); border-color: var(--line); }
+  .chip.soon { color: var(--dim); border-color: var(--dim); }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .row:first-of-type { border-top: 0; }
+  .opt { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; background: #0c1510; }
+  .opt.sel { border-color: var(--gold); }
+  .box { border-left: 3px solid var(--gold); padding: 8px 12px; background: #0c1510; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .transcript { background: #0c1510; border-radius: 8px; padding: 12px; font-size: 16px; line-height: 1.6; }
+  .transcript p { margin: 6px 0; }
+  .who { color: var(--gold-soft); font-weight: 600; }
+  .note { border: 1px solid var(--final); border-radius: 8px; padding: 12px; background: #0c1510; }
+  .small { font-size: 14px; color: var(--muted); }
+  .tag { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .check { display: block; margin: 8px 0; }
+  .check input { margin-right: 8px; transform: scale(1.2); }
+  .pl { display: grid; gap: 14px; }
+  @media (min-width: 700px) { .pl { grid-template-columns: 190px 1fr; } }
+  .rail { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #0c1510; }
+  .rail .tag { margin: 2px 4px 8px; }
+  .pt { display: block; width: 100%; text-align: left; background: transparent; color: var(--text); border: 1px solid transparent; border-radius: 8px; padding: 9px 10px; margin: 2px 0; font: inherit; cursor: pointer; }
+  .pt .small { display: block; }
+  .pt.on { border-color: var(--gold); background: #15241c; }
+  .add { display: block; width: 100%; margin-top: 8px; background: transparent; border: 1px dashed var(--gold-soft); color: var(--gold); border-radius: 8px; padding: 9px; font: inherit; cursor: pointer; }
+  .cal { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0c1510; }
+  .calhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .calhead strong { font-family: var(--serif); color: var(--gold); font-size: 19px; font-weight: 400; }
+  .consent { font-size: 14px; color: var(--final); margin: 0 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .dow { text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+  .d { aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--muted); background: transparent; font-family: var(--sans); cursor: pointer; padding: 0; }
+  .d.blank { border: 0; cursor: default; }
+  .d.future { color: var(--dim); border-color: #1d2c24; cursor: default; }
+  .d.temp { background: #3a2a12; border-color: var(--temp); color: var(--gold); font-weight: 600; }
+  .d.saved { background: #1f3b2b; border-color: var(--final); color: #cfe9d8; font-weight: 600; }
+  .d.absent { border: 2px dashed #c0574a; color: #e39a90; }
+  .d.today { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .d.picked { box-shadow: 0 0 0 3px rgba(224,182,88,.55); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 5px; border: 1px solid; }
+  .sw.temp { background: #3a2a12; border-color: var(--temp); }
+  .sw.saved { background: #1f3b2b; border-color: var(--final); }
+  .sw.absent { border: 2px dashed #c0574a; }
+  .day { margin-top: 12px; }
+  .choice { display: inline-block; border: 1px solid #c0574a; color: #e39a90; border-radius: 999px; padding: 6px 12px; margin: 4px 6px 4px 0; font-size: 15px; background: transparent; cursor: pointer; font-family: var(--sans); }
+  .turn { display: block; width: 100%; text-align: left; background: transparent; color: var(--text); border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; margin: 4px 0; font: inherit; line-height: 1.55; cursor: pointer; }
+  .turn.on { border-color: var(--gold); background: #15241c; }
+  .acts { margin: 2px 0 8px 10px; }
+  .act { display: inline-block; background: transparent; border: 1px solid var(--gold-soft); color: var(--gold); border-radius: 999px; padding: 6px 12px; margin: 4px 6px 4px 0; font: inherit; font-size: 15px; cursor: pointer; }
+  .act.ask { border-color: #6f9fd8; color: #a9c8f0; }
+  .cmt { border-left: 3px solid var(--gold); background: #0c1510; padding: 6px 10px; margin: 4px 0 8px 10px; font-size: 15px; border-radius: 0 6px 6px 0; }
+  .qa { border-left: 3px solid #6f9fd8; background: #0c1510; padding: 6px 10px; margin: 4px 0 8px 10px; font-size: 15px; border-radius: 0 6px 6px 0; }
+  .qa .small { display: block; margin-top: 4px; }
+  .seg { border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; margin: 4px 0; line-height: 1.6; cursor: pointer; -webkit-user-select: text; user-select: text; }
+  .seg.on { border-color: var(--gold); background: #15241c; }
+  .paper { background: #0c1510; border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 10px 0; }
+  .paper h3 { margin: 4px 4px 6px; }
+  .paper .small { margin: 0 4px 6px; display: block; }
+  mark.c { background: rgba(224,182,88,.28); color: inherit; border-bottom: 2px solid var(--gold); padding: 0 1px; }
+  mark.q { background: rgba(111,159,216,.25); color: inherit; border-bottom: 2px solid #6f9fd8; padding: 0 1px; }
+  textarea.ta { width: 100%; min-height: 70px; background: #0c1510; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--text); font: 16px/1.5 var(--sans); }
+  .keep { display: inline-block; background: #2f5d48; color: var(--text); border: 0; border-radius: 8px; padding: 8px 14px; margin: 6px 6px 0 0; font: inherit; font-size: 15px; cursor: pointer; }
+  .quote { font-style: italic; color: var(--muted); display: block; margin-bottom: 4px; }
+  .papers { display: block; }
+  .seg.linked { border-color: #6f9fd8; background: rgba(111,159,216,.10); }
+  @media (min-width: 760px) {
+    .screen.wide { width: calc(min(1240px, 100vw) - 32px); position: relative; left: 50%; transform: translateX(-50%); }
+    .papers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+    .papers .paper { margin: 0; max-height: 68vh; overflow-y: auto; }
+    .papers .paper h3 { position: sticky; top: -10px; background: #0c1510; padding: 6px 0; margin: -4px 4px 4px; z-index: 1; }
+  }
+  @media (min-width: 640px) { .screen { padding: 22px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">DEMO. Every patient, name, session and note here is fictional. Nothing is recorded, stored or sent.</div>
+
+  <h1>Your EgoAgent workspace, step by step</h1>
+  <p class="intro">A walk through the workspace in the order you meet it, from setting up to a saved process note. Tap and try anything. Patients never enter this workspace.</p>
+
+  <!-- SCREEN 1: ONBOARDING, REVISED -->
+  <section class="screen">
+    <p class="label">Stage 1 of 6 · Setting up the workspace</p>
+    <h2>Set up your workspace, one step at a time.</h2>
+    <p class="muted">You will be taken through each step. Nothing is recorded yet.</p>
+
+    <div class="step"><div class="num">1</div><div><strong>Confirm who you are.</strong>
+      <div class="field"><span>First name</span><div class="input">Example: A.</div></div>
+      <div class="field"><span>Last name</span><div class="input">Example: Smith</div></div>
+      <div class="field"><span>Professional email</span><div class="input">name@practice.example</div></div></div></div>
+
+    <div class="step"><div class="num">2</div><div><strong>Confirm your professional license.</strong>
+      <p class="muted">Choose the profession you are licensed in. Then choose your state and enter the license number exactly as it appears on your license.</p>
+
+      <div class="field"><span>Profession</span>
+        <select aria-label="Profession">
+          <option>Choose your profession</option>
+          <option>Physician (MD or DO)</option>
+          <option>Licensed psychologist (PhD, PsyD, or other doctorate in psychology)</option>
+          <option>Licensed clinical social worker (LCSW)</option>
+          <option>Licensed psychoanalyst</option>
+        </select></div>
+
+      <div class="field"><span>State</span>
+        <select aria-label="State">
+          <option>New York</option>
+          <option disabled>New Jersey · not yet available</option>
+          <option disabled>Connecticut · not yet available</option>
+          <option disabled>Massachusetts · not yet available</option>
+          <option disabled>Pennsylvania · not yet available</option>
+          <option disabled>Florida · not yet available</option>
+          <option disabled>California · not yet available</option>
+          <option disabled>Texas · not yet available</option>
+          <option disabled>Illinois · not yet available</option>
+          <option disabled>… all other states and DC · not yet available</option>
+        </select>
+        <p class="small">Only New York is open for registration now. Other states will open as each one is verified.</p></div>
+
+      <div class="field"><span>License number, as printed on your license</span><div class="input">Enter number</div></div>
+      <p class="small">Your license and your current New York registration are checked against the New York State Education Department's public record before the workspace opens.</p></div></div>
+
+    <div class="step"><div class="num">3</div><div><strong>Confirm the work you do.</strong>
+      <label class="check"><input type="checkbox">I treat adults in individual therapy.</label>
+      <label class="check"><input type="checkbox">I do not work in a federally assisted substance-use treatment program (42 CFR Part 2).</label></div></div>
+
+    <div class="step"><div class="num">4</div><div><strong>Sign your professional affirmation.</strong>
+      <label class="check"><input type="checkbox">Under penalty of perjury, I affirm that I hold the license named above, that it is in my name, that my registration to practice in New York is current, and that the statements above are true.</label>
+      <a class="btn" href="#">Continue</a></div></div>
+
+    <div class="step"><div class="num">5</div><div><strong>Read the patient consent form.</strong>
+      <p class="muted">This is the written consent your patient signs before anything is recorded. Preview it now.</p>
+      <a class="btn ghost" href="#">Preview the consent form</a></div></div>
+
+    <div class="step"><div class="num">6</div><div><strong>Your workspace is ready.</strong>
+      <p class="muted">Add your first patient when you are ready. Nothing is sent to any patient until you choose.</p>
+      <a class="btn" href="#">Open my workspace</a></div></div>
+  </section>
+
+  <!-- SCREEN 2: PATIENTS, CALENDAR -->
+  <section class="screen">
+    <p class="label">Stage 2 of 6 · Your patients</p>
+    <h2>One space for each patient, one calendar of the treatment.</h2>
+    <p class="muted">Choose a patient. Her calendar opens. Each session day is coloured by what is waiting there. Tap a day to open it.</p>
+    <div class="pl">
+      <div class="rail">
+        <p class="tag">Patients</p>
+        <button class="pt on" data-p="m">Miriam S.<span class="small">Twice weekly · consent signed</span></button>
+        <button class="pt" data-p="d">David K.<span class="small">Weekly · consent signed</span></button>
+        <button class="pt" data-p="a">Anna L.<span class="small">Consent sent, not yet signed</span></button>
+        <button class="add" type="button">+ Add a patient</button>
+      </div>
+      <div class="cal">
+        <div class="calhead"><strong id="calname">Miriam S.</strong><span class="small">August 2026</span></div>
+        <p class="consent" id="consent">✓ Consent signed 28 Jul 2026 · recording allowed</p>
+        <div class="grid" id="grid"></div>
+        <div class="legend">
+          <span><span class="sw temp"></span>Waiting · temporary</span>
+          <span><span class="sw saved"></span>Process note saved</span>
+          <span><span class="sw absent"></span>Absence</span>
+        </div>
+        <div class="day box" id="day"><strong>Tap a day.</strong><br><span class="small">Coloured days open their documents. An empty past day can be marked as an absence.</span></div>
+      </div>
+    </div>
+    <p class="small">Temporary items (gold) are deleted when the process note for that day is saved. Saved notes (green) stay private to you.</p>
+  </section>
+
+  <!-- SCREEN 3: TRANSCRIPT -->
+  <section class="screen">
+    <p class="label">Stage 3 of 6 · After the session</p>
+    <h2>The session is transcribed and filed.</h2>
+    <p class="muted">When you press stop, the recording is transcribed and the sound file is deleted. The transcript is filed in Miriam S.'s space as a temporary item.</p>
+    <div class="transcript">
+      <p><span class="who">P:</span> I keep coming back to the drawing I ruined on Friday. I knew it was finished and I kept adding to it anyway.</p>
+      <p><span class="who">T:</span> You knew it was finished.</p>
+      <p class="small">… 467 words · 48 minutes · status: <span class="chip temp">temporary</span></p>
+    </div>
+    <div class="box">The sound file is already gone. The transcript waits here until you save the process note for this day.</div>
+    <div class="box" style="border-left-color: var(--temp)"><strong>Deleted automatically on 17 Feb 2027</strong><br>
+      <span class="small">If no process note is saved within six months, this transcript is deleted on its own. This period is set in one place for the whole workspace.</span></div>
+  </section>
+
+  <!-- SCREEN 4: ANALYSIS -->
+  <section class="screen">
+    <p class="label">Stage 4 of 6 · Widening the view</p>
+    <h2>Choose one or more perspectives.</h2>
+    <p class="muted">Use any standard perspective, your own perspective, or a standard perspective with your own instructions added to it. Each analysis is saved as a temporary item.</p>
+    <div class="opt sel" id="scope">
+      <strong>What should the AI read?</strong> <span class="small">· analysing Mon 17 Aug</span>
+      <label class="check"><input type="radio" name="scope" value="one" checked>This session only</label>
+      <label class="check"><input type="radio" name="scope" value="ctx">This session in light of earlier sessions</label>
+      <div id="ctx" style="display:none;margin:6px 0 2px 26px">
+        <p class="small" style="margin:4px 0">Earlier days, read in date order, oldest first:</p>
+        <label class="check"><input type="checkbox" class="cd" checked value="3 Aug">Mon 3 Aug · process note</label>
+        <label class="check"><input type="checkbox" class="cd" checked value="6 Aug">Thu 6 Aug · absence, cancelled, justified</label>
+        <label class="check"><input type="checkbox" class="cd" checked value="10 Aug">Mon 10 Aug · process note</label>
+        <label class="check"><input type="checkbox" class="cd" checked value="13 Aug">Thu 13 Aug · transcript, note not yet saved</label>
+        <p class="small" style="margin:4px 0">Shortcuts: <a href="#" style="color:var(--gold)">This week</a> · <a href="#" style="color:var(--gold)">Last 10</a> · <a href="#" style="color:var(--gold)">Choose on the calendar</a></p>
+        <p class="small" style="margin:10px 0 2px">From those days, bring:</p>
+        <label class="check"><input type="checkbox" checked>Her words: the transcripts kept in your notes</label>
+        <label class="check"><input type="checkbox" checked>Your own thoughts, comments and questions</label>
+        <label class="check"><input type="checkbox" id="oldai">Earlier AI analyses <span class="small">(off by default, so the AI looks with a fresh eye)</span></label>
+        <div class="box" style="margin:8px 0 0">Only 17 Aug is analysed. The earlier days are read as background, not analysed again.</div>
+      </div>
+    </div>
+    <div class="opt sel"><strong>Standard perspectives</strong> <span class="small">· choose any number</span>
+        <label class="check"><input type="checkbox" class="sp" value="General psychoanalytic">General psychoanalytic</label>
+        <label class="check"><input type="checkbox" class="sp" value="Classical and contemporary Freudian">Classical and contemporary Freudian</label>
+        <label class="check"><input type="checkbox" class="sp" value="Ego psychology and modern conflict theory">Ego psychology and modern conflict theory</label>
+        <label class="check"><input type="checkbox" class="sp" checked value="Kleinian–Bionian">Kleinian–Bionian</label>
+        <label class="check"><input type="checkbox" class="sp" value="Object relations">Object relations</label>
+        <label class="check"><input type="checkbox" class="sp" value="Kernbergian object relations">Kernbergian object relations</label>
+        <label class="check"><input type="checkbox" class="sp" value="Transference-focused">Transference-focused</label>
+        <label class="check"><input type="checkbox" class="sp" value="Winnicottian and British Independent">Winnicottian and British Independent</label>
+        <label class="check"><input type="checkbox" class="sp" checked value="Self psychology">Self psychology</label>
+        <label class="check"><input type="checkbox" class="sp" value="Relational">Relational</label>
+        <label class="check"><input type="checkbox" class="sp" value="Interpersonal">Interpersonal</label>
+        <label class="check"><input type="checkbox" class="sp" value="Intersubjective">Intersubjective</label>
+        <label class="check"><input type="checkbox" class="sp" value="Attachment-based">Attachment-based</label>
+        <label class="check"><input type="checkbox" class="sp" value="Lacanian">Lacanian</label>
+      <label class="check" style="color:var(--gold);margin-top:12px"><input type="checkbox" id="neuro">Add neuropsychoanalytic integration <span class="small">(joins each perspective chosen above, or stands alone)</span></label>
+    </div>
+    <div class="opt"><strong>Standard + your instructions</strong><br><span class="small">Add instructions that widen the perspectives chosen above.</span>
+      <div class="field"><div class="input">Example: attend especially to what is said about lateness and waiting.</div></div></div>
+    <div class="opt"><strong>Your own perspective</strong><br><span class="small">Write a perspective of your own, in your words. It is kept in your library for next time.</span>
+      <div class="field"><div class="input">Example: a perspective I name "Late Winnicott, with attention to play".</div></div></div>
+    <div class="box" id="runlist"></div>
+    <a class="btn" href="#">Run the analysis</a>
+  </section>
+
+  <!-- SCREEN 5: PROCESS NOTE -->
+  <section class="screen wide">
+    <p class="label">Stage 5 of 6 · Your process note</p>
+    <h2>Read, think, and save one note for the day.</h2>
+    <p class="muted">Work on it as on paper. On a larger screen the transcript and the analyses sit side by side; tapping a passage of an analysis lights up the lines of the transcript it reads. Tap any passage, or highlight a few words, in either one. Add your own comment, or ask a question and keep the answer. Write your own thoughts at the end. Use any of these, or none, on any day.</p>
+
+    <div class="papers">
+    <div class="paper" id="p-tx">
+      <h3>1 · The transcript</h3><span class="small">17 Aug · 48 minutes · verbatim</span>
+      <div class="seg"><span class="who">P:</span> I keep coming back to the drawing I ruined on Friday. I knew it was finished and I kept adding to it anyway.</div>
+      <div class="seg"><span class="who">T:</span> You knew it was finished.</div>
+      <div class="seg"><span class="who">P:</span> It's like I can't let anything be done. If it's done, someone can look at it and decide what it is.</div>
+      <div class="seg"><span class="who">T:</span> And here?</div>
+      <div class="seg"><span class="who">P:</span> Here too, I suppose. I always want one more session before you know what I am.</div>
+    </div>
+
+    <div class="paper" id="p-an">
+      <h3>2 · The analyses</h3><span class="small">Another perspective, like a colleague's consultation</span>
+      <p class="tag" style="margin:8px 4px 2px">Kleinian–Bionian</p>
+      <div class="seg" data-ref="0">The ruined drawing may hold an attack on her own good object: what is complete can be envied, judged, and therefore spoiled first.</div>
+      <div class="seg" data-ref="2">“Someone can decide what it is” suggests a fear of the other's mind as a container that will not hold her, only define her.</div>
+      <p class="tag" style="margin:12px 4px 2px">Self psychology</p>
+      <div class="seg" data-ref="0">Leaving work unfinished may protect a fragile self from a mirroring response she expects to be disappointing.</div>
+      <div class="seg" data-ref="4">“One more session before you know what I am” may express a wish for an idealizing tie that is never put to the test.</div>
+    </div>
+    </div>
+
+    <div class="paper">
+      <h3>3 · Your own thoughts</h3>
+      <textarea class="ta" id="own" placeholder="Whatever comes to mind about this hour."></textarea>
+      <h3 style="margin-top:12px">Questions to carry to the next session</h3>
+      <textarea class="ta" id="carry" placeholder="Questions for you to think about, one per line."></textarea>
+    </div>
+
+    <div class="note">
+      <p class="tag">Included in this note</p>
+      <p id="n1">1. The full transcript, with your marks on it.</p>
+      <p id="n2">2. The analyses, with your marks on them.</p>
+      <p id="n3">3. Your own thoughts and the questions you carry.</p>
+      <p class="small">Every question you asked is kept with its answer, beside the words it was about.</p>
+    </div>
+    <div class="box"><strong>Save as the process note for 17 Aug?</strong><br>
+      When you save, the temporary items are deleted: the transcript and both analyses as separate files. What remains is this single note, with everything above in it, kept private to you.</div>
+    <a class="btn" href="#">Save the process note</a>
+    <a class="btn ghost" href="#">Keep editing</a>
+  </section>
+
+  <!-- SCREEN 6: SAVED -->
+  <section class="screen">
+    <p class="label">Stage 6 of 6 · Saved</p>
+    <h2>The day is complete.</h2>
+    <div class="row"><div>Process note, 17 Aug 2026</div><span class="chip final">Saved, private</span></div>
+    <div class="row"><div>Transcript, 17 Aug 2026</div><span class="chip wait">Deleted</span></div>
+    <div class="row"><div>Analysis, Kleinian–Bionian</div><span class="chip wait">Deleted</span></div>
+    <div class="row"><div>Analysis, Self Psychology</div><span class="chip wait">Deleted</span></div>
+    <p class="small">On Miriam S.'s calendar, 17 Aug now shows green.</p>
+
+    <div class="note" style="margin-top:14px">
+      <p class="tag">Process note · 17 Aug 2026 · saved 17 Aug, 9:40 pm</p>
+      <p class="small">The transcript and analyses with your marks, your thoughts, and your questions to carry. <a href="#" style="color:var(--gold)">Open the full note</a></p>
+      <div id="later"></div>
+      <h3>Add a later thought</h3>
+      <p class="small">Something that came to you that night, or before the next session. It is added below the note with its date. What you saved is never changed.</p>
+      <textarea class="ta" id="latertxt" placeholder="Example: I dreamt about the drawing. Was I the one who couldn't let the session end?"></textarea>
+      <button class="keep" id="laterbtn" type="button">Add to this note</button>
+    </div>
+    <p class="small">Your process note is kept for the treatment, under the same protection as your own process notes. Its retention period is set in one place for the whole workspace.</p>
+  </section>
+
+</div>
+<script>
+(function(){
+  var data={
+    m:{name:'Miriam S.',consent:'✓ Consent signed 28 Jul 2026 · recording allowed',days:{
+      3:{k:'saved',t:'<strong>Mon 3 Aug</strong><br><span class="chip final">Process note saved</span> private to you'},
+      6:{k:'absent',t:'<strong>Thu 6 Aug</strong><br><span class="chip" style="color:#e39a90;border-color:#c0574a">Cancelled, justified</span> “Flight delayed, called ahead.”'},
+      10:{k:'saved',t:'<strong>Mon 10 Aug</strong><br><span class="chip final">Process note saved</span> private to you'},
+      13:{k:'temp',t:'<strong>Thu 13 Aug</strong><br><span class="chip temp">Transcript</span> 50 minutes · temporary<br><span class="chip temp">Analysis ready</span> Kleinian–Bionian + Self Psychology · temporary<br><a class="btn" href="#">Open this day</a>'},
+      17:{k:'temp',t:'<strong>Mon 17 Aug</strong><br><span class="chip temp">Transcript waiting</span> 48 minutes · temporary<br><a class="btn" href="#">Open this day</a>'}
+    }},
+    d:{name:'David K.',consent:'✓ Consent signed 4 Aug 2026 · recording allowed',days:{
+      5:{k:'saved',t:'<strong>Wed 5 Aug</strong><br><span class="chip final">Process note saved</span> private to you'},
+      12:{k:'temp',t:'<strong>Wed 12 Aug</strong><br><span class="chip temp">Transcript waiting</span> 45 minutes · temporary<br><a class="btn" href="#">Open this day</a>'}
+    }},
+    a:{name:'Anna L.',consent:'Consent sent 15 Aug 2026, not yet signed · nothing can be recorded until she signs',days:{}}
+  };
+  var TODAY=18, START=6; /* 1 Aug 2026 is a Saturday: Monday-first grid starts with 5 blanks */
+  var grid=document.getElementById('grid'), day=document.getElementById('day'), cur='m';
+  function draw(){
+    var p=data[cur]; document.getElementById('calname').textContent=p.name;
+    var c=document.getElementById('consent'); c.textContent=p.consent; c.style.color=(cur==='a')?'#c98a3d':'';
+    grid.innerHTML='';
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(function(w){var e=document.createElement('div');e.className='dow';e.textContent=w;grid.appendChild(e);});
+    for(var i=0;i<5;i++){var e=document.createElement('div');e.className='d blank';grid.appendChild(e);}
+    for(var n=1;n<=31;n++){
+      var b=document.createElement('button'); b.className='d'; b.textContent=n; b.dataset.n=n;
+      var x=p.days[n]; if(x) b.className+=' '+x.k;
+      if(n>TODAY) b.className+=' future'; if(n===TODAY) b.className+=' today';
+      b.onclick=pick; grid.appendChild(b);
+    }
+    day.innerHTML='<strong>Tap a day.</strong><br><span class="small">'+(cur==='a'?'Nothing can be recorded for Anna L. until she signs the consent form.':'Coloured days open their documents. An empty past day can be marked as an absence.')+'</span>';
+  }
+  function pick(e){
+    var n=+e.currentTarget.dataset.n, p=data[cur], x=p.days[n];
+    if(n>TODAY) return;
+    [].forEach.call(grid.querySelectorAll('.picked'),function(q){q.classList.remove('picked');});
+    e.currentTarget.classList.add('picked');
+    if(x){ day.innerHTML=x.t; return; }
+    if(cur==='a'){ day.innerHTML='<strong>'+n+' Aug</strong><br><span class="small">No consent yet, so nothing can be filed here.</span>'; return; }
+    day.innerHTML='<strong>'+n+' Aug · no session filed</strong><br><span class="small">Mark this day as an absence?</span><br>'+
+      '<button class="choice" data-k="No-show">No-show</button><button class="choice" data-k="Cancelled, justified">Cancelled, justified</button><button class="choice" data-k="Cancelled, not justified">Cancelled, not justified</button>'+
+      '<div class="field"><span>Short explanation (optional)</span><div class="input">Example: called the morning of the session</div></div>';
+    [].forEach.call(day.querySelectorAll('.choice'),function(c){c.onclick=function(){
+      p.days[n]={k:'absent',t:'<strong>'+n+' Aug</strong><br><span class="chip" style="color:#e39a90;border-color:#c0574a">'+c.dataset.k+'</span> marked by you'};
+      draw(); var b=grid.querySelector('[data-n="'+n+'"]'); b.classList.add('picked'); day.innerHTML=p.days[n].t;
+    };});
+  }
+  [].forEach.call(document.querySelectorAll('.pt'),function(b){b.onclick=function(){
+    [].forEach.call(document.querySelectorAll('.pt'),function(q){q.classList.remove('on');}); b.classList.add('on'); cur=b.dataset.p; draw();
+  };});
+  draw();
+})();
+</script>
+<script>
+(function(){
+  var box=document.getElementById('runlist');
+  function upd(){
+    var sel=[].filter.call(document.querySelectorAll('.sp'),function(c){return c.checked;}).map(function(c){return c.value;});
+    var neuro=document.getElementById('neuro').checked;
+    var rows=sel.map(function(n){return n+(neuro?' + neuropsychoanalytic integration':'');});
+    if(!sel.length && neuro) rows=['Neuropsychoanalytic integration'];
+    if(!rows.length){box.innerHTML='<span class="small">Choose at least one perspective.</span>';return;}
+    var ctx=document.querySelector('input[name=scope]:checked').value==='ctx';
+    document.getElementById('ctx').style.display=ctx?'block':'none';
+    var days=[].filter.call(document.querySelectorAll('.cd'),function(c){return c.checked;}).map(function(c){return c.value;});
+    var how=(ctx&&days.length)?' · reading 17 Aug in light of '+days.join(', '):' · 17 Aug alone';
+    box.innerHTML=rows.map(function(r,i){return 'Analysis '+(i+1)+' of '+rows.length+' · '+r+how+' · <span class="chip temp">temporary</span>';}).join('<br>');
+  }
+  [].forEach.call(document.querySelectorAll('.sp, #neuro, input[name=scope], .cd'),function(c){c.onchange=upd;});
+  upd();
+})();
+</script>
+<script>
+(function(){
+  var counts={c:0,q:0};
+  function ans(text){
+    return 'Demo text. Read alongside the rest of the hour, these words seem to carry the fear of being finished and therefore judged. The same wish appears toward you in her last line.';
+  }
+  function update(){
+    var t=document.getElementById('p-tx'), a=document.getElementById('p-an');
+    function n(el,cls){return el.querySelectorAll(cls).length;}
+    function pl(k,w){return k+' '+w+(k===1?'':'s');}
+    function marks(el){var c=n(el,'.cmt'),q=n(el,'.qa'); if(!c&&!q) return ': no marks yet.'; return ': '+pl(c,'comment')+', '+pl(q,'question')+' with '+(q===1?'its answer':'answers')+'.';}
+    document.getElementById('n1').textContent='1. The full transcript, with your marks on it'+marks(t);
+    document.getElementById('n2').textContent='2. The analyses, with your marks on them'+marks(a);
+    var own=document.getElementById('own').value.trim(), carry=document.getElementById('carry').value.trim();
+    var cq=carry?carry.split(/\n+/).filter(function(x){return x.trim();}).length:0;
+    document.getElementById('n3').textContent='3. Your own thoughts'+(own?'':' (none yet)')+' and '+cq+' question'+(cq===1?'':'s')+' to carry.';
+  }
+  function close(){[].forEach.call(document.querySelectorAll('.acts'),function(e){e.remove();});[].forEach.call(document.querySelectorAll('.seg.on'),function(e){e.classList.remove('on');});}
+  function after(seg){ var x=seg; while(x.nextElementSibling && (x.nextElementSibling.classList.contains('cmt')||x.nextElementSibling.classList.contains('qa'))) x=x.nextElementSibling; return x; }
+  function open(seg, range){
+    close(); seg.classList.add('on');
+    var quote=range?range.toString().trim():'';
+    var a=document.createElement('div'); a.className='acts';
+    a.innerHTML=(quote?'<span class="small">Highlighted: “'+quote.replace(/</g,'&lt;')+'”</span>':'')+
+      '<button class="act" type="button">Add a comment</button><button class="act ask" type="button">Ask a question</button>';
+    seg.after(a);
+    function markIt(cls){ if(!range) return; try{ var m=document.createElement('mark'); m.className=cls; range.surroundContents(m);}catch(e){} }
+    a.querySelector('.act').onclick=function(){
+      markIt('c');
+      var box=document.createElement('div'); box.className='cmt';
+      box.innerHTML=(quote?'<span class="quote">“'+quote.replace(/</g,'&lt;')+'”</span>':'')+'<textarea class="ta" placeholder="Your comment"></textarea><button class="keep" type="button">Keep</button>';
+      a.remove(); seg.classList.remove('on'); after(seg).after(box);
+      var ta=box.querySelector('textarea'); ta.focus();
+      box.querySelector('.keep').onclick=function(){ var v=ta.value.trim()||'(empty comment)'; box.innerHTML=(quote?'<span class="quote">“'+quote.replace(/</g,'&lt;')+'”</span>':'')+'<strong>Your comment:</strong> '+v.replace(/</g,'&lt;'); update(); };
+      update();
+    };
+    a.querySelector('.act.ask').onclick=function(){
+      markIt('q');
+      var box=document.createElement('div'); box.className='qa';
+      box.innerHTML=(quote?'<span class="quote">“'+quote.replace(/</g,'&lt;')+'”</span>':'')+'<textarea class="ta" placeholder="Your question to the AI"></textarea><button class="keep" type="button">Ask</button>';
+      a.remove(); seg.classList.remove('on'); after(seg).after(box);
+      var ta=box.querySelector('textarea'); ta.focus();
+      box.querySelector('.keep').onclick=function(){ var v=ta.value.trim()||'What do these words suggest?'; box.innerHTML=(quote?'<span class="quote">“'+quote.replace(/</g,'&lt;')+'”</span>':'')+'<strong>Your question:</strong> '+v.replace(/</g,'&lt;')+'<span class="small"><strong>Answer:</strong> '+ans(v)+'</span>'; update(); };
+      update();
+    };
+  }
+  var txSegs=document.querySelectorAll('#p-tx .seg');
+  function showLink(seg){
+    [].forEach.call(txSegs,function(t){t.classList.remove('linked');});
+    if(seg.dataset.ref===undefined) return;
+    var t=txSegs[+seg.dataset.ref]; t.classList.add('linked');
+    var col=document.getElementById('p-tx');
+    if(col.scrollHeight>col.clientHeight){ col.scrollTo({top:t.offsetTop-col.offsetTop-40,behavior:'smooth'}); }
+  }
+  [].forEach.call(document.querySelectorAll('.seg'),function(seg){
+    seg.addEventListener('click',function(){ showLink(seg); });
+    seg.addEventListener('click',function(){
+      var sel=window.getSelection(), r=null;
+      if(sel && !sel.isCollapsed && sel.rangeCount){ var rr=sel.getRangeAt(0); if(seg.contains(rr.commonAncestorContainer)) r=rr.cloneRange(); }
+      if(!r && seg.classList.contains('on')){ close(); return; }
+      open(seg, r);
+    });
+  });
+  document.getElementById('own').oninput=update; document.getElementById('carry').oninput=update;
+  update();
+})();
+</script>
+<script>
+(function(){
+  var n=0, dates=['18 Aug 2026, 7:15 am','19 Aug 2026, 8:02 pm','20 Aug 2026, 6:50 am'];
+  document.getElementById('laterbtn').onclick=function(){
+    var t=document.getElementById('latertxt'), v=t.value.trim(); if(!v) return;
+    var d=document.createElement('div'); d.className='cmt'; d.style.margin='8px 0';
+    d.innerHTML='<strong>Added '+dates[Math.min(n,2)]+':</strong> '+v.replace(/</g,'&lt;');
+    document.getElementById('later').appendChild(d); t.value=''; n++;
+  };
+})();
+</script>
+</body>
+</html>
