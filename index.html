@@ -1135,7 +1135,7 @@
     <div class="wrap">
       <div class="faq">
         <details class="strip"><summary><span>Practical details</span><small>8 questions</small></summary>
-          <p class="t-faqctl"><button id="tExpand">Expand all</button><button id="tCollapse">Collapse all</button></p>
+          <p class="t-faqctl"><button id="tToggle" type="button">Expand all</button></p>
           <div class="qs">
         <details><summary>How does recording work?</summary><p>An app on your device, sound only, in the room or on the call. You press start and stop. The session arrives in that patient's workspace transcribed and filed by date; the audio exists only for transcription. Details are on the Privacy &amp; Security page.</p></details>
         <details><summary>What does my patient agree to?</summary><p>You send them a unique invitation link. They read the patient page, then complete the written permission — what is recorded, what is done with it, and what stays their choice. Nothing is recorded before it is completed, and any session can go unrecorded if they ask.</p></details>
@@ -1753,9 +1753,12 @@
 
 <script>
 (function(){
-  const ex=document.getElementById('tExpand'),co=document.getElementById('tCollapse');
-  if(ex){ex.onclick=()=>document.querySelectorAll('#t-faq .qs details').forEach(d=>d.open=true);
-         co.onclick=()=>document.querySelectorAll('#t-faq .qs details').forEach(d=>d.open=false);}
+  /* one button: says Expand all while any question is closed, Collapse all once all are open */
+  const tg=document.getElementById('tToggle'); if(!tg) return;
+  const qs=()=>Array.from(document.querySelectorAll('#t-faq .qs details'));
+  const sync=()=>{ tg.textContent=qs().every(d=>d.open)?'Collapse all':'Expand all'; };
+  tg.onclick=()=>{ const open=tg.textContent==='Expand all'; qs().forEach(d=>d.open=open); sync(); };
+  qs().forEach(d=>d.addEventListener('toggle',sync)); sync();
 })();
 </script>
 <script>
