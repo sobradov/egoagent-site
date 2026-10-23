@@ -271,7 +271,15 @@
   .fsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
 
   .tourbtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-  #pgsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
+  .htitle { display: flex; align-items: flex-start; gap: 14px; margin: 24px 0 6px; }
+  .htitle h1 { margin: 0; }
+  .hsay { flex: none; width: 46px; height: 46px; margin-top: -2px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 2px solid var(--gold); color: var(--gold); cursor: pointer; padding: 0; box-shadow: 0 0 0 4px rgba(224,182,88,.10); transition: background .15s, box-shadow .15s; }
+  .hsay svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .hsay:hover, .hsay:focus-visible { background: rgba(224,182,88,.14); box-shadow: 0 0 0 6px rgba(224,182,88,.16); }
+  .hsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; animation: hsayPulse 1.6s ease-in-out infinite; }
+  @keyframes hsayPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(224,182,88,.25); } 50% { box-shadow: 0 0 0 10px rgba(224,182,88,.05); } }
+  @media (prefers-reduced-motion: reduce) { .hsay[aria-pressed="true"] { animation: none; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -280,13 +288,13 @@
 
   <div class="banner">DEMO. Every patient, name, session and note here is fictional. Nothing is recorded, stored or sent.</div>
 
-  <h1>Your EgoAgent workspace, step by step</h1>
+  <div class="htitle"><button class="hsay" type="button" id="pgsay" aria-pressed="false" aria-label="Read this page aloud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span class="sr">Read aloud</span></button><h1>Your EgoAgent workspace, step by step</h1></div>
   <p class="intro">Watch the short tour, then open any stage below and try it. Patients never enter this workspace.</p>
   <div class="tourwrap"><button class="watch" id="tourwatch" type="button">
     <span class="w-thumb"><img src="egoagent_workspace_tour_v3.jpg" alt=""><span class="w-tri"></span></span>
     <span class="w-txt"><span class="w-h">Watch how it works</span><small>45 seconds &middot; sound on</small></span>
   </button>
-  <div class="tourbtns"><button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button><button class="diagbtn" type="button" id="pgsay" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Read aloud</span></button></div></div>
+  <div class="tourbtns"><button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button></div></div>
   <div class="fsfilm" id="fstour" hidden role="dialog" aria-modal="true" aria-label="EgoAgent workspace tour">
     <video id="tourvid" src="egoagent_workspace_tour_v6.mp4" poster="egoagent_workspace_tour_v3.jpg" playsinline controls preload="none"></video>
     <button class="fsx" id="tourclose" type="button" aria-label="Close the tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2L14 14M14 2L2 14"/></svg></button>
@@ -806,11 +814,12 @@
       });
       return out.filter(Boolean);
     }
-    function stop(){ try{ window.speechSynthesis.cancel(); }catch(e){} b.setAttribute('aria-pressed','false'); lab.textContent='Read aloud'; }
+    function stop(){ try{ window.speechSynthesis.cancel(); }catch(e){} b.setAttribute('aria-pressed','false'); lab.textContent='Read aloud'; b.setAttribute('aria-label','Read this page aloud'); }
     b.addEventListener('click',function(){
       if(!('speechSynthesis' in window)) return;
       if(b.getAttribute('aria-pressed')==='true'){ stop(); return; }
       window.speechSynthesis.cancel();
+      b.setAttribute('aria-label','Stop reading');
       var ps=script();
       ps.forEach(function(t,i){ var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.95; if(i===ps.length-1) u.onend=stop; window.speechSynthesis.speak(u); });
       b.setAttribute('aria-pressed','true'); lab.textContent='Stop reading';
