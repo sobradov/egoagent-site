@@ -163,7 +163,9 @@
   .fsfilm{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center}
   .fsfilm[hidden]{display:none}
   .fsfilm video{width:100%;height:100%;object-fit:contain;background:#000}
-  .fsfilm .fsx{position:fixed;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:2;background:#000;border:2px solid #fff;color:#fff;border-radius:10px;padding:9px 15px;font:600 17px/1 "Inter Tight",sans-serif;cursor:pointer}
+  .fsfilm .fsx{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:2;width:44px;height:44px;padding:0;border-radius:50%;background:rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.92);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(0,0,0,.45)}
+  .fsfilm .fsx svg{width:18px;height:18px;stroke:#fff;stroke-width:2.6;stroke-linecap:round;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+  .fsfilm .fsx:hover,.fsfilm .fsx:focus-visible{background:rgba(0,0,0,.55)}
   /* ---- v178: the film box on the patient first screen ---- */
   #e-film{padding:clamp(8px,2vh,24px) 0 clamp(24px,4vh,48px)}
   .film{position:relative;max-width:22em;margin:0 auto;border-radius:18px;overflow:hidden;background:#0b0b0b;aspect-ratio:9/16;box-shadow:0 10px 40px rgba(0,0,0,.5)}
@@ -2614,7 +2616,7 @@ P: Of course we do. (laughs) At least I didn't add anything this time.`;
 </script>
 <div class="fsfilm" id="fsfilm" hidden role="dialog" aria-modal="true" aria-label="EgoAgent film">
   <video id="fsvideo" src="egoagent_film_v19_oct22.mp4" poster="egoagent_film_v10_oct22_poster.jpg" playsinline controls preload="none"></video>
-  <button class="fsx" id="fsclose" type="button" aria-label="Close the film">&#x2715; Close</button>
+  <button class="fsx" id="fsclose" type="button" aria-label="Close the film"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 3l12 12M15 3L3 15"/></svg></button>
 </div>
 <script>
 /* v261: the "Watch how it works" button opens the film full screen and plays it with sound; it closes
