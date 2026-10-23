@@ -263,6 +263,11 @@
     .flink.l12 { background: linear-gradient(90deg, var(--c1), var(--c2)); }
     .flink.l23 { background: linear-gradient(90deg, var(--c2), var(--c3)); }
   }
+
+  .fsay { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: transparent; border: 2px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 9px 18px; font: inherit; font-size: 16px; cursor: pointer; }
+  .fsay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .fsay:hover, .fsay:focus-visible { background: rgba(224,182,88,.12); }
+  .fsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
 </style>
 </head>
 <body>
@@ -286,7 +291,7 @@
   <div class="dgwrap" id="dg" hidden role="dialog" aria-modal="true" aria-labelledby="dgtitle">
     <div class="dgcard">
       <div class="dgin">
-      <div class="dghead"><p class="fkick">The path of a session</p><h2 id="dgtitle">Where your session goes</h2><p class="flede">From the consulting room to one private note.</p><ul class="flegend" aria-label="Colour key"><li class="k1">Your patient's side</li><li class="k2">Temporary</li><li class="k3">Kept and private</li></ul><button class="dgclose" type="button" id="dgclose" aria-label="Close the diagram"><span class="x" aria-hidden="true">✕</span>Close</button></div>
+      <div class="dghead"><p class="fkick">The path of a session</p><h2 id="dgtitle">Where your session goes</h2><p class="flede">From the consulting room to one private note.</p><ul class="flegend" aria-label="Colour key"><li class="k1">Your patient's side</li><li class="k2">Temporary</li><li class="k3">Kept and private</li></ul><button class="fsay" type="button" id="dgsay" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Read aloud</span></button><button class="dgclose" type="button" id="dgclose" aria-label="Close the diagram"><span class="x" aria-hidden="true">✕</span>Close</button></div>
       <div class="flow">
         <section class="zone z1" style="--i:1" aria-labelledby="z1h">
           <header><span class="zn">01</span><h3 id="z1h">In the room</h3></header>
@@ -778,6 +783,32 @@
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!o.hidden)close();});
   })();
   syncAll();
+  /* v272: the diagram reads itself aloud; the script is written for listening, and speech stops when the diagram closes */
+  (function(){
+    var b=document.getElementById('dgsay'), dg=document.getElementById('dg'), cl=document.getElementById('dgclose'); if(!b) return;
+    var lab=b.querySelector('span');
+    var SCRIPT=[
+      'Where your session goes. From the consulting room to one private note.',
+      'Step one: in the room. Consent. Your patient agrees in writing, and never enters your workspace. Recording. You record the session on your phone or iPad.',
+      'Step two: in your workspace. Everything here is temporary.',
+      'The transcript is made from the recording. The audio is deleted as soon as the transcript is made.',
+      'AI analyses are made through the perspectives you choose. Your comments are your marks, questions and thoughts.',
+      'Step three: kept, and private. The process note is one note for the day, saved in that patient\'s space.',
+      'It holds the full transcript, every AI analysis you chose, in full, and all your comments.',
+      'When you save the note, the working copies are deleted. If you never save, they are deleted after six months.'
+    ];
+    function stop(){ try{ window.speechSynthesis.cancel(); }catch(e){} b.setAttribute('aria-pressed','false'); lab.textContent='Read aloud'; }
+    b.addEventListener('click',function(){
+      if(!('speechSynthesis' in window)) return;
+      if(b.getAttribute('aria-pressed')==='true'){ stop(); return; }
+      window.speechSynthesis.cancel();
+      SCRIPT.forEach(function(t,i){ var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.95; if(i===SCRIPT.length-1) u.onend=stop; window.speechSynthesis.speak(u); });
+      b.setAttribute('aria-pressed','true'); lab.textContent='Stop reading';
+    });
+    if(cl) cl.addEventListener('click',stop);
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') stop(); });
+    dg.addEventListener('click',function(e){ if(e.target===dg) stop(); });
+  })();
 })();
 </script>
 </body>
