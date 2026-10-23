@@ -137,7 +137,7 @@
   .uplsample { background: transparent; border: 0; color: var(--gold); text-decoration: underline; font: inherit; font-size: 15px; cursor: pointer; }
   .uplrow { border-top: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
   .uplrow input[type=date] { background: #0c1510; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 15px; color-scheme: dark; }
-  .allctl { justify-content: space-between; align-items: center; }
+  .allctl { justify-content: flex-end; align-items: center; }
   .allgrp { display: flex; gap: 10px; flex-wrap: wrap; }
   .diagbtn { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 2px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 15px; cursor: pointer; }
   .diagbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -184,7 +184,7 @@
   @media (min-width: 640px) { .screen { padding: 22px; } }
 
   /* v267: the tour opens from a small button, same style and frame as the patient page film */
-  .tourwrap { margin: 6px 0 14px; }
+  .tourwrap { margin: 10px 0 14px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
   .watch{display:flex;align-items:center;gap:1em;margin:0;padding:.55em 1.3em .55em .55em;background:rgba(255,255,255,.04);border:1.5px solid #E0B658;border-radius:16px;color:#F2EDE4;font:inherit;cursor:pointer;text-align:left;max-width:22em}
   .watch:hover,.watch:focus-visible{background:rgba(224,182,88,.10)}
   .w-thumb{position:relative;flex:none;width:84px;height:84px;border-radius:10px;overflow:hidden;background:#000}
@@ -212,12 +212,13 @@
   <div class="tourwrap"><button class="watch" id="tourwatch" type="button">
     <span class="w-thumb"><img src="egoagent_workspace_tour_v3.jpg" alt=""><span class="w-tri"></span></span>
     <span class="w-txt"><span class="w-h">Watch how it works</span><small>45 seconds &middot; sound on</small></span>
-  </button></div>
+  </button>
+  <button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button></div>
   <div class="fsfilm" id="fstour" hidden role="dialog" aria-modal="true" aria-label="EgoAgent workspace tour">
     <video id="tourvid" src="egoagent_workspace_tour_v6.mp4" poster="egoagent_workspace_tour_v3.jpg" playsinline controls preload="none"></video>
     <button class="fsx" id="tourclose" type="button" aria-label="Close the tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2L14 14M14 2L2 14"/></svg></button>
   </div>
-  <div class="allctl"><button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button><span class="allgrp"><button class="allbtn" type="button" id="openall">Expand all</button><button class="allbtn" type="button" id="closeall">Collapse all</button></span></div>
+  <div class="allctl"><span class="allgrp"><button class="allbtn" type="button" id="openall">Expand all</button><button class="allbtn" type="button" id="closeall">Collapse all</button></span></div>
   <div class="dgwrap" id="dg" hidden role="dialog" aria-modal="true" aria-labelledby="dgtitle">
     <div class="dgcard">
       <div class="dgin">
