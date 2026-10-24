@@ -155,7 +155,7 @@
 
 
   /* ---- v261: film opened from a small button on the first screen, played full screen ---- */
-  .watch{display:flex;align-items:center;gap:1em;margin:1.5em auto .3em;padding:.55em 1.3em .55em .55em;background:rgba(255,255,255,.04);border:1.5px solid #E0B658;border-radius:16px;color:#F2EDE4;font:inherit;cursor:pointer;text-align:left;max-width:22em}
+  .watch{display:flex;align-items:center;gap:1em;margin:1.5em auto .3em;padding:.55em 1.3em .55em .55em;background:rgba(255,255,255,.04);border:2.5px solid var(--indigo-rim);box-shadow:0 0 0 4px rgba(63,115,162,.22);border-radius:16px;color:#F2EDE4;font:inherit;cursor:pointer;text-align:left;max-width:22em}
   .watch:hover,.watch:focus-visible{background:rgba(224,182,88,.10)}
   .w-thumb{position:relative;flex:none;width:58px;height:103px;border-radius:10px;overflow:hidden;background:#000}
   .w-thumb img{width:100%;height:100%;object-fit:cover;opacity:.8;display:block}
@@ -873,6 +873,15 @@
 .facts .v{color:#EDE6DA;font-size:.95em}
 .facts li,.facts{border-color:#4A4640}
 @media(min-width:701px){.facts li{border-left-color:#4A4640}}
+  /* v278: indigo made stronger wherever it outlines something - the film rim and outlined indigo buttons */
+  :root{--indigo-rim:#5B8FC0}
+  .watch:hover,.watch:focus-visible{border-color:#7FA9D2}
+  .btn.ochre{border-width:2px;border-color:var(--indigo-rim)}
+  .btn.ochre:hover{border-color:#7FA9D2}
+  .top .acts .btn.keep:not(.fill){border-width:2px;border-color:var(--indigo-lit)}
+  .top .acts .btn.keep:not(.fill):hover{border-color:var(--indigo-rim)}
+  .btn.fill,.btn.madder{border-width:2px}
+  .cb-btn:hover{border-color:var(--indigo-rim)}
 </style>
 </head>
 <body class="vb">
