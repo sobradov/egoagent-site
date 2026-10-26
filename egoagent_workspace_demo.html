@@ -290,8 +290,9 @@
   @keyframes teIn{from{opacity:0;transform:translate(-50%,-40%)}to{opacity:1;transform:translate(-50%,-50%)}}
   /* v291: it reads as a real button above the film - lifted with a shadow, and a soft halo that breathes three times */
   .tourend{box-shadow:0 10px 28px rgba(0,0,0,.55),0 0 0 1px rgba(242,247,244,.10)}
-  .tourend:after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 0 rgba(111,170,140,.55);animation:teHalo 1.8s ease-out .6s 3;pointer-events:none}
-  @keyframes teHalo{0%{box-shadow:0 0 0 0 rgba(111,170,140,.55)}100%{box-shadow:0 0 0 18px rgba(111,170,140,0)}}
+  .tourend:after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 0 rgba(224,182,88,.85);animation:teHalo 1.6s ease-out .5s infinite;pointer-events:none}
+  /* v293: a gold rim pulses outward from the button for as long as it is on screen, so it reads clearly as something to press */
+  @keyframes teHalo{0%{box-shadow:0 0 0 2px rgba(224,182,88,.9)}70%{box-shadow:0 0 0 20px rgba(224,182,88,0)}100%{box-shadow:0 0 0 20px rgba(224,182,88,0)}}
   .tourend:active{transform:translate(-50%,-48%)}
   @media (prefers-reduced-motion: reduce){ .tourend:after{animation:none} }
   /* v292: the button is sized to the video card (about half its width), with the same shape and colour as "Meet your EgoAgent" on the home page */
@@ -805,14 +806,17 @@
     var w=document.getElementById('tourwatch'),o=document.getElementById('fstour'),v=document.getElementById('tourvid'),x=document.getElementById('tourclose');
     if(!w||!o||!v)return;
     function open(){v.removeAttribute('controls');o.hidden=false;document.body.style.overflow='hidden';try{v.currentTime=0;}catch(e){} var r=v.play(); if(r&&r.catch)r.catch(function(){});}
-    function close(){var te=document.getElementById('tourend'); if(te) te.hidden=true; try{v.pause();}catch(e){} try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen(); if(document.fullscreenElement)document.exitFullscreen();}catch(e){} o.hidden=true;document.body.style.overflow='';try{v.currentTime=0;}catch(e){} w.focus();}
+    function close(){if(typeof stopAuto==='function') stopAuto(); var te=document.getElementById('tourend'); if(te) te.hidden=true; try{v.pause();}catch(e){} try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen(); if(document.fullscreenElement)document.exitFullscreen();}catch(e){} o.hidden=true;document.body.style.overflow='';try{v.currentTime=0;}catch(e){} w.focus();}
     w.addEventListener('click',open); /* v283: the film starts without the device's controls (their dark veil made the opening fade look black); a tap on the film brings them back */ v.addEventListener('click',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); }); v.addEventListener('touchend',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); },{passive:true}); x.addEventListener('click',close);
     /* v290: at the end the tour stays on its last card and offers registration; the X still closes it */
     var te=document.getElementById('tourend');
-    v.addEventListener('ended',function(){ v.removeAttribute('controls'); if(te) te.hidden=false; });
+    /* v293: if the button is not pressed, the tour closes by itself 6 seconds after the video ends and the page returns */
+    var autoClose=null; function stopAuto(){ if(autoClose){ clearTimeout(autoClose); autoClose=null; } }
+    v.addEventListener('ended',function(){ v.removeAttribute('controls'); if(te) te.hidden=false; stopAuto(); autoClose=setTimeout(function(){ autoClose=null; if(!o.hidden) close(); },6000); });
+    if(te) te.addEventListener('click',stopAuto);
     /* v291: the button arrives as the last card settles (about 45 s), not 2.7 s later when the video stops */
     v.addEventListener('timeupdate',function(){ if(te && te.hidden && v.duration && v.currentTime>=v.duration-2.6){ te.hidden=false; } });
-    v.addEventListener('play',function(){ if(te) te.hidden=true; });
+    v.addEventListener('play',function(){ stopAuto(); if(te) te.hidden=true; });
     v.addEventListener('webkitendfullscreen',function(){ if(v.ended&&te) te.hidden=false; });
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!o.hidden)close();});
   })();
