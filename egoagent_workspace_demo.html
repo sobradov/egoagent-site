@@ -280,6 +280,10 @@
   @keyframes hsayPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(224,182,88,.25); } 50% { box-shadow: 0 0 0 10px rgba(224,182,88,.05); } }
   @media (prefers-reduced-motion: reduce) { .hsay[aria-pressed="true"] { animation: none; } }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tourend{position:fixed;left:50%;top:calc(50% + min(100vw,100vh)*0.18);transform:translate(-50%,-50%);z-index:3;background:#3E6B58;color:#F2F7F4;border-radius:14px;padding:16px 30px;font:500 clamp(17px,2.4vw,22px) var(--sans);text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.35);white-space:nowrap;animation:teIn .5s ease-out}
+  .tourend[hidden]{display:none}
+  .tourend:hover,.tourend:focus-visible{background:#4A7D67}
+  @keyframes teIn{from{opacity:0;transform:translate(-50%,-40%)}to{opacity:1;transform:translate(-50%,-50%)}}
 </style>
 </head>
 <body>
@@ -292,11 +296,12 @@
   <p class="intro">Watch the short tour, then open any stage below and try it. Patients never enter this workspace.</p>
   <div class="tourwrap"><button class="watch" id="tourwatch" type="button">
     <span class="w-thumb"><img src="egoagent_workspace_tour_v3.jpg" alt=""><span class="w-tri"></span></span>
-    <span class="w-txt"><span class="w-h">Watch how it works</span><small>45 seconds &middot; sound on</small></span>
+    <span class="w-txt"><span class="w-h">Watch how it works</span><small>48 seconds &middot; sound on</small></span>
   </button>
   <div class="tourbtns"><button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button></div></div>
   <div class="fsfilm" id="fstour" hidden role="dialog" aria-modal="true" aria-label="EgoAgent workspace tour">
-    <video id="tourvid" src="egoagent_workspace_tour_v10.mp4" poster="egoagent_workspace_tour_v3.jpg" playsinline controls preload="none"></video>
+    <a class="tourend" id="tourend" href="index.html#register" hidden>Meet your EgoAgent</a>
+    <video id="tourvid" src="egoagent_workspace_tour_v12.mp4" poster="egoagent_workspace_tour_v3.jpg" playsinline controls preload="none"></video>
     <button class="fsx" id="tourclose" type="button" aria-label="Close the tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2L14 14M14 2L2 14"/></svg></button>
   </div>
   <div class="allctl"><span class="allgrp"><button class="allbtn" type="button" id="toggleall" aria-label="Expand all stages">Expand all</button></span></div>
@@ -788,10 +793,13 @@
     var w=document.getElementById('tourwatch'),o=document.getElementById('fstour'),v=document.getElementById('tourvid'),x=document.getElementById('tourclose');
     if(!w||!o||!v)return;
     function open(){v.removeAttribute('controls');o.hidden=false;document.body.style.overflow='hidden';try{v.currentTime=0;}catch(e){} var r=v.play(); if(r&&r.catch)r.catch(function(){});}
-    function close(){try{v.pause();}catch(e){} try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen(); if(document.fullscreenElement)document.exitFullscreen();}catch(e){} o.hidden=true;document.body.style.overflow='';try{v.currentTime=0;}catch(e){} w.focus();}
+    function close(){var te=document.getElementById('tourend'); if(te) te.hidden=true; try{v.pause();}catch(e){} try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen(); if(document.fullscreenElement)document.exitFullscreen();}catch(e){} o.hidden=true;document.body.style.overflow='';try{v.currentTime=0;}catch(e){} w.focus();}
     w.addEventListener('click',open); /* v283: the film starts without the device's controls (their dark veil made the opening fade look black); a tap on the film brings them back */ v.addEventListener('click',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); }); v.addEventListener('touchend',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); },{passive:true}); x.addEventListener('click',close);
-    v.addEventListener('ended',close);
-    v.addEventListener('webkitendfullscreen',function(){if(v.ended||(v.duration&&v.currentTime>v.duration-0.6))close();});
+    /* v290: at the end the tour stays on its last card and offers registration; the X still closes it */
+    var te=document.getElementById('tourend');
+    v.addEventListener('ended',function(){ v.removeAttribute('controls'); if(te) te.hidden=false; });
+    v.addEventListener('play',function(){ if(te) te.hidden=true; });
+    v.addEventListener('webkitendfullscreen',function(){ if(v.ended&&te) te.hidden=false; });
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!o.hidden)close();});
   })();
   syncAll();
