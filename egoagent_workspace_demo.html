@@ -288,6 +288,12 @@
   .tourend[hidden]{display:none}
   .tourend:hover,.tourend:focus-visible{background:#4A7D67;border-color:#4A7D67}
   @keyframes teIn{from{opacity:0;transform:translate(-50%,-40%)}to{opacity:1;transform:translate(-50%,-50%)}}
+  /* v291: it reads as a real button above the film - lifted with a shadow, and a soft halo that breathes three times */
+  .tourend{box-shadow:0 10px 28px rgba(0,0,0,.55),0 0 0 1px rgba(242,247,244,.10)}
+  .tourend:after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 0 rgba(111,170,140,.55);animation:teHalo 1.8s ease-out .6s 3;pointer-events:none}
+  @keyframes teHalo{0%{box-shadow:0 0 0 0 rgba(111,170,140,.55)}100%{box-shadow:0 0 0 18px rgba(111,170,140,0)}}
+  .tourend:active{transform:translate(-50%,-48%)}
+  @media (prefers-reduced-motion: reduce){ .tourend:after{animation:none} }
   @media (max-width:600px){ .tourend{top:calc(50% + min(100vw,100vh)*0.29);font-size:16.15px;padding:12.1px 21.8px;border-radius:9.7px} }
 </style>
 </head>
@@ -803,6 +809,8 @@
     /* v290: at the end the tour stays on its last card and offers registration; the X still closes it */
     var te=document.getElementById('tourend');
     v.addEventListener('ended',function(){ v.removeAttribute('controls'); if(te) te.hidden=false; });
+    /* v291: the button arrives as the last card settles (about 45 s), not 2.7 s later when the video stops */
+    v.addEventListener('timeupdate',function(){ if(te && te.hidden && v.duration && v.currentTime>=v.duration-2.6){ te.hidden=false; } });
     v.addEventListener('play',function(){ if(te) te.hidden=true; });
     v.addEventListener('webkitendfullscreen',function(){ if(v.ended&&te) te.hidden=false; });
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!o.hidden)close();});
