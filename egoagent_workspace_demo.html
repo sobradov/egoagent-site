@@ -282,7 +282,7 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .tourend{position:fixed;left:50%;top:calc(50% + min(100vw,100vh)*0.27);transform:translate(-50%,-50%);z-index:3;background:#3E6B58;color:#F2F7F4;border-radius:14px;padding:16px 30px;font:500 clamp(17px,2.4vw,22px) var(--sans);text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.35);white-space:nowrap;animation:teIn .5s ease-out}
   .tourend[hidden]{display:none}
-  @media (max-width:600px){ .tourend{top:calc(50% + min(100vw,100vh)*0.5 + 56px)} }
+  @media (max-width:600px){ .tourend{top:calc(50% + min(100vw,100vh)*0.29);padding:11px 22px;font-size:16px;border-radius:12px} }
   .tourend:hover,.tourend:focus-visible{background:#4A7D67}
   @keyframes teIn{from{opacity:0;transform:translate(-50%,-40%)}to{opacity:1;transform:translate(-50%,-50%)}}
 </style>
