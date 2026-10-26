@@ -2662,9 +2662,9 @@ P: Of course we do. (laughs) At least I didn't add anything this time.`;
 (function(){
   var w=document.getElementById('watch'),o=document.getElementById('fsfilm'),v=document.getElementById('fsvideo'),x=document.getElementById('fsclose');
   if(!w||!o||!v)return;
-  function open(){o.hidden=false;document.body.style.overflow='hidden';try{v.currentTime=0;}catch(e){} var r=v.play(); if(r&&r.catch)r.catch(function(){});}
+  function open(){v.removeAttribute('controls');o.hidden=false;document.body.style.overflow='hidden';try{v.currentTime=0;}catch(e){} var r=v.play(); if(r&&r.catch)r.catch(function(){});}
   function close(){try{v.pause();}catch(e){} try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen(); if(document.fullscreenElement)document.exitFullscreen();}catch(e){} o.hidden=true;document.body.style.overflow='';try{v.currentTime=0;}catch(e){} w.focus();}
-  w.addEventListener('click',open); x.addEventListener('click',close);
+  w.addEventListener('click',open); /* v283: the film starts without the device's controls (their dark veil made the opening fade look black); a tap on the film brings them back */ v.addEventListener('click',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); }); v.addEventListener('touchend',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); },{passive:true}); x.addEventListener('click',close);
   v.addEventListener('ended',close);
   v.addEventListener('webkitendfullscreen',function(){if(v.ended||(v.duration&&v.currentTime>v.duration-0.6))close();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!o.hidden)close();});
