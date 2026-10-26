@@ -451,12 +451,12 @@
   .trace-thoth{left:8px;bottom:8px;height:92px;width:auto;opacity:1;position:absolute;filter:brightness(.75) drop-shadow(0 0 10px rgba(111,176,142,.35))}
   @media(max-width:700px){.trace-athena{height:84px;right:6px;opacity:.53}.trace-thoth{height:64px;left:6px;opacity:1}}
 
-  /* ---- v126: the door (registration) as a third space, rug-ground field ---- */
-  body.rview{background:#301F1A}
-  body.rview .top,body.rview .crumbs{background:rgb(48,31,26);border-color:#44302A}
+  /* ---- v126: the door (registration) as a third space, rug-ground field (v295: night blue, the therapist page colour, easier on the eyes) ---- */
+  body.rview{background:#0B1420}
+  body.rview .top,body.rview .crumbs{background:rgb(11,20,32);border-color:#1C2B3D}
   body.rview .crumbs{display:none}
-  #pane-register,#pane-profile{background:radial-gradient(1200px 700px at 78% -8%,#3E2B23 0%,rgba(62,43,35,0) 60%),radial-gradient(900px 600px at 12% 38%,#382620 0%,rgba(56,38,32,0) 55%),#301F1A;color:#FFFFFF;
-    --rmuted:#E6DAD0;--rdim:#BCA99B;--rline:#44302A;--rline2:#523C34}
+  #pane-register,#pane-signin,#pane-profile{background:radial-gradient(1200px 700px at 78% -8%,#152338 0%,rgba(21,35,56,0) 60%),radial-gradient(900px 600px at 12% 38%,#122033 0%,rgba(18,32,51,0) 55%),#0B1420;color:#FFFFFF;
+    --rmuted:#DCE3EA;--rdim:#A3B1C0;--rline:#1E2E42;--rline2:#2A3D55}
   .pf-row{display:flex;gap:1.2em;align-items:baseline;padding:.55em 0;border-bottom:1px solid var(--rline);margin:0}
   .pf-row:last-child{border-bottom:0}
   .pf-k{flex:0 0 10.5em;color:var(--ochre);font-size:.72em;letter-spacing:.14em;text-transform:uppercase}
@@ -475,15 +475,15 @@
   .door legend{font-size:.66em;letter-spacing:.16em;text-transform:uppercase;color:var(--ochre);padding:0;margin-bottom:.45em}
   .door .f{display:grid;gap:.2em;margin-bottom:.55em}
   .door label{font-size:.9em;color:var(--rmuted)}
-  .door input[type=text],.door input[type=email],.door input:not([type]){width:100%;font-family:inherit;font-size:1em;font-weight:300;color:#FFFFFF;background:rgba(34,21,17,.8);border:1px solid var(--rline2);border-radius:8px;padding:.5em .7em;outline:none}
+  .door input[type=text],.door input[type=email],.door input[type=password],.door input:not([type]){width:100%;font-family:inherit;font-size:1em;font-weight:300;color:#FFFFFF;background:rgba(6,12,20,.8);border:1px solid var(--rline2);border-radius:8px;padding:.5em .7em;outline:none}
   .door input:focus,.door select:focus{border-color:var(--ochre)}
-  .door select{width:100%;font-family:inherit;font-size:1em;font-weight:300;color:#FFFFFF;background:rgba(34,21,17,.8);border:1px solid var(--rline2);border-radius:8px;padding:.5em .7em;outline:none;min-width:0}
-  .door select option{color:#FFFFFF;background:#221511}
-  .door select option:disabled{color:#8a7a72}
+  .door select{width:100%;font-family:inherit;font-size:1em;font-weight:300;color:#FFFFFF;background:rgba(6,12,20,.8);border:1px solid var(--rline2);border-radius:8px;padding:.5em .7em;outline:none;min-width:0}
+  .door select option{color:#FFFFFF;background:#08101A}
+  .door select option:disabled{color:#6F7E8E}
   .door .lic2{display:grid;grid-template-columns:1fr;gap:0 .9em}
   @media (min-width:700px){.door .lic2{grid-template-columns:3fr 2fr}}
   .door .fhint{color:var(--rdim);font-size:.8em;margin:-.2em 0 .65em;line-height:1.4}
-  .door input:-webkit-autofill,.door input:-webkit-autofill:hover,.door input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px #221511 inset;-webkit-text-fill-color:#FFFFFF;caret-color:#FFFFFF;transition:background-color 99999s ease-in-out 0s}
+  .door input:-webkit-autofill,.door input:-webkit-autofill:hover,.door input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px #08101A inset;-webkit-text-fill-color:#FFFFFF;caret-color:#FFFFFF;transition:background-color 99999s ease-in-out 0s}
   .door .att input[type=checkbox]{width:1.25em;height:1.25em;accent-color:var(--ochre);flex:0 0 auto;margin-top:.1em}
   body.rview footer .cols,body.wview footer .cols,body.rview footer .fbrand p,body.wview footer .fbrand p{display:none}
   body.rview footer,body.wview footer{padding:1.4em 0 1.6em;font-size:.85em}
@@ -528,7 +528,7 @@
   .door .signin a{color:var(--ochre);text-decoration:none;border-bottom:1px solid var(--rline2)}
   .door .then{margin-top:1em;padding-top:.7em;border-top:1px solid var(--rline);font-size:.8em;color:var(--rdim)}
   .door .then p{margin:.2em 0}
-  .r-back{color:var(--ochre);text-decoration:none;font-size:.9em;border-bottom:1px solid #523C34}
+  .r-back{color:var(--ochre);text-decoration:none;font-size:.9em;border-bottom:1px solid #2A3D55}
 
   /* ---- v130: the casebook (home page of the working space) ---- */
   body.rview .acts .r-back{margin-right:.2em}
