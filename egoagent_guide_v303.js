@@ -1,4 +1,4 @@
-/* EgoAgent Guide (v302) - one guide for every page of the site.
+/* EgoAgent Guide (v303) - one guide for every page of the site.
    - A living EgoAgent mark on the right edge, vertically centred, clear of the reading column.
    - Three likely questions per page, with answers taken from what the site says.
    - Any other question, typed or spoken, is answered from the site's own text: the guide finds the passage that answers it and reads it aloud.
@@ -29,6 +29,8 @@
   '.gd-head svg{width:26px;height:26px;fill:none;stroke:#C8553D;stroke-width:4.6;stroke-linecap:round;stroke-linejoin:round;flex:none}' +
   '.gd-head h2{margin:0;font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.25em;color:#E0B658;flex:1;letter-spacing:0}' +
   '.gd-x{width:42px;height:42px;border-radius:50%;border:1.5px solid #E0B658;background:transparent;color:#E0B658;font-size:22px;line-height:1;cursor:pointer;flex:none}' +
+  '.gd-new{font-family:inherit;font-size:.85em;height:42px;padding:0 .8em;border-radius:21px;border:1.5px solid #E0B658;background:transparent;color:#E0B658;cursor:pointer;flex:none;white-space:nowrap}' +
+  '.gd-new:focus-visible,.gd-x:focus-visible{outline:2px solid #F0CF7E;outline-offset:2px}' +
   '.gd-log{flex:1;overflow:auto;padding:.7em 1em;display:flex;flex-direction:column;gap:.55em;min-height:90px}' +
   '.gd-msg{padding:.55em .8em;border-radius:12px;max-width:94%;white-space:pre-line}' +
   '.gd-msg.g{background:#16263C;align-self:flex-start}' +
@@ -51,7 +53,7 @@
   var MARK = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg>';
   var fab = D.createElement('button'); fab.type = 'button'; fab.className = 'gd-fab'; fab.setAttribute('aria-label', 'Ask the EgoAgent guide'); fab.innerHTML = MARK; D.body.appendChild(fab);
   var pan = D.createElement('div'); pan.className = 'gd-panel'; pan.hidden = true; pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'EgoAgent guide');
-  pan.innerHTML = '<div class="gd-head">' + MARK + '<h2>Ask EgoAgent</h2><button class="gd-x" type="button" aria-label="Close the guide">&times;</button></div>' +
+  pan.innerHTML = '<div class="gd-head">' + MARK + '<h2>Ask EgoAgent</h2><button class="gd-new" type="button" aria-label="Clear everything and start again">\u21BA Start over</button><button class="gd-x" type="button" aria-label="Close the guide">&times;</button></div>' +
     '<div class="gd-log" aria-live="polite"></div><div class="gd-acts"></div>' +
     '<div class="gd-ask"><input type="text" aria-label="Ask any question about EgoAgent" placeholder="Ask any question"><button class="gd-mic" type="button" aria-label="Ask by voice">🎙</button><button class="gd-b main gd-send" type="button">Ask</button></div>';
   D.body.appendChild(pan);
@@ -119,15 +121,16 @@
   /* ---------- the site's own text, as passages to search ---------- */
   var KB = null;
   function clean(t) { return String(t || '').replace(/\s+/g, ' ').replace(/\s*(Expand all|Collapse all)\s*/g, ' ').trim(); }
+  function spaced(el) { var c = el.cloneNode(true); c.querySelectorAll('script,style,svg,button,select,input').forEach(function (x) { x.remove(); }); c.querySelectorAll('*').forEach(function (n) { n.after(' '); }); return c.textContent; }
   function harvest(root, where, out) {
     root.querySelectorAll('details').forEach(function (d) {
       if (d.querySelector('details')) return; var s = d.querySelector('summary'); if (!s) return;
       var c = d.cloneNode(true); var cs = c.querySelector('summary'); if (cs) cs.remove(); c.querySelectorAll('script,style,svg,button,select,input').forEach(function (x) { x.remove(); });
-      var q = clean(s.textContent), a = clean(c.textContent); if (q && a.length > 20) out.push({ q: q, a: a, where: where, el: d, faq: true });
+      var q = clean(spaced(s)), a = clean(spaced(c)); if (q && a.length > 20) out.push({ q: q, a: a, where: where, el: d, faq: true });
     });
     root.querySelectorAll('h1,h2,h3').forEach(function (h) {
       if (h.closest('details')) return; var parts = [], n = h.nextElementSibling, k = 0;
-      while (n && k < 4 && !/^H[1-3]$/.test(n.tagName)) { if (n.tagName === 'P' || n.tagName === 'UL') parts.push(clean(n.textContent)); n = n.nextElementSibling; k++; }
+      while (n && k < 4 && !/^H[1-3]$/.test(n.tagName)) { if (n.tagName === 'P' || n.tagName === 'UL') parts.push(clean(spaced(n))); n = n.nextElementSibling; k++; }
       var a = parts.join(' '); if (a.length > 30) out.push({ q: clean(h.textContent), a: a, where: where, el: h });
     });
   }
@@ -143,7 +146,7 @@
       var bits = [];
       sec.querySelectorAll('p, .small, .box, li').forEach(function (el) {
         if (el.closest('.seg') || el.querySelector('.who') || el.querySelector('p, .small, .box')) return;
-        var t = clean(el.textContent).replace(/^Stage \d of \d\s*\u00b7[^A-Z]*?(?=[A-Z][a-z])/, '').replace(/^[^\u00b7]{0,40}\u00b7\s*(?=[A-Z])/, ''); if (t.length > 25 && bits.indexOf(t) < 0) bits.push(t);
+        var t = clean(spaced(el)).replace(/^Stage \d of \d\s*\u00b7[^A-Z]*?(?=[A-Z][a-z])/, '').replace(/^[^\u00b7]{0,40}\u00b7\s*(?=[A-Z])/, ''); if (t.length > 25 && bits.indexOf(t) < 0) bits.push(t);
       });
       var sents = bits.join(' ').replace(/\b([A-Z])\.(?=\s)/g, '$1\u2024').split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(function (x) { return x.replace(/\u2024/g, '.'); });
       for (var i = 0; i < sents.length; i++) out.push({ q: clean(h.textContent), a: clean(sents[i] + ' ' + (sents[i + 1] || '')), where: 'this page', el: sec });
@@ -205,6 +208,8 @@
   var lastView = null;
   function open() { pan.hidden = false; D.body.classList.add('gd-open'); fab.setAttribute('aria-expanded', 'true'); if (lastView !== view()) { lastView = view(); log.innerHTML = ''; home(); } if (!KB) buildKB(); }
   function close() { pan.hidden = true; D.body.classList.remove('gd-open'); fab.setAttribute('aria-expanded', 'false'); hush(); }
+  /* Start over: clears the conversation, the typed question, any highlight and any form-filling in progress, then greets again */
+  pan.querySelector('.gd-new').onclick = function () { hush(); filling = false; step = 0; inp.value = ''; log.innerHTML = ''; D.querySelectorAll('.gd-lit').forEach(function (x) { x.classList.remove('gd-lit'); }); lastView = view(); home(); inp.focus(); };
   fab.onclick = open; pan.querySelector('.gd-x').onclick = function () { close(); fab.focus(); };
   D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pan.hidden) close(); });
   pan.querySelector('.gd-send').onclick = function () { ask(inp.value); };
