@@ -490,6 +490,14 @@
   .door .selw:has(select:disabled){opacity:.55}
   /* v298: iPad and iPhone paint filled-in fields pale with black type, and a page cannot override that colour. When a field turns pale, the page inverts it: near-black field, white type, same as the rest of the form */
   .door .af{filter:invert(1) hue-rotate(180deg)}
+  /* v299: a gold X inside the right end of every typed field clears it in one tap; it shows only when the field has something in it */
+  .door .clw{position:relative;display:block}
+  .door .clw input{padding-right:3.1em!important}
+  .door .clx{position:absolute;right:.35em;top:50%;transform:translateY(-50%);width:2.4em;height:2.4em;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+  .door .clx[hidden]{display:none!important}
+  .door .clx span{width:1.55em;height:1.55em;border-radius:50%;border:1.8px solid #E0B658;display:flex;align-items:center;justify-content:center}
+  .door .clx svg{width:.68em;height:.68em;stroke:#E0B658;stroke-width:2.6;stroke-linecap:round;fill:none}
+  .door .clx:hover span,.door .clx:focus-visible span{background:rgba(224,182,88,.18)}
   .door .lic2{display:grid;grid-template-columns:1fr;gap:0 .9em}
   .door [hidden]{display:none!important}
   @media (min-width:700px){.door .lic2{grid-template-columns:1fr 1fr}.door .lic2.one{grid-template-columns:1fr}}
@@ -2796,6 +2804,21 @@ P: Of course we do. (laughs) At least I didn't add anything this time.`;
     function check(){ document.querySelectorAll(sel).forEach(function(el){ el.classList.remove('af'); var light=lum(getComputedStyle(el).backgroundColor)>0.5; if(light) el.classList.add('af'); }); }
     ['input','change','focusin','focusout','animationstart'].forEach(function(t){ document.addEventListener(t,function(){ setTimeout(check,30); },true); });
     setInterval(function(){ if(document.body.classList.contains('rview')) check(); },800);
+  })();
+
+  /* v299: clear buttons for the typed fields on the registration, sign-in and profile pages */
+  (function(){
+    var X='<span><svg viewBox="0 0 10 10"><path d="M2 2l6 6M8 2l-6 6"/></svg></span>';
+    document.querySelectorAll('#pane-register input:not([type=checkbox]),#pane-signin input:not([type=checkbox]),#pane-profile input:not([type=checkbox])').forEach(function(el){
+      var w=document.createElement('span'); w.className='clw'; el.parentNode.insertBefore(w,el); w.appendChild(el);
+      var lab=document.querySelector('label[for="'+el.id+'"]'), name=lab?lab.textContent.trim().toLowerCase():'this field';
+      var b=document.createElement('button'); b.type='button'; b.className='clx'; b.hidden=true; b.setAttribute('aria-label','Clear '+name); b.innerHTML=X; w.appendChild(b);
+      function sync(){ b.hidden=!el.value; }
+      el.addEventListener('input',sync); el.addEventListener('change',sync);
+      b.addEventListener('mousedown',function(e){ e.preventDefault(); });
+      b.addEventListener('click',function(){ el.value=''; el.dispatchEvent(new Event('input',{bubbles:true})); sync(); el.focus(); });
+      setInterval(sync,800); sync();
+    });
   })();
 </script>
 </body>
