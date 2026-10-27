@@ -1241,7 +1241,7 @@
           </div>
           <p class="fhint" id="lopen">Choose your country first. Only New York, in the United States, is open for registration now.</p>
           <div class="f"><label for="prof">Profession</label><span class="selw"><select id="prof"><option value="" selected disabled>Choose your profession</option><option>Physician (MD or DO)</option><option>Licensed psychologist (PhD, PsyD, or other doctorate in psychology)</option><option>Licensed clinical social worker (LCSW)</option><option>Licensed psychoanalyst</option></select></span></div>
-          <div class="f"><label for="lic" id="lic-lab">License number, as printed on your license</label><input id="lic" type="text" autocomplete="off" spellcheck="false"></div>
+          <div class="f"><label for="lic" id="lic-lab">License or registration number</label><input id="lic" type="text" autocomplete="off" spellcheck="false"></div>
           <p class="fhint" id="lcheck">Your license is checked against the public licensing record where you practice before the casebook opens.</p>
         </fieldset>
         <fieldset>
@@ -2769,29 +2769,29 @@ P: Of course we do. (laughs) At least I didn't add anything this time.`;
         rf.hidden=false; row.classList.remove('one'); lab.textContent='State or province'; rs.innerHTML='<option value="" selected disabled>Choose a country first</option>'; rs.disabled=true; rs.dataset.k='';
         op.textContent='Choose your country first. Only New York, in the United States, is open for registration now.';
         ck.textContent='Your license is checked against the public licensing record where you practice before the casebook opens.';
-        place.textContent='the place named above'; lic.textContent='License or registration number, as printed on your license'; return;
+        place.textContent='the place named above'; lic.textContent='License or registration number'; return;
       }
       rs.disabled=false;
       if(v==='United States'){
         rf.hidden=false; row.classList.remove('one'); lab.textContent='State'; if(rs.dataset.k!=='US'){ rs.innerHTML=US; rs.dataset.k='US'; }
         op.textContent='Only New York is open for registration now. Other states will open as each one is verified.';
         ck.innerHTML='Your license and your current New York registration are checked against the New York State Education Department’s public record before the casebook opens.';
-        place.textContent=(rs.value==='NY'?'New York':'my state'); lic.textContent='License number, as printed on your license';
+        place.textContent=(rs.value==='NY'?'New York':'my state'); lic.textContent='License or registration number';
       } else if(v==='Canada'){
         rf.hidden=false; row.classList.remove('one'); lab.textContent='Province or territory'; rs.innerHTML=list('Choose one',CA); rs.dataset.k='CA';
         op.textContent='Registration in Canada is not open yet. Each province and territory will open as it is verified.';
         ck.textContent='Your license is checked against the public register of your province’s or territory’s regulatory college.';
-        place.textContent='my province or territory'; lic.textContent='License or registration number, as printed on your license';
+        place.textContent='my province or territory'; lic.textContent='License or registration number';
       } else if(v==='Australia'){
         rf.hidden=false; row.classList.remove('one'); lab.textContent='State or territory'; rs.innerHTML=list('Choose one',AU); rs.dataset.k='AU';
         op.textContent='Registration in Australia is not open yet. It will open once the national register is verified.';
         ck.textContent='Registration in Australia is national. It is checked against the Ahpra public register.';
-        place.textContent='Australia'; lic.textContent='Ahpra registration number, as printed on your registration';
+        place.textContent='Australia'; lic.textContent='License or registration number';
       } else {
         rf.hidden=true; row.classList.add('one'); rs.dataset.k='';
         op.textContent='Registration in '+nm(v)+' is not open yet. It will open once its licensing record is verified.';
         ck.textContent='Your license is checked against the public licensing record in '+nm(v)+'.';
-        place.textContent=nm(v); lic.textContent='License or registration number, as printed on your license';
+        place.textContent=nm(v); lic.textContent='License or registration number';
       }
     }
     c.addEventListener('change',set); rs.addEventListener('change',function(){ if(c.value==='United States') place.textContent=(rs.value==='NY'?'New York':'my state'); }); set();
