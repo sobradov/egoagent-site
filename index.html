@@ -490,6 +490,36 @@
   .door .selw:has(select:disabled){opacity:.55}
   /* v298: iPad and iPhone paint filled-in fields pale with black type, and a page cannot override that colour. When a field turns pale, the page inverts it: near-black field, white type, same as the rest of the form */
   .door .af{filter:invert(1) hue-rotate(180deg)}
+
+  /* ---- v301: the EgoAgent Guide (preview) - a living mark on the registration page; voice fills the form, reads each answer back; the affirmation stays the therapist's own tap ---- */
+  .gd-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:150;width:68px;height:68px;border-radius:50%;border:0;padding:0;cursor:pointer;background:radial-gradient(circle at 50% 40%,#16263C,#0B1420 70%);box-shadow:0 0 0 2px #E0B658,0 8px 24px rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+  body.rview.gd-on .gd-fab{display:flex}
+  .gd-fab svg{width:34px;height:34px;fill:none;stroke:#C8553D;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round;animation:gdBreathe 3.2s ease-in-out infinite}
+  .gd-fab:after{content:"";position:absolute;inset:-2px;border-radius:50%;box-shadow:0 0 0 0 rgba(224,182,88,.7);animation:gdRing 3.2s ease-out infinite;pointer-events:none}
+  .gd-fab .gd-tip{position:absolute;right:80px;top:50%;transform:translateY(-50%);white-space:nowrap;background:#0B1420;color:#F2F7F4;border:1.5px solid #E0B658;border-radius:10px;padding:.45em .8em;font-size:16px;font-family:"Inter Tight",system-ui,sans-serif;pointer-events:none}
+  body.gd-open .gd-fab .gd-tip{display:none}
+  @keyframes gdBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes gdRing{0%{box-shadow:0 0 0 0 rgba(224,182,88,.7)}70%,100%{box-shadow:0 0 0 16px rgba(224,182,88,0)}}
+  @keyframes gdGlow{0%,100%{box-shadow:0 0 0 2px #E0B658,0 8px 24px rgba(0,0,0,.55)}50%{box-shadow:0 0 0 5px #E0B658,0 0 26px 6px rgba(224,182,88,.5)}}
+  @media (prefers-reduced-motion: reduce){ .gd-fab svg,.gd-fab:after{animation:none} .gd-fab{animation:gdGlow 3.2s ease-in-out infinite} }
+  .gd-panel{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 82px);z-index:151;width:min(420px,calc(100vw - 28px));max-height:min(70vh,620px);display:flex;flex-direction:column;background:#0E1A2A;border:1.5px solid #E0B658;border-radius:16px;box-shadow:0 18px 48px rgba(0,0,0,.6);color:#F2F7F4;font-family:"Inter Tight",system-ui,sans-serif;font-size:17px;line-height:1.45}
+  .gd-panel[hidden]{display:none}
+  .gd-head{display:flex;align-items:center;gap:.6em;padding:.8em 1em .6em;border-bottom:1px solid #2A3D55}
+  .gd-head h2{margin:0;font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.25em;color:#E0B658;flex:1}
+  .gd-x{width:40px;height:40px;border-radius:50%;border:1.5px solid #E0B658;background:transparent;color:#E0B658;font-size:20px;line-height:1;cursor:pointer}
+  .gd-pre{margin:0;padding:.5em 1em 0;font-size:.82em;color:#A3B1C0}
+  .gd-log{flex:1;overflow:auto;padding:.6em 1em;display:flex;flex-direction:column;gap:.55em}
+  .gd-msg{padding:.55em .8em;border-radius:12px;max-width:92%}
+  .gd-msg.g{background:#16263C;align-self:flex-start}
+  .gd-msg.u{background:#24384C;align-self:flex-end;color:#FFFFFF}
+  .gd-acts{display:flex;flex-wrap:wrap;gap:.5em;padding:.6em 1em 1em;border-top:1px solid #2A3D55}
+  .gd-b{font-family:inherit;font-size:.95em;padding:.6em 1em;border-radius:10px;border:1.5px solid #3F73A2;background:#16263C;color:#F2F7F4;cursor:pointer}
+  .gd-b.main{background:#3E6B58;border-color:#3E6B58}
+  .gd-b.mic{background:#3E6B58;border-color:#E0B658;font-weight:500}
+  .gd-b.mic.on{background:#8E2F22;border-color:#F0CF7E}
+  .gd-type{display:flex;gap:.5em;width:100%}
+  .gd-type input{flex:1;font:inherit;color:#fff;background:#08101A;border:1px solid #2A3D55;border-radius:10px;padding:.5em .7em}
+  .door .gd-lit{outline:3px solid #E0B658;outline-offset:3px;transition:outline-color .6s}
   /* v299: a gold X inside the right end of every typed field clears it in one tap; it shows only when the field has something in it */
   .door .clw{position:relative;display:block}
   .door .clw input{padding-right:3.1em!important}
@@ -2819,6 +2849,89 @@ P: Of course we do. (laughs) At least I didn't add anything this time.`;
       b.addEventListener('click',function(){ el.value=''; el.dispatchEvent(new Event('input',{bubbles:true})); sync(); el.focus(); });
       setInterval(sync,800); sync();
     });
+  })();
+
+  /* v301: the EgoAgent Guide - preview on the registration page. Voice uses the device's own speech recognition and voice; the questions it answers are scripted until the live guide is connected */
+  (function(){
+    var MARK='<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg>';
+    var fab=document.createElement('button'); fab.className='gd-fab'; fab.type='button'; fab.setAttribute('aria-label','Open the EgoAgent Guide'); fab.innerHTML=MARK+'<span class="gd-tip">Talk to me</span>'; document.body.appendChild(fab);
+    var pan=document.createElement('div'); pan.className='gd-panel'; pan.hidden=true; pan.setAttribute('role','dialog'); pan.setAttribute('aria-label','EgoAgent Guide');
+    pan.innerHTML='<div class="gd-head"><h2>Your guide</h2><button class="gd-x" type="button" aria-label="Close the guide">&times;</button></div><p class="gd-pre">Preview. Voice form-filling works now; questions have scripted answers until the live guide is connected.</p><div class="gd-log" aria-live="polite"></div><div class="gd-acts"></div>';
+    document.body.appendChild(pan);
+    var log=pan.querySelector('.gd-log'), acts=pan.querySelector('.gd-acts');
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition, voiceOn=true;
+    function vis(){ var on=document.body.classList.contains('rview') && !document.getElementById('pane-register').hidden; document.body.classList.toggle('gd-on',on); if(!on) close(); }
+    setInterval(vis,600); window.addEventListener('hashchange',vis); vis();
+    function add(t,who){ var d=document.createElement('div'); d.className='gd-msg '+(who||'g'); d.textContent=t; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+    function say(t){ add(t,'g'); if(voiceOn && window.speechSynthesis){ try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.92; speechSynthesis.speak(u); }catch(e){} } }
+    function btn(label,cls,fn){ var b=document.createElement('button'); b.type='button'; b.className='gd-b '+(cls||''); b.textContent=label; b.onclick=fn; acts.appendChild(b); return b; }
+    function clear(){ acts.innerHTML=''; }
+    function open(){ pan.hidden=false; document.body.classList.add('gd-open'); fab.setAttribute('aria-expanded','true'); if(!log.childNodes.length) home(); }
+    function close(){ pan.hidden=true; document.body.classList.remove('gd-open'); fab.setAttribute('aria-expanded','false'); try{ speechSynthesis.cancel(); }catch(e){} }
+    fab.onclick=function(){ pan.hidden?open():close(); }; pan.querySelector('.gd-x').onclick=close;
+    var QA=[
+      ['How is my license checked?','Your license or registration number is checked against the public licensing record where you practice. In New York, that is the State Education Department’s record. Your sworn affirmation completes it.'],
+      ['What happens after I register?','Your casebook opens: your cases, their hours, and the consultation on each. A sample hour is there if you want to try it first. Nothing is recorded and no patient is invited until you choose to.'],
+      ['Can you see my patients?','No. In the working space I explain the screens and take you where you want to go. I am built with no access to cases, transcripts or notes.']];
+    function home(){ clear(); say('Hello. I can fill in this form with you by voice, or answer a question about EgoAgent.');
+      btn('Fill in the form by voice','main',startFill);
+      QA.forEach(function(q){ btn(q[0],'',function(){ add(q[0],'u'); say(q[1]); }); });
+      btn(voiceOn?'Voice off':'Voice on','',function(){ voiceOn=!voiceOn; try{speechSynthesis.cancel();}catch(e){} home(); }); }
+    /* --- voice form-filling --- */
+    var W={zero:'0',oh:'0',o:'0',one:'1',two:'2',to:'2',too:'2',three:'3',four:'4',for:'4',five:'5',six:'6',seven:'7',eight:'8',ate:'8',nine:'9'};
+    function cap(t){ return t.replace(/\s+/g,' ').trim().split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' '); }
+    var N={
+      name:function(t){ return cap(t.replace(/[.,!?]/g,'')); },
+      email:function(t){ return t.toLowerCase().replace(/\s+at\s+/g,'@').replace(/\s+dot\s+/g,'.').replace(/\s+/g,'').replace(/[,!?]$/,''); },
+      num:function(t){ return t.toLowerCase().split(/[\s-]+/).map(function(w){ return W.hasOwnProperty(w)?W[w]:w; }).join('').replace(/[^a-z0-9]/g,'').toUpperCase(); }
+    };
+    function pick(sel,t){ t=t.toLowerCase().replace(/[.,!?]/g,'').replace(/^the\s+/,'').trim(); var best=null, firsts=[];
+      [].forEach.call(sel.options,function(o){ if(!o.value&&o.disabled&&/choose/i.test(o.text)) return; var n=o.text.split('\u00b7')[0].trim().toLowerCase(); if(!n) return;
+        var sc=t===n?4:(t.indexOf(n)>=0?3:((t.length>=3&&n.indexOf(t)>=0)?2:0));
+        if(!sc && t.indexOf(n.split(' ')[0])>=0 && n.split(' ')[0].length>4) firsts.push({o:o,n:n});
+        if(sc && (!best||sc>best.sc||(sc===best.sc&&n.length>best.n.length))) best={o:o,n:n,sc:sc}; });
+      if(!best && firsts.length===1) best=firsts[0];
+      return best&&best.o; }
+    var STEPS=[
+      {id:'fn',q:'What is your first name?',f:N.name},
+      {id:'ln',q:'And your last name?',f:N.name},
+      {id:'em',q:'Your professional email? Say at and dot where they belong.',f:N.email,spell:true},
+      {id:'lcountry',q:'Which country are you licensed in?',sel:true},
+      {id:'lstate',q:function(){ return 'Which '+document.getElementById('lstate-lab').textContent.toLowerCase()+'?'; },sel:true,skip:function(){ return document.getElementById('lregion-f').hidden; }},
+      {id:'prof',q:'Which profession are you licensed in? Physician, psychologist, clinical social worker, or psychoanalyst.',sel:true},
+      {id:'lic',q:'And your license or registration number? Say it one character at a time.',f:N.num,spell:true}];
+    var i=0;
+    function startFill(){ i=0; next(); }
+    function el(id){ return document.getElementById(id); }
+    function lit(e){ document.querySelectorAll('.door .gd-lit').forEach(function(x){x.classList.remove('gd-lit');}); var t=e.closest('.selw')||e.closest('.clw')||e; t.classList.add('gd-lit'); try{ t.scrollIntoView({behavior:'smooth',block:'center'}); }catch(x){} }
+    function next(){ while(i<STEPS.length && STEPS[i].skip && STEPS[i].skip()) i++;
+      if(i>=STEPS.length) return finish();
+      var st=STEPS[i], e=el(st.id); lit(e); var q=typeof st.q==='function'?st.q():st.q; clear(); say(q); answerControls(st,e); }
+    function answerControls(st,e){
+      if(SR){ var m=btn('🎙 Tap, then answer','mic',function(){ listen(m,function(t){ got(st,e,t); }); }); }
+      var w=document.createElement('div'); w.className='gd-type'; w.innerHTML='<input type="text" aria-label="Or type your answer" placeholder="Or type it here"><button class="gd-b" type="button">OK</button>'; acts.appendChild(w);
+      var inp=w.querySelector('input'); w.querySelector('button').onclick=function(){ if(inp.value.trim()) got(st,e,inp.value); };
+      inp.addEventListener('keydown',function(ev){ if(ev.key==='Enter'&&inp.value.trim()) got(st,e,inp.value); });
+      btn('Skip','',function(){ i++; next(); }); btn('Stop','',home); }
+    function listen(b,cb){ try{ speechSynthesis.cancel(); }catch(x){}
+      var r=new SR(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1; b.classList.add('on'); b.textContent='● Listening…';
+      r.onresult=function(ev){ cb(ev.results[0][0].transcript); };
+      r.onerror=function(){ b.classList.remove('on'); b.textContent='🎙 Tap, then answer'; add('I did not catch that. Tap again, or type it below.','g'); };
+      r.onend=function(){ b.classList.remove('on'); b.textContent='🎙 Tap, then answer'; };
+      r.start(); }
+    function got(st,e,t){ add(t,'u'); var v;
+      if(st.sel){ var o=pick(e,t);
+        if(!o){ clear(); say('I could not match “'+t+'” to the list. Please say it again.'); return answerControls(st,e); }
+        if(o.disabled){ clear(); say(o.text.split('·')[0].trim()+' is not open for registration yet. Only New York is open now.'); return answerControls(st,e); }
+        e.value=o.value||o.text; e.dispatchEvent(new Event('change',{bubbles:true})); v=o.text.split('·')[0].trim();
+      } else { v=st.f(t); e.value=v; e.dispatchEvent(new Event('input',{bubbles:true})); }
+      clear(); var spoken=st.spell?v.split('').join(' ').replace(/@/,'at').replace(/\./g,'dot'):v;
+      say('I have: '+spoken+'. Is that right?');
+      btn('Yes, next','main',function(){ i++; next(); });
+      btn('No, say it again','',function(){ e.value=''; e.dispatchEvent(new Event('input',{bubbles:true})); next(); }); }
+    function finish(){ clear(); var oath=document.querySelector('#pane-register .oath'); if(oath) lit(oath);
+      say('That is everything I can fill in. The boxes under Your work, and the sworn affirmation, are yours to tick yourself. Then tap Register.');
+      btn('Done','main',home); }
   })();
 </script>
 </body>
