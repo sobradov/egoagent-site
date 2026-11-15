@@ -1,6 +1,6 @@
 # EgoAgent: plan for the first working version
 
-Status: plan only. Nothing is built. No existing file is changed.
+Status: approved by the owner on 15 November 2026, with three requests. They are recorded at the end. Nothing is built yet. No existing file is changed.
 Written 15 November 2026. Changed the same day: the app now starts on Google Cloud.
 
 ## The plan in short
@@ -200,7 +200,7 @@ Five rules first.
 3. Put these within reach: the inbox of your EgoAgent email address, your iPhone, your password app, and one card. A credit card is the safer choice. Prepaid cards are refused. So are debit cards that ask for a code from your bank at each payment.
 4. Know your answer to new question 1: Individual or Business. It can never be changed later.
 5. Know the country. It is the country of your card's billing address. New question 3 asks about it. It sets the currency, and it can never be changed later.
-6. Ask me for the first links and for the project name. I send them in one message.
+6. I send the links and the steps one sitting at a time. The first sitting is steps 1 to 17. The project name comes with the sitting that holds step 33.
 
 #### A Google Account for EgoAgent
 
@@ -278,10 +278,10 @@ This makes Google send you an email when the month's cost passes a mark. It only
 
 Wait for this until I say I am ready. I first test my own half on GitHub. That needs nothing from you.
 
-What kind of step this is. You paste one line of text that I wrote. For about two minutes it acts with your own full powers over the Google account. It is the most powerful single step in this plan. You cannot check it yourself. A second AI helper will have checked it. That helper is not a person. If you want a person who knows such commands to read it first, say so.
+What kind of step this is. You paste one line of text that I wrote. For about two minutes it acts with your own full powers over the Google account. It is the most powerful single step in this plan. You cannot check it yourself. A second AI helper will have checked it. That helper is not a person. Before step 50 I show you the full line, with one plain sentence beside each command. You have it checked independently before you paste.
 
 49. Open the link named Welcome. After the heading Welcome come the project name, the project number and the project ID. The name must be the one from step 33. If it is My First Project, find the project picker at the top of the page and choose your project. Tell me the number and the ID. Neither is a secret.
-50. I send you one line of text. Open our chat on the same device as the Google page. Copy the line. Copy nothing else after it.
+50. You have seen the full line, with a sentence beside each command, and you have had it checked. Now I send the line by itself. Open our chat on the same device as the Google page. Copy the line. Copy nothing else after it.
 51. Open the link named Command window. The window opens in the lower part of the page. Wait one full minute. Not confirmed: on a first visit a small window may ask you to continue or to agree to terms. Read it to me before you press.
 52. Paste the line. On a Mac, or on an iPad with a keyboard attached, press Command and V. Then press Return. Not confirmed: how to paste there on an iPad without a keyboard. The focus must be inside the command window. Not confirmed: whether it lands there by itself. If nothing happens, tell me, and press nothing else.
 53. If a small window named Authorize Cloud Shell appears, press the button named Authorize. It lets the command window act with your sign-in for this one visit.
@@ -474,7 +474,7 @@ This part is for planning. It is not legal advice. The times in it are my estima
 ### Start after your approval
 
 - F6. Yours: the three looks from Part C, with no press. If the HIPAA section at Anthropic is missing, write to its sales team the same day. I draft the message.
-- F7. Mine: a list of every promise on the public pages, each beside what the planned system really does. It is for you and the lawyer. It builds nothing. With it go the addresses of Google's and AssemblyAI's agreement texts. Anthropic's text I could not read.
+- F7. Mine, and the first thing I do: a list of every promise on the public pages, each beside what the planned system really does. It is for you and the lawyer. It builds nothing. It is kept as a private document, not in this public repository. With it go the addresses of Google's and AssemblyAI's agreement texts. Anthropic's text I could not read.
 - Three items on that list need the lawyer's eye. The main page and the demo page give two different rules for how long transcripts are kept. A deleted transcript stays in the database's backups for up to seven more days. And Google's 180 days from Part B.
 
 ### After stage 7. These are mine.
@@ -556,10 +556,11 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 - Not tested on a real device: nothing has run on an iPhone or iPad yet. A browser reference that I read today warns about the iPhone's file chooser. It does not handle a chooser that asks for audio only. Stage 4 is built to avoid this and to test it.
 - Not tested: whether two computer voices are told apart as two speakers, and how often the AI declines talk of self-harm. Stages 5 and 6 test both.
 
-## What I need from you now
+## Approved on 15 November 2026, with three requests
 
-- I stop here. I build nothing until you approve.
-- Your change to question 1 is recorded above.
-- Your answers to the three new questions are recorded above.
-- Say approved, or tell me what to change.
+- You approved this plan. The build may begin.
+- Request 1: I begin with point F7, the list of public promises for the lawyer.
+- Request 2: before step 50, I show you the full line you will paste, with one plain sentence beside each command. You have it checked independently before you paste. Steps 49 to 54 now say so.
+- Request 3: I send the links and the steps one sitting at a time. The first sitting is steps 1 to 17.
+- The first thing I need from you: the new private repository named egoagent-app, with Claude allowed to work in it.
 - This plan is saved as PLAN.md on the branch named thin-path-plan. The main branch and every other file are untouched.
