@@ -54,7 +54,7 @@ Written 15 November 2026. Changed the same day: the app now starts on Google Clo
 Every price and agreement fact below was read on the company's own pages on 15 November 2026. Where that is not so, I say it. Now means this first version. Later means from the first real patient recording.
 
 - All Google parts sit in one Google Cloud account, in the United States. The server, the database and the storage space are in Google's data centres in Iowa.
-- One HIPAA agreement with Google covers all of them.
+- One HIPAA agreement with Google covers every part I chose.
 - Google stores all of it in encrypted form. Every connection to the app, and from the app to the database, is encrypted too. Both are Google's standard settings.
 - The choice of Iowa, and of each Google part below, is my judgement. The facts beside each choice are from Google's pages.
 
@@ -72,10 +72,10 @@ Every price and agreement fact below was read on the company's own pages on 15 N
 - Reason: Google runs it, backs it up every day and repairs it. It is on Google's covered list.
 - Cost now: about $9.50 a month, on the smallest test size, with daily backups.
 - Cost later: about $51 a month, on the smallest size that is not a test size, without a standby copy. Or about $102 a month with a standby copy.
-- Google's pages say plainly: the small test sizes are not for real use. They also say a database without a standby copy is recommended only for tests. For real use Google recommends the standby copy. And Google's promise about how much of the time the database runs holds only with it.
-- Without the standby copy, a fault in that one data centre stops the app until Google repairs it. The data is not lost. There is a backup every day.
+- Google's pages say plainly: the small test sizes are not for real use. They also say a database without a standby copy is recommended only for tests. For real use Google recommends the standby copy. Only with the standby copy does Google promise how much of the time the database runs.
+- Without the standby copy, a fault in that one data centre stops the app until the data centre works again, or until the database is restored by hand. Google's page says such a restore can lose the latest changes: up to one day with daily backups alone, about five minutes with Google's running record of changes. For the live copy I switch that record on, and tell you its price first.
 - You choose between $51 and $102 just before real patients. Google's advice points to $102. I still suggest $51 while you are the only therapist, because a stop of some hours is bearable for one therapist. That is my judgement, and it goes against Google's advice. Ask the security reviewer.
-- Moving from the test size to the real size takes the database offline for under one minute. Google's page says so. That no data is lost is my reading, not Google's words. I take a backup first. Adding the standby copy later takes the database offline for several minutes.
+- The live copy gets its own database at the real size from its first day. So nothing is moved. Adding the standby copy later takes the database offline for several minutes. Google's page says so.
 - HIPAA agreement later: yes. The same Google agreement.
 
 ### 3. A holding place for the recording: Google Cloud Storage
@@ -87,7 +87,7 @@ This part is new.
 - Making the delete real: Google keeps a deleted file for seven more days unless that is switched off. I switch it off. Our server deletes the file, asks for it once more, and must get the answer not found.
 - Google's HIPAA page advises the opposite for stored files: keep old versions. For this one storage space I keep none, so that deleted audio is really gone. The lawyer should know this.
 - A safety net: a rule at Google deletes any finished file older than one day. Google does not promise the hour, so it can run late.
-- One gap: an upload that breaks off half-way is not yet a file. The rule does not reach it. So our server cancels every unfinished upload itself, two hours after it began. If our server could not, Google drops the pieces after one week.
+- One gap: an upload that breaks off half-way is not yet a file. The rule does not reach it. So our server cancels every unfinished upload itself, two hours after it began. If our server could not, Google closes the unfinished upload after one week.
 - One limit you should know. Google's own pages say Google finishes wiping deleted data from its machines and backups within about 180 days. After our delete, we cannot bring the file back. The lawyer settles how the public promise is worded.
 - Cost: about $0 a month at our size.
 - HIPAA agreement later: yes. The same Google agreement.
@@ -135,10 +135,10 @@ I read three of Google's own pages on 15 November 2026. The help page with the s
 - How: by a click, inside your Google Cloud account. Google's help page gives these steps. Open the page named I A M and Admin. It is Google's page for access rights. Select a project. Below the heading Google Cloud Platform HIPAA Business Associate Addendum, press Review and Accept. Read the agreement. Press I Accept.
 - When it counts: the agreement text says it takes effect when the customer clicks to accept.
 - By whom: by you. The text says the person who clicks must have full legal authority to bind the customer. So I never press it.
-- Who the customer is: whoever agreed to Google's terms for the account. That your choice of Individual or Business names this customer is my reading. No Google page says it in those words. The lawyer confirms it. That is why the first new question matters.
+- Who the customer is: whoever agreed to Google's terms for the account. My reading: your choice of Individual or Business names this customer. No Google page says it in those words. The lawyer confirms it. That is why the first new question matters.
 - At what cost: $0 extra. The agreement text names no fee. Google's HIPAA page says HIPAA customers get the same services at the same pricing as everyone else. Zero extra cost is my reading of those two pages. No page says the word free.
 - How often: once. Google says one click, in one project, counts for your account.
-- What it covers: only the services on Google's list. Every Google part that this plan names is on that list. It does not cover AssemblyAI or Anthropic.
+- What it covers: only the services on Google's list. Every Google part that I chose for this plan is on that list. Error Reporting, below, is the one open case. The agreement does not cover AssemblyAI or Anthropic.
 - One rule from Google's page: do not put patient data into test features that Google has not fully released.
 - What it does not do: it does not make the app lawful by itself. Google's page says the United States health department offers no HIPAA certificate, and that you stay responsible for what you build on Google's services.
 
@@ -175,9 +175,9 @@ Five rules first.
 
 - Never paste a secret key into our chat, into GitHub or into an email. The same holds for your passwords, your backup codes and your card number. If one lands there by mistake, tell me. We cancel it and make a new one.
 - When a step says read it to me, read only the words that the company put on the page.
-- You never have to type a web address. Each step that says open names a link. I send all the links in one message in our chat, and you press them there.
+- You never have to type a web address. Each step that says open names a link. I send the links in our chat, and you press them there.
 - I cannot see your screens. Where I could not confirm a screen, the step says: not confirmed. If the screen shows a different name, or VoiceOver says one, stop. Tell me what it says. Press nothing you are unsure of. Where a name on the screen has the sign for and, I write the word and.
-- At the start of every sitting with Google, check who is signed in. At the top right of each Google page is a button for your account. It must show the EgoAgent email. If it shows another, stop and tell me.
+- At the start of every sitting with Google, check who is signed in. From memory: at the top right of each Google page is a round button for your account. VoiceOver reads your email there. By sight, press it to see the email. It must be the EgoAgent email. If it is another, stop and tell me.
 
 ### Account 1. GitHub
 
@@ -196,11 +196,11 @@ Five rules first.
 #### Before you start
 
 1. Use the device you name in new question 2. Do not start in the Google Cloud app for the iPhone or iPad. It cannot do the sign-up.
-2. Check the browser. If you use Gmail, YouTube or another Google service in it, you are already signed in to a Google account. Sign out there first, or use a browser where you never sign in to Google. Do not use a private window. Otherwise the card and the sign-up can land on the wrong account. That cannot be moved.
+2. Check the browser. If you use Gmail, YouTube or another Google service in it, you are already signed in to a Google account. Sign out there first, or use a browser where you never sign in to Google. Otherwise the card and the sign-up can land on the wrong account. Treat that as final. Do not use a private window. In Safari, Google's command window does not work in one.
 3. Put these within reach: the inbox of your EgoAgent email address, your iPhone, your password app, and one card. A credit card is the safer choice. Prepaid cards are refused. So are debit cards that ask for a code from your bank at each payment.
 4. Know your answer to new question 1: Individual or Business. It can never be changed later.
 5. Know the country. It is the country of your card's billing address. New question 3 asks about it. It sets the currency, and it can never be changed later.
-6. Ask me for the links and for the project name. I send them in one message.
+6. Ask me for the first links and for the project name. I send them in one message.
 
 #### A Google Account for EgoAgent
 
@@ -222,7 +222,7 @@ Google requires a second sign-in step before it lets anyone into the console. Th
 
 14. Open the link named Second sign-in step. If the wrong page opens, find Security and sign-in, then the heading How you sign in to Google.
 15. Find Turn on 2-Step Verification. Press it.
-16. Not confirmed: follow the steps on the screen. Choose a Google prompt or an authenticator app. The prompt arrives only if the Gmail app or the Google app is on your iPhone, signed in with the EgoAgent email. If a screen asks you to scan a square code with the camera and that is hard, stop and tell me.
+16. Not confirmed: follow the steps on the screen. Choose a Google prompt or an authenticator app. The prompt arrives only if the Gmail app or the Google app is on your iPhone, signed in with the EgoAgent email. If a screen asks you to scan a square code with the camera, stop and tell me.
 17. Not confirmed, the name of the button: create backup codes in the same place. They are one-time codes for a day when the phone is missing. Save them in your password app. Without them, a lost phone locks you out while the card can still be charged.
 
 #### Sign up for Google Cloud
@@ -236,8 +236,8 @@ I could not see these screens. Google's pages say what is asked, but not the exa
 22. Find Account type. Choose Individual or Business, as in step 4. Google also calls Business by the name Organization. If there is no Account type field, or the page speaks of an existing payments profile, stop and tell me. The type may be set already, and it cannot be changed. If any field asks about tax, stop and read it to me.
 23. Type your name and billing address. If you chose Business, type the company's legal name where the page asks for it.
 24. Type the card number, the expiry date and the security code.
-25. Before you press, check that the page speaks of a free trial or of $300 in credit. If it does not, stop and tell me. Then press the last button. From memory its name is Start free. If you find Activate, Upgrade, Submit and enable billing, or anything about a paid or full account, do not press it. Read it to me first.
-26. A warning before the next pages. Two pages now carry a button named Activate: the Welcome page and the billing page. One Google page calls it Upgrade. Do not press it until I say so. It ends the free trial and lets Google charge your card. If you press it by mistake, a second window asks you to confirm. Do not confirm. Tell me.
+25. A warning before you press. The next two pages, Welcome and billing, each carry a button named Activate. One Google page calls it Upgrade. Do not press it until I say so. It ends the free trial and lets Google charge your card. If you press it by mistake, a second window asks you to confirm. Do not confirm. Tell me.
+26. Check that the page speaks of a free trial or of $300 in credit. If it does not, stop and tell me. Find the last button. From memory its name is Start free. If it is named Activate, Upgrade, Submit and enable billing, or anything about a paid or full account, do not press it. Read it to me first. Otherwise press it.
 27. Wait for a page named Welcome. Tell me the first heading on it.
 28. In the next days your bank may show a pending amount from Google, between $0 and $1. Google says it is a hold, not a charge. It goes away by itself.
 29. Open the link named Billing. Google's page says you should find the words Free trial account, and a part named Free credit, with the credit and the days that are left. The Activate button sits in that same part. Leave it. Tell me what you find. If you find the words Paid account, stop and tell me.
@@ -253,7 +253,7 @@ Google makes a first project by itself, named My First Project. We do not use it
 34. Google makes a project ID from the name. Read it to me, and wait for my yes before you go on. It can never be changed after this screen.
 35. If there is a field for the billing account, it should say My Billing Account. Leave it.
 36. Find the field named Parent resource. Leave what is already there. It should be a name that ends in -org. Google made it by itself. Do not choose No organization.
-37. Press the button named Create. Wait about one minute. From here on, each link I send holds your project ID, so that the right project opens. From memory this works. It is not confirmed.
+37. Press the button named Create. Wait about one minute. Then I send new links for the steps that follow. Each holds your project ID, so that the right project opens. From memory this works. It is not confirmed.
 
 #### A warning for spending
 
@@ -270,7 +270,7 @@ This makes Google send you an email when the month's cost passes a mark. It only
 
 #### Look at the HIPAA page, and press nothing
 
-46. Open the link named Privacy and Security. The page should carry that name. Check that it shows your project, not My First Project.
+46. Open the link named Privacy and Security. Not confirmed: the page's own name. It may say Privacy and Security, or I A M and Admin. Check that it shows your project, not My First Project.
 47. Find the heading Google Cloud Platform HIPAA Business Associate Addendum. Not confirmed: if it is not there, find a tab or link named Legal and Compliance. Press that, and look again.
 48. Press nothing else. Above all, press no button named Review and Accept. Google's help page shows two of them on this page. One belongs to a different agreement. Tell me the headings and buttons in the order you find them. This settles early the main thing I could not confirm.
 
@@ -278,7 +278,7 @@ This makes Google send you an email when the month's cost passes a mark. It only
 
 Wait for this until I say I am ready. I first test my own half on GitHub. That needs nothing from you.
 
-What kind of step this is. You paste one line of text that I wrote. For about two minutes it acts with your own full powers over the Google account. It is the most powerful single step in this plan. You cannot check it by ear. A second AI helper will have checked it. That helper is not a person. If you want a person who knows such commands to read it first, say so.
+What kind of step this is. You paste one line of text that I wrote. For about two minutes it acts with your own full powers over the Google account. It is the most powerful single step in this plan. You cannot check it yourself. A second AI helper will have checked it. That helper is not a person. If you want a person who knows such commands to read it first, say so.
 
 49. Open the link named Welcome. After the heading Welcome come the project name, the project number and the project ID. The name must be the one from step 33. If it is My First Project, find the project picker at the top of the page and choose your project. Tell me the number and the ID. Neither is a secret.
 50. I send you one line of text. Open our chat on the same device as the Google page. Copy the line. Copy nothing else after it.
@@ -293,10 +293,10 @@ What the line does:
 - It carries all its commands inside itself, and fetches nothing from the internet. Pasting it twice does no harm.
 - It creates no password and no key file. So nothing secret can land in our chat or in GitHub.
 - It lets my build path create, change and delete the server, the database, the storage space and the queue for long work. My build path can also read the test database and the test storage space. That is one more reason this copy holds made-up data only.
-- It gives my build path no right to read your secret keys. It can replace or delete them.
+- It lets my build path replace or delete your secret keys, but not read them.
 - One limit you should know. My build path publishes the server, and the server reads the keys. So I promise never to read them. That is a rule I keep. It is not a lock. Your real protection: you can cancel a key at AssemblyAI or at Anthropic at any time, and each key can spend only a small amount.
 
-How you switch my access off. Open the link named Workload Identity Pools. Press the pool's name, which I tell you. Press the switch named Status, then the button named Disable. Do not press Delete. After that, no new version can reach Google. The app itself keeps running. In stage 1 you try this switch once, off and on again.
+How you switch my access off. Open the link named Workload Identity Pools. Press the pool's name, which I tell you. Press the switch named Status, then the button named Disable. Do not press Delete. After that, Google accepts no new sign-in from my build path. One already handed out can last up to an hour. The app itself keeps running. To switch it on again, press Status, then Enable. In stage 1 you try this once, off and on.
 
 What is untested. The line itself: it has never been run against Google. Whether one of Google's default safety rules accepts the link to GitHub: if it refuses, I change the line and you paste again. And the paste into that window with VoiceOver, on a Mac or on an iPad. Google's pages say the window is not read aloud by itself. That is why the steps never ask you to read it.
 
@@ -313,7 +313,7 @@ I give the exact steps when we reach each one.
 - Before real patients: you leave the free trial and you accept the HIPAA agreement. Part F has the order.
 - One fixed date. Leave the free trial by day 75 after sign-up. If you have not left it by day 90, everything stops. It stops sooner if the $300 is used up. Thirty days later Google deletes everything.
 - A second person. If you want one trusted person to be able to get in when you cannot, tell me. Not confirmed: whether Google's default rules allow it.
-- An emergency stop. During the free trial you never need it, because Google does not charge the card. After the trial, use it only if you cannot reach me and the emails show a cost far above the warning amount. Open the link named Billing projects. In the project's row, open the menu named Actions. Choose Disable billing, and confirm. This stops the app at once. Some data may be lost for good. With real patients that can mean the transcripts.
+- An emergency stop. It stops the app at once, and some data may be lost for good. With real patients that can mean the transcripts. During the free trial you never need it, because Google does not charge the card. After the trial, use it only if you cannot reach me and the cost is far above the warning amount. An email at the warning amount is not reason enough. Then open the link named Billing projects. In the project's row, open the menu named Actions. Choose Disable billing, and confirm.
 
 ### Account 3. AssemblyAI, at assemblyai.com
 
@@ -346,13 +346,13 @@ Not needed now: a web address that you own, and an email-sending service. Do not
 - On Google itself I can open only pages that need no sign-in. So you are the first to test each signed-in page there.
 - Everything on a real iPhone or iPad, and everything with VoiceOver, is tested only by you.
 - Every test works by sight and with VoiceOver. Each test names the words to expect. Those words appear on the screen in large, clear type, and they stay there. VoiceOver speaks the same words.
-- Where a test says you should see and hear something, either way counts for that test. Tell me which way you tested. I keep a list. Before stage 7 ends, each stage should have been tried once by sight and once with VoiceOver. What was tried only one way, my report names as not tested the other way.
+- Where a test says you should see and hear something, either way counts for that test. Tell me which way you tested. I keep a list. Before stage 7 ends, each stage should have been tried once by sight and once with VoiceOver. My report names each stage that was tried only one way.
 - The look is my job. I put pictures of each new page beside the mockup and list every difference. The pictures come from a desktop browser, not from Safari.
 - Before each stage goes live, a second AI helper that has not seen my reasoning checks it. It is not a person.
 - I never see your secret keys. For stages 5 and 6, the Claude app can show you a secure form for a key. That form is the one exception to the rule about our chat. Type the key only into the form, never into a message. I can then use the key, but I cannot read it. The key stays saved in your Claude settings until you delete it. If the form fails, I test with stand-in answers and tell you.
 - The Claude app will ask you to approve a few things, such as opening the app's web address. Before each one I say what it is for.
 - I put no new version live while you are testing.
-- If Google cannot start the test copy, I read the reason myself, through GitHub. You do not have to copy anything for me. This is untested until stage 1. For the live copy it stops. Part F, point F11, says why.
+- If Google cannot start the test copy, I read the reason myself, through GitHub. You do not have to copy anything for me. This is untested until stage 1. For the live copy I may not. Part F, point F10, says why.
 - The existing website is not touched. Its Sign in button still opens the mockup.
 
 ### Rules the build follows
@@ -373,7 +373,7 @@ Not needed now: a web address that you own, and an email-sending service. Do not
 - I build: the bare app on Google, with the small test database, the storage space and the safe for keys. The sign-in page is in the existing look. It does not sign in yet. The address is one that Google gives. It ends in run.app.
 - I measure how long the first page takes after a pause. I tell you the number.
 - You test on your iPad: open the link I send. The first opening can take some seconds. Then you should see and hear the heading Sign in. Then two fields: Professional email, and Password. Then one button, named: Sign in and open your casebook. The button does nothing yet. Then open the link once on your iPhone.
-- You also try the switch that turns my access off, once, off and on again. Tell me what you found.
+- You also try the switch for my access once: Status, then Disable. Then Status, then Enable. Tell me what you found.
 
 ### Stage 2. Real sign-in
 
@@ -461,49 +461,44 @@ This decided where the app runs. You have answered it. The text below is the ear
 
 ## Part F. Before the first real patient recording
 
-This part is for planning. It is not legal advice. The times in it are my estimates.
+This part is for planning. It is not legal advice. The times in it are my estimates. I could not read the United States health department's pages today. So the lawyer must confirm every point about the law here.
 
-One limit first. The website of the United States health department refused my requests today. So every point about the law here comes from search summaries or from memory. The lawyer must confirm each one.
+### Start today. These are yours, and they need no approval of this plan.
 
-### Start now, alongside the build. These are yours.
-
-You can start these today, with or without approving this plan.
-
-- F1. The lawyer. A note at the top of your main page file mentions a counsel note of 11 October. If you already have a lawyer who knows health privacy law in your state, brief that lawyer this week. If not, engage one this week. It is the longest wait on this list. I estimate one to two weeks to engage, and three to six weeks of work.
-- F2. What the lawyer decides. Whether HIPAA applies to your practice at all. Who legally owns EgoAgent and signs the agreements. Whether you as therapist need an agreement with that owner, if it is a company. The consent form for recording, by your state's law. Whether a transcript counts as psychotherapy notes, which may decide what a patient may ask to see. For each promise on the public pages: keep it, drop it or reword it. How long transcripts are kept. And the Privacy page and the Terms page that your main page links to. They are not written yet.
+- F1. The lawyer. If you already have a lawyer who knows health privacy law in your state, brief that lawyer this week. If not, engage one this week. It is the longest wait on this list. I estimate one to two weeks to engage, and three to six weeks of work.
+- F2. What the lawyer decides. Whether HIPAA applies to your practice at all. Who legally owns EgoAgent and signs the agreements. Whether you as therapist need an agreement with that owner, if it is a company. The consent form for recording, by your state's law. Whether a transcript counts as psychotherapy notes. For each promise on the public pages: keep it, drop it or reword it. How long transcripts are kept. And the Privacy page and the Terms page that your main page links to. They are not written yet.
 - F3. The owner of the accounts. This is the first new question below. If a company must be registered first, start now. I estimate one to three weeks.
 - F4. A security review by a person. Find the reviewer now. I estimate two to six weeks to book, one week for the review, and one to two weeks for my fixes.
 - F5. Insurance. Ask your broker whether your cover allows recording and AI analysis. This is my judgement, not a rule that I verified.
 
 ### Start after your approval
 
-- F6. Yours: the three looks from Part C, with no press. Google's HIPAA page, the agreement part at AssemblyAI, and the HIPAA section at Anthropic. If Anthropic's section is missing, write to its sales team the same day. I draft the message.
-- F7. Mine: a list of every promise on the public pages, each beside what the planned system really does. It is for you and the lawyer. It builds nothing. With it go the addresses of Google's and AssemblyAI's agreement texts. Anthropic's text I could not read. Its page says you download it inside the HIPAA section, before the accept button. Do that only when I say so.
+- F6. Yours: the three looks from Part C, with no press. If the HIPAA section at Anthropic is missing, write to its sales team the same day. I draft the message.
+- F7. Mine: a list of every promise on the public pages, each beside what the planned system really does. It is for you and the lawyer. It builds nothing. With it go the addresses of Google's and AssemblyAI's agreement texts. Anthropic's text I could not read.
 - Three items on that list need the lawyer's eye. The main page and the demo page give two different rules for how long transcripts are kept. A deleted transcript stays in the database's backups for up to seven more days. And Google's 180 days from Part B.
 
-### After stage 7, before the security review. These are mine.
+### After stage 7. These are mine.
 
 None of this is in the seven stages. I show you each item, with its price, before I build it.
 
-- F8. Five additions to the app. A second sign-in step, such as a code from a phone app. Sign-out by itself after a pause. A record of who opened or deleted what. A consent check: no upload until you confirm a signed consent for that patient. And the short written rules that the law asks for, which you, the lawyer and the reviewer check.
-- F9. A clean live copy, in its own Google project, apart from the test copy. It is the same code, set up from the same files. You first choose two things: the standby database, yes or no, and your own web address, yes or no. Your part is a second project, one pasted line and fresh secret keys. I estimate half an hour. If the lawyer says a company must own the live copy, you first open the company's Google account, with steps 1 to 54 once more.
-- F10. What the live copy gets. The real-size database, protected against deletion, with daily backups. Google's own record of who read data. The lawyer says how long that record is kept. An alarm by email if the app stops answering. And an Anthropic key from a new organization, kept for real patients only. Organization is Anthropic's word for one separate work space. Then I restore one backup as a test.
-- F11. My access to the live copy is cut down. My build path gets no right there to read the database, the recordings or the secret keys. A new version goes live only when you act yourself. How that is done is not designed yet. One limit stays. I write the code that runs on the live copy, and that code can reach patient data. So I promise that no version of mine sends patient data anywhere else. That is a rule I keep. The second AI helper checks every version, and the reviewer checks the set-up. It is not a lock. The reason: you have no HIPAA agreement with the AI builder or with GitHub.
+- F8. Five additions to the app. A second sign-in step, such as a code from a phone app. Sign-out by itself after a pause. A record of who opened or deleted what. A consent check: no upload until you confirm a signed consent for that patient. And the short written rules that the law asks for.
+- F9. A clean live copy, in its own Google project, apart from the test copy. It gets the real-size database, an alarm by email if the app stops, and Google's record of who read data, kept as long as the lawyer says. You first choose two things: the standby database, yes or no, and your own web address, yes or no. Your part is a second project, one pasted line, a new Anthropic organization and fresh secret keys. Organization is Anthropic's word for one separate work space. I have not confirmed its steps.
+- F10. My access to the live copy is cut down, because you have no HIPAA agreement that covers me or GitHub. My build path gets no right there to read the database, the recordings or the secret keys. A new version goes live only when you act yourself. How that is done is not designed yet. One limit stays. I write the code that runs there, and that code can reach patient data. So I promise that no version of mine sends patient data anywhere else. That is a rule I keep. It is not a lock. The second AI helper checks every version, and the reviewer checks the set-up.
 
 ### Last, just before the first real recording
 
-- F12. The security review, and my fixes.
-- F13. You leave Google's free trial. You press Activate, and Activate once more in the small window that follows. From then on Google charges your card by itself: on the first of each month, and earlier if the bill reaches an amount that Google sets. Google may also ask for a one-time advance payment. It does not state the amount. If a screen asks for money, stop and tell me. Do this by day 75 at the latest, wherever the build stands. Day 75 is my safety margin. Google's own limit is day 90. On the same day we raise the spending warning.
-- F14. You accept the three agreements, in this order: Google, AssemblyAI, Anthropic. Each in the name of the legal owner. Each after the lawyer's yes. Before each press, check which account you are signed in to. At Anthropic, accept only inside the new organization for real patients, never in the test one. The setting there is permanent. Save your own proof each time: a picture of the page, the date, the time, and the email you were signed in with.
-- F15. The whole path once more, on the live copy, with a made-up recording. Accepting can change settings. At AssemblyAI the standard timer becomes 72 hours. I could not confirm whether your one-hour setting stays. So you look, and set it back if it changed.
-- F16. Go or no-go. It is your decision. Go only when three things are true. The reviewer's findings are fixed. The restore worked. The lawyer has said yes in writing to the pages and the consent form. Then start with one consenting patient.
+- F11. The security review, and my fixes.
+- F12. You leave Google's free trial. You press Activate, and confirm once. From then on Google charges your card by itself. Google may first ask for a one-time advance payment. It does not state the amount. If a screen asks for money, stop and tell me. Do this by day 75, wherever the build stands. Then we raise the spending warning.
+- F13. You accept the three agreements, in this order: Google, AssemblyAI, Anthropic. Each in the name of the legal owner. Each after the lawyer's yes. Before each press, check which account you are signed in to. At Anthropic, accept only inside the new organization, never in the test one. The setting there is permanent. Save your own proof each time: a picture of the page, the date and the time.
+- F14. The whole path once more, on the live copy, with a made-up recording. Accepting can change settings. At AssemblyAI you check that the timer still says one hour.
+- F15. Go or no-go. It is your decision. Go only when three things are true. The reviewer's findings are fixed. A restore from a backup worked. The lawyer has said yes in writing to the pages and the consent form. Then start with one consenting patient.
 
-From that day on, never paste real transcript text, real names or real server records into our chat, or into Anthropic's website. Anthropic's agreement covers what our server sends. It does not cover text typed into the website itself.
+From that day on, never paste real transcript text, real names or real server records into our chat, or into Anthropic's website.
 
 ### Is one to three months realistic?
 
-- Three months: realistic under three conditions. The lawyer and the owner question start in the first week. The first real use is you alone, with one consenting patient. And everything up to point F11 is finished by about week nine.
-- Week nine is my calculation from my own estimates: the review, my fixes and the last steps need three to four weeks. I have no measured figure for how long the build takes. I cannot promise a date.
+- Three months: realistic under three conditions. The lawyer and the owner question start in the first week. The first real use is you alone, with one consenting patient. And everything up to point F10 is finished by about week nine.
+- Week nine is my calculation from my own estimates: the review, my fixes and the last steps need three to four weeks. I have no measured figure for how long the build takes.
 - One month: unlikely. By my estimates, the lawyer and the security review alone take longer.
 - What would break three months: the lawyer starts late or asks for a redesign. Anthropic's HIPAA route is closed to you. The review finds serious faults. Upload fails on your iPad. Or the first real version must also have other therapists, Serbian, or consent by email.
 
@@ -550,7 +545,7 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 - Not confirmed: the exact screens of the Google Cloud sign-up, which I could not open. The screens of AssemblyAI and Anthropic. Their names come from the companies' help pages. The text of Anthropic's HIPAA agreement, which I could not open. The deposit at AssemblyAI. Whether $10 is an allowed credit purchase at Anthropic. GitHub's pages, which were blocked today. The Voice Memos steps, because Apple's help page was blocked.
 - Not read at all: the United States health department's pages. Every legal point in Part F needs the lawyer.
 - Not run: nothing was tried against Google with a real account. The setup line, the upload to Google's storage space and the link for AssemblyAI are designs taken from the companies' pages. Stages 1, 4 and 5 prove them.
-- Not designed yet: how a new version of the live copy goes live only by your own act. Point F11 says so.
+- Not designed yet: how a new version of the live copy goes live only by your own act. Point F10 says so.
 - Not checked: how well the pages of Google Cloud, AssemblyAI and Anthropic work with VoiceOver. For Google I have only Google's own advice: VoiceOver with Chrome on a Mac.
 - Not tested on a real device: nothing has run on an iPhone or iPad yet. A browser reference that I read today warns about the iPhone's file chooser. It does not handle a chooser that asks for audio only. Stage 4 is built to avoid this and to test it.
 - Not tested: whether two computer voices are told apart as two speakers, and how often the AI declines talk of self-harm. Stages 5 and 6 test both.
