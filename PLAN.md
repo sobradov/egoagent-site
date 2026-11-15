@@ -559,7 +559,7 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 ## Approved on 15 November 2026, with three requests
 
 - You approved this plan. The build may begin.
-- Request 1: I begin with point F7, the list of public promises for the lawyer.
+- Request 1: I begin with point F7, the list of public promises for the lawyer. Done on 15 November 2026. The list holds 104 promises. It is a private document and a Word file. It is not in this repository. AI helpers checked it. No person has checked it yet.
 - Request 2: before step 50, I show you the full line you will paste, with one plain sentence beside each command. You have it checked independently before you paste. Steps 49 to 54 now say so.
 - Request 3: I send the links and the steps one sitting at a time. The first sitting is steps 1 to 17.
 - The first thing I need from you: the new private repository named egoagent-app, with Claude allowed to work in it.
