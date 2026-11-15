@@ -1,7 +1,7 @@
 # EgoAgent: plan for the first working version
 
 Status: approved by the owner on 15 November 2026, with three requests. They are recorded at the end. Nothing is built yet. No existing file is changed.
-Written 15 November 2026. Changed the same day: the app now starts on Google Cloud.
+Written 15 November 2026. Changed the same day: the app now starts on Google Cloud. Changed again after the approval, each change with your yes. The last section names the changed places.
 
 ## The plan in short
 
@@ -25,7 +25,7 @@ Written 15 November 2026. Changed the same day: the app now starts on Google Clo
 - New: Part F, and three new questions near the end.
 - Changed because of that: the short summary, the word list, the opening of Part E, one line each in questions 1 and 4, your answers, and the list of what was checked.
 - Changed for your request about sight and VoiceOver: every test now names words to see and hear. The earlier plan named only what you should hear. That was a gap.
-- Not changed: Part A, questions 2, 3 and 5, and your answers 2 to 5.
+- Not changed then: Part A, questions 2, 3 and 5, and your answers 2 to 5. One point of Part A was changed later. The last section says so.
 
 ## Words used in this plan
 
@@ -38,7 +38,10 @@ Written 15 November 2026. Changed the same day: the app now starts on Google Clo
 - Free trial: your first 90 days at Google Cloud. Google gives $300 of credit for them.
 - Standby copy: a second copy of the database, in another data centre. It takes over if the first one fails.
 - Cloud Shell: a command window inside the Google Cloud console. You paste one line of text into it.
-- My build path: GitHub's machines, which put each new version of the app onto Google.
+- My build path: GitHub's machines, which put each new version of the app onto Google. At Google it acts under an identity of its own.
+- Identity: a name under which a program acts at Google. It is like a user account, but for a program.
+- Branch: one copy of the code inside a repository. The app is built from the copy named main.
+- Your checker: whoever you choose to check the line of step 50 before you paste it.
 
 ## Part A. What is in the repository now
 
@@ -47,7 +50,7 @@ Written 15 November 2026. Changed the same day: the app now starts on Google Clo
 - Nothing real runs. Sign in is only a link. Anyone can open the Casebook by typing its address. The patients and the transcript are samples. The upload box reads only the file's name and date.
 - The Analyze button calls Anthropic straight from the page, with no secret key. On a public website that cannot work.
 - General Psychoanalytic already exists, with a one-sentence instruction.
-- The pages make many promises. Three bear on this first version, and the plan keeps them. The audio is deleted after transcription. The material is never used to train AI. Nothing is analyzed until the therapist presses the button.
+- The pages make many promises. Three bear on this first version. One: the audio is deleted after transcription. Two: the material is never used to train AI. Three: nothing is analyzed until the therapist presses the button. The plan does not keep them in full. One: our server deletes the recording once the transcript is made. But the page says permanently deleted. Google can take about 180 days to finish wiping it, and the copy on your own device stays. Two: this rests on the word of AssemblyAI and Anthropic. I cannot check it. Three: nothing is analyzed before the press. But the page also speaks of selecting material, and the plan sends the whole transcript of that day. The list for the lawyer has the details.
 
 ## Part B. The choices: server, database, sign-in and transcription
 
@@ -85,7 +88,7 @@ This part is new.
 - Choice: one private storage space at Google. The recording waits there only until the transcript is made.
 - Reason: Google's server accepts at most 32 megabytes in one upload, and it has no disk of its own. So a recording cannot rest on the server. The storage space sits in the same Google account. There is no extra account and no extra agreement.
 - Making the delete real: Google keeps a deleted file for seven more days unless that is switched off. I switch it off. Our server deletes the file, asks for it once more, and must get the answer not found.
-- Google's HIPAA page advises the opposite for stored files: keep old versions. For this one storage space I keep none, so that deleted audio is really gone. The lawyer should know this.
+- Google's HIPAA page advises the opposite for stored files: keep old versions. For this one storage space I keep none, so that no older copy of deleted audio stays on purpose. The lawyer should know this.
 - A safety net: a rule at Google deletes any finished file older than one day. Google does not promise the hour, so it can run late.
 - One gap: an upload that breaks off half-way is not yet a file. The rule does not reach it. So our server cancels every unfinished upload itself, two hours after it began. If our server could not, Google closes the unfinished upload after one week.
 - One limit you should know. Google's own pages say Google finishes wiping deleted data from its machines and backups within about 180 days. After our delete, we cannot bring the file back. The lawyer settles how the public promise is worded.
@@ -124,7 +127,7 @@ You fixed this choice. This is what I checked.
 - Secret Manager: Google's safe for secret keys. Our server reads the keys from it.
 - Cloud Tasks: a queue for long work. It hands the work back to our server, and tries again if the work fails.
 - Artifact Registry: a store for each built version of the app.
-- Cloud Logging: the server's diary of errors. Google keeps it for 30 days. No patient text is ever written into it.
+- Cloud Logging: the diaries of the project. They hold the server's errors, each visit to the server, and each change made in the project. Google keeps the server's diary for 30 days. It keeps the record of changes for 400 days, and that cannot be shortened. No patient text is ever written into them.
 - All four are on Google's covered list. Together they cost about $0 to $1 a month at our size.
 - Each new version is built on GitHub's machines. I expect that to cost $0. I could not re-read GitHub's price page today.
 
@@ -182,14 +185,14 @@ Five rules first.
 ### Account 1. GitHub
 
 - You already have it. Cost: $0 a month. It holds code only, so it needs no HIPAA agreement.
-- You create a new private repository named egoagent-app, and you allow Claude to work in it. Then you tell me in this same conversation.
+- You create a new private repository named egoagent-app, and you allow Claude to work in it. Then you tell me in this same conversation. Keep it private, and give no one else the right to write to it. The part named Hand the building over to me says why.
 - Turn on two-step sign-in for GitHub. It asks for a code from your phone at each sign-in. Save the recovery codes GitHub gives you. Whoever gets into your GitHub account can change the app on Google. So this lock matters.
 
 ### Account 2. Google Cloud
 
 - What for: the server, the database and the storage space. Needed for stage 1.
-- Time: I estimate one to two hours, best split over three sittings.
-- Good places to stop: after step 17, after step 30 and after step 48. Do not stop between step 18 and step 27. I do not know whether the sign-up form keeps what you typed.
+- Time: I estimate one to two hours, best split over four or five sittings. The wait for your checker is not counted.
+- Good places to stop: after step 17, after step 30, after step 48 and after step 49. After step 49 you wait in any case, until your checker has said yes to the final line. Steps 50 to 54 then hold waits of about seven minutes in all. Do not stop between step 18 and step 27. I do not know whether the sign-up form keeps what you typed.
 - Cost to open: $0.
 - The steps are numbered from 1 to 54. If a step goes wrong, tell me its number.
 
@@ -278,31 +281,46 @@ This makes Google send you an email when the month's cost passes a mark. It only
 
 Wait for this until I say I am ready. I first test my own half on GitHub. That needs nothing from you.
 
-What kind of step this is. You paste one line of text that I wrote. For about two minutes it acts with your own full powers over the Google account. It is the most powerful single step in this plan. You cannot check it yourself. A second AI helper will have checked it. That helper is not a person. Before step 50 I show you the full line, with one plain sentence beside each command. You have it checked independently before you paste.
+What kind of step this is. You paste one line of text that I wrote. For some minutes it acts with your own full powers over the Google account. I estimate two to four minutes. Nobody has measured it. It is the most powerful single step in this plan. You cannot check it yourself. AI helpers have checked it, in three rounds and one last reading. One of them proposed the present form of command 1. They are not persons, and they could not try it against Google. I show you the full line twice, each time with one plain sentence beside each command. The first showing has three blanks. The second comes after step 49, with the blanks filled in. Where a limit or a purpose needs saying, a note follows the sentence. Before you paste, you have the second showing checked independently. Below I call whoever checks it your checker.
 
 49. Open the link named Welcome. After the heading Welcome come the project name, the project number and the project ID. The name must be the one from step 33. If it is My First Project, find the project picker at the top of the page and choose your project. Tell me the number and the ID. Neither is a secret.
-50. You have seen the full line, with a sentence beside each command, and you have had it checked. Now I send the line by itself. Open our chat on the same device as the Google page. Copy the line. Copy nothing else after it.
+
+The check comes between step 49 and step 50. After step 49 I show you the final line. Its three blanks are filled in, and a sentence stands beside each command. I say exactly what changed since the first showing. Give all of it to your checker, together with the first showing. That can take days, so end the sitting here. If your checker finds a fault, tell me. I change the line and show it again, and your checker checks it again. Go on to step 50 only when your checker has said yes to that final line.
+
+50. Copy the checked line. There are two ways. The surest way: your checker sends you the checked line as a plain text file. You copy the whole text of that file. That way, the line you paste at step 52 is the one your checker saw. Not confirmed: how to copy the whole text of a file on an iPad. The other way: I send the line once more, by itself, in a box of its own. You press the copy button of that box. That way, you rely on my word that it is, letter for letter, the checked line. Not confirmed: that the box has a copy button on the iPad. Either way, copy the whole line and nothing else. Do not copy it out of the text of an email, or of a message in another app. Such apps can break a long line into rows or change its quote marks. Do the copying on the device where the Google page is open.
 51. Open the link named Command window. The window opens in the lower part of the page. Wait one full minute. Not confirmed: on a first visit a small window may ask you to continue or to agree to terms. Read it to me before you press.
 52. Paste the line. On a Mac, or on an iPad with a keyboard attached, press Command and V. Then press Return. Not confirmed: how to paste there on an iPad without a keyboard. The focus must be inside the command window. Not confirmed: whether it lands there by itself. If nothing happens, tell me, and press nothing else.
-53. If a small window named Authorize Cloud Shell appears, press the button named Authorize. It lets the command window act with your sign-in for this one visit.
-54. Wait two minutes. You do not need to read anything in that window. Two keys from Google's own page: Control and M frees the Tab key, and Control and comma reads the current line. Then tell me: pasted. I check from my side and tell you whether it worked.
+53. If a small window named Authorize Cloud Shell appears, press the button named Authorize. It lets the command window act with your sign-in for this one visit. The line waits about one minute for this. If you needed longer, the line stops and has changed nothing. Its message then says Setup stopped at command 12. Tell me, and I say when to paste again.
+54. Wait five minutes. Do not paste a second time while you wait. The line ends with one short message at the start of the current row. It says Setup finished. Or it says Setup stopped at command, and then a number. After the message, the same row goes on with a few words from the window itself. They show that the window is ready again. That is normal. You do not need to read anything else in that window. Two keys from Google's own page: Control and M frees the Tab key, and Control and comma reads the current row. If you catch the message, tell me what it says. If you do not, tell me: pasted. If you catch something else, tell me that, and press nothing more. I check from my side and tell you whether it worked.
 
 What the line does:
 
-- It lets each new version that I save in egoagent-app go live on Google by itself. It works only from that one repository.
-- It carries all its commands inside itself, and fetches nothing from the internet. Pasting it twice does no harm.
+- It lets each new version that I save in the branch named main of egoagent-app go live on Google by itself. It works only from that one repository and that one branch. A rule at Google says so. The rule tests the repository and your GitHub account by their permanent numbers, not by their names. So a new repository under the same name would not get through.
+- It carries all its commands inside itself, and fetches nothing from the internet. Pasting it twice does no harm. The second paste writes the same rule and the same rights again. So it gives back any of these rights that you took away in between. It does not switch my access on again after you switched it off.
 - It creates no password and no key file. So nothing secret can land in our chat or in GitHub.
-- It lets my build path create, change and delete the server, the database, the storage space and the queue for long work. My build path can also read the test database and the test storage space. That is one more reason this copy holds made-up data only.
-- It lets my build path replace or delete your secret keys, but not read them.
-- One limit you should know. My build path publishes the server, and the server reads the keys. So I promise never to read them. That is a rule I keep. It is not a lock. Your real protection: you can cancel a key at AssemblyAI or at Anthropic at any time, and each key can spend only a small amount.
+- It switches on twelve Google services in this project. Google may switch on a few more that these need. By switching them on you accept Google's terms for each of them. Switching on costs nothing by itself. What a service later uses is billed to your account.
+- It creates two identities at Google. An identity is a name under which a program acts there. One is for my build path. The other is for the app itself.
+- It lets my build path create, change and delete servers, databases and storage spaces. The same holds for queues for long work, and for stores for built versions of the app. That covers everything of these kinds in this one project. Nothing in these rights limits size or number, so my build path can cause cost. The warning for spending only warns. My promise from Part B holds: I add no paid part without your yes. That is a rule I keep, not a lock.
+- It lets my build path decide who may reach those things. That includes opening the server to everyone on the internet, as a website needs. It also lets my build path run commands inside a running server.
+- My build path can also read the test database, the test storage space and all the diaries of the project. That is one more reason this copy holds made-up data only. The diaries hold each visit to the server and each change made in the project. Beside each change stand the email address of the account that made it, and the internet address it came from. So your own Google email address stands there too.
+- It lets my build path look at, but not change, machines and networks in this project. Google's page for creating a database asks for that. As far as I know a new project has none, and my plan creates none.
+- It lets my build path create, replace, switch off and delete your secret keys, and see their names, but not read them.
+- The app may read every secret key in this project. It may connect to any database in it, and put work into any queue in it. So keep only this app's keys in this project's safe.
+- One limit you should know. My build path publishes the server and can run commands inside it, and the server reads the keys. So I promise never to read them. That is a rule I keep. It is not a lock. Your real protection: you can cancel a key at AssemblyAI or at Anthropic at any time, and each key can spend only a small amount.
+- These rights hang on the branch named main of egoagent-app, not on me alone. Whoever can change that branch can use them. So keep the repository private, and let no one else write to it.
+- A build recipe is a file in the repository that tells GitHub's machines what to do. My recipes there start in two ways only: when a version is saved, or when a recipe is started by hand. Either way, the rule lets a recipe sign in at Google only when it runs for the branch named main. None of my recipes starts from a proposed change, from a comment, or from the end of another recipe. For a reviewer, from memory: GitHub's names for two such starts are pull_request_target and workflow_run. I could not re-read GitHub's pages.
+- A narrower right over the server exists. With it, my build path could not decide who may open the server. You would then open the website to the public yourself, once, after the server exists. That takes a second paste, or a few presses on Google's page. The narrower right would still let my build path run commands inside a running server. I chose the wider right, so that one paste is enough. That is my judgement. If you prefer the narrower right, say so before step 49. After that, the line would have to be checked again.
+- Nothing that the line sets up ends by itself. The rights have no end date. My build path can use its rights until you switch my access off. The app keeps its rights after that.
+- It ends with one short message: Setup finished. Or: Setup stopped at command, and then a number.
+- This list is the short form. The sentences beside the line name every command.
 
-How you switch my access off. Open the link named Workload Identity Pools. Press the pool's name, which I tell you. Press the switch named Status, then the button named Disable. Do not press Delete. After that, Google accepts no new sign-in from my build path. One already handed out can last up to an hour. The app itself keeps running. To switch it on again, press Status, then Enable. In stage 1 you try this once, off and on.
+How you switch my access off. Open the link named Workload Identity Pools. Press the name GitHub build path. Google calls it a pool. In the sentences beside the line I call it the door. Press the switch named Status, then the button named Disable. Do not press Delete. After that, Google accepts no new sign-in from my build path. One already handed out can last up to an hour. This switches my access off. It does not undo what is already there. The app itself keeps running. Database passwords that my build path made, and any access it gave to others, stay as they are. To stop the app too, I give you a second link, with its steps, when a server exists. To switch my access on again, press Status, then Enable. Pasting the line again does not switch it on. In stage 1 you try this once, off and on.
 
-What is untested. The line itself: it has never been run against Google. Whether one of Google's default safety rules accepts the link to GitHub: if it refuses, I change the line and you paste again. And the paste into that window with VoiceOver, on a Mac or on an iPad. Google's pages say the window is not read aloud by itself. That is why the steps never ask you to read it.
+What is untested. The line itself: it has never been run against Google. In my workspace it ran with Google's real command tool, against a stand-in for Google's servers, and with test values in the three blanks. That shows what the tool does. It shows nothing about what Google answers. Whether Google accepts the rule for the link to GitHub exactly as written. Whether one of Google's default safety rules refuses the last two commands. In both cases I change the line, your checker checks the changed line, and you paste again. Whether Google has made the identity of its own queue service by the time the last command runs. If not, the line stops at command 25 with everything else done. I then tell you when to paste the same line again. How long the line takes. And the paste into that window with VoiceOver, on a Mac or on an iPad. Google's pages say the window is not read aloud by itself. That is why the steps never need you to read it. If you catch the last message, it helps me. There may be more that I do not know of.
 
 One of my own researchers advised against sending you to this window at all. I chose it because it is one paste instead of many forms. That is my judgement.
 
-If the paste fails, there are two fallbacks. A second person beside you pastes the line on your device. Or we use Google's forms: about 15 presses for the server, about 20 for the database and about 10 for the storage space. Two traps wait on those forms. The database form opens on Google's dearest kind, at about $185 a month or more. The storage form has the seven-day keeping of deleted files switched on. So with the forms, you read the summary to me before you press Create. If you prefer the forms from the start, say so.
+If the paste fails, there are two fallbacks. A second person beside you pastes the line on your device. Or we use Google's forms: about 15 presses for the server, about 20 for the database and about 10 for the storage space. The forms do by hand what my build path would do. They do not hand the building over. How each new version then goes live, I would have to design first. Two traps wait on those forms. The database form opens on Google's dearest kind, at about $185 a month or more. The storage form has the seven-day keeping of deleted files switched on. So with the forms, you read the summary to me before you press Create. If you prefer the forms from the start, say so.
 
 #### Later visits to Google Cloud
 
@@ -349,7 +367,7 @@ Not needed now: a web address that you own, and an email-sending service. Do not
 - Where a test says you should see and hear something, either way counts for that test. Tell me which way you tested. I keep a list. Before stage 7 ends, each stage should have been tried once by sight and once with VoiceOver. My report names each stage that was tried only one way.
 - The look is my job. I put pictures of each new page beside the mockup and list every difference. The pictures come from a desktop browser, not from Safari.
 - Before each stage goes live, a second AI helper that has not seen my reasoning checks it. It is not a person.
-- I never see your secret keys. For stages 5 and 6, the Claude app can show you a secure form for a key. That form is the one exception to the rule about our chat. Type the key only into the form, never into a message. I can then use the key, but I cannot read it. The key stays saved in your Claude settings until you delete it. If the form fails, I test with stand-in answers and tell you.
+- I never look at your secret keys. Part C says why that is a rule I keep and not a lock. One key is different: my build path itself makes the database's password. For stages 5 and 6, the Claude app can show you a secure form for a key. That form is the one exception to the rule about our chat. Type the key only into the form, never into a message. I can then use the key, but I cannot read it. The key stays saved in your Claude settings until you delete it. If the form fails, I test with stand-in answers and tell you.
 - The Claude app will ask you to approve a few things, such as opening the app's web address. Before each one I say what it is for.
 - I put no new version live while you are testing.
 - If Google cannot start the test copy, I read the reason myself, through GitHub. You do not have to copy anything for me. This is untested until stage 1. For the live copy I may not. Part F, point F10, says why.
@@ -358,7 +376,7 @@ Not needed now: a web address that you own, and an email-sending service. Do not
 ### Rules the build follows
 
 - Every signed-in page says at the top: test version, made-up names and made-up recordings only.
-- Secret keys stay in Google's safe for keys and on the server.
+- Secret keys stay in Google's safe for keys and on the server. One exception: my build path makes the database's password and puts it straight into the safe.
 - Transcript text is saved only in our database. It passes through AssemblyAI, which makes it, and through Anthropic when you press Analyze. It is never written into the server's diary or kept by the browser.
 - No patient name and no transcript text appears in a web address, in a file name, in an error message or in any name at Google.
 - If the server restarts during long work, the work picks up again or says stopped. Nothing may say working for longer than 15 minutes.
@@ -370,10 +388,10 @@ Not needed now: a web address that you own, and an email-sending service. Do not
 ### Stage 1. The new address opens
 
 - Needs: the new repository, and the Google Cloud account with steps 1 to 54 done.
-- I build: the bare app on Google, with the small test database, the storage space and the safe for keys. The sign-in page is in the existing look. It does not sign in yet. The address is one that Google gives. It ends in run.app.
+- I build: the bare app on Google, with the small test database, the storage space and the safe for keys. Before my build path creates the database, I tell you, because the monthly cost starts then. My build path makes the database's password and puts it into the safe for keys. It opens the app's address to everyone on the internet, as a website needs. The sign-in page is in the existing look. It does not sign in yet. The address is one that Google gives. It ends in run.app.
 - I measure how long the first page takes after a pause. I tell you the number.
 - You test on your iPad: open the link I send. The first opening can take some seconds. Then you should see and hear the heading Sign in. Then two fields: Professional email, and Password. Then one button, named: Sign in and open your casebook. The button does nothing yet. Then open the link once on your iPhone.
-- You also try the switch for my access once: Status, then Disable. Then Status, then Enable. Tell me what you found.
+- You also try the switch for my access once. Open the link named Workload Identity Pools. Press the name GitHub build path. Press Status, then Disable. Tell me, and wait for my answer. I test from my side that Google now refuses a new sign-in from my build path. Then press Status, then Enable. Tell me again, and I test that the sign-in works again.
 
 ### Stage 2. Real sign-in
 
@@ -482,8 +500,8 @@ This part is for planning. It is not legal advice. The times in it are my estima
 None of this is in the seven stages. I show you each item, with its price, before I build it.
 
 - F8. Five additions to the app. A second sign-in step, such as a code from a phone app. Sign-out by itself after a pause. A record of who opened or deleted what. A consent check: no upload until you confirm a signed consent for that patient. And the short written rules that the law asks for.
-- F9. A clean live copy, in its own Google project, apart from the test copy. It gets the real-size database, an alarm by email if the app stops, and Google's record of who read data, kept as long as the lawyer says. You first choose two things: the standby database, yes or no, and your own web address, yes or no. Your part is a second project, one pasted line, a new Anthropic organization and fresh secret keys. Organization is Anthropic's word for one separate work space. I have not confirmed its steps.
-- F10. My access to the live copy is cut down, because you have no HIPAA agreement that covers me or GitHub. My build path gets no right there to read the database, the recordings or the secret keys. A new version goes live only when you act yourself. How that is done is not designed yet. One limit stays. I write the code that runs there, and that code can reach patient data. So I promise that no version of mine sends patient data anywhere else. That is a rule I keep. It is not a lock. The second AI helper checks every version, and the reviewer checks the set-up.
+- F9. A clean live copy, in its own Google project, apart from the test copy. It gets the real-size database, an alarm by email if the app stops, and Google's record of who read data, kept as long as the lawyer says. You first choose two things: the standby database, yes or no, and your own web address, yes or no. Your part is a second project, one pasted line, a new Anthropic organization and fresh secret keys. Organization is Anthropic's word for one separate work space. I have not confirmed its steps. The pasted line is a new and narrower one. I show it to you with a sentence beside each command, and your checker checks it, as before step 50.
+- F10. My access to the live copy is cut down, because you have no HIPAA agreement that covers me or GitHub. My build path gets no right there to read the database, the recordings or the secret keys. On the test copy my build path has three more ways to reach such data. They are commands inside a running server, deciding who may reach things, and the diaries. The design for the live copy must close these three too. A new version goes live only when you act yourself. How that is done is not designed yet. One limit stays. I write the code that runs there, and that code can reach patient data. So I promise that no version of mine sends patient data anywhere else. That is a rule I keep. It is not a lock. The second AI helper checks every version, and the reviewer checks the set-up.
 
 ### Last, just before the first real recording
 
@@ -545,12 +563,12 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 
 - Read on each company's own pages on 15 November 2026. Google Cloud: the HIPAA help page, the agreement text and the covered list. Also the price pages for the server, the database and the storage space. Also the free trial terms, and the pages on budgets and projects.
 - AssemblyAI: prices, languages, links to recordings, deletion, and the text of its HIPAA agreement. Anthropic: prices, its commercial terms, and its help pages about the HIPAA agreement.
-- Checked against the repository files: every statement in Part A.
+- Checked against the repository files: every statement in Part A about those files.
 - Calculated by me: every monthly Google sum. They use Google's list prices for Iowa, at 730 hours a month.
 - Not confirmed about Google's HIPAA agreement: the nine points listed in Part B.
-- Not confirmed: the exact screens of the Google Cloud sign-up, which I could not open. The screens of AssemblyAI and Anthropic. Their names come from the companies' help pages. The text of Anthropic's HIPAA agreement, which I could not open. The deposit at AssemblyAI. Whether $10 is an allowed credit purchase at Anthropic. GitHub's pages, which were blocked today. The Voice Memos steps, because Apple's help page was blocked.
+- Not confirmed: the exact screens of the Google Cloud sign-up, which I could not open. The screens of AssemblyAI and Anthropic. Their names come from the companies' help pages. The text of Anthropic's HIPAA agreement, which I could not open. The deposit at AssemblyAI. Whether $10 is an allowed credit purchase at Anthropic. GitHub's pages, which were blocked today. So what this plan says about GitHub's build recipes is from memory. The Voice Memos steps, because Apple's help page was blocked.
 - Not read at all: the United States health department's pages. Every legal point in Part F needs the lawyer.
-- Not run: nothing was tried against Google with a real account. The setup line, the upload to Google's storage space and the link for AssemblyAI are designs taken from the companies' pages. Stages 1, 4 and 5 prove them.
+- Not run: nothing was tried against Google with a real account. The setup line ran in my workspace with Google's real command tool, against a stand-in for Google's servers. That shows what the tool does, not what Google answers. The upload to Google's storage space and the link for AssemblyAI are designs taken from the companies' pages. Step 54 and stages 1, 4 and 5 prove them.
 - Not designed yet: how a new version of the live copy goes live only by your own act. Point F10 says so.
 - Not checked: how well the pages of Google Cloud, AssemblyAI and Anthropic work with VoiceOver. For Google I have only Google's own advice: VoiceOver with Chrome on a Mac.
 - Not tested on a real device: nothing has run on an iPhone or iPad yet. A browser reference that I read today warns about the iPhone's file chooser. It does not handle a chooser that asks for audio only. Stage 4 is built to avoid this and to test it.
@@ -560,7 +578,8 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 
 - You approved this plan. The build may begin.
 - Request 1: I begin with point F7, the list of public promises for the lawyer. Done on 15 November 2026. The list holds 104 promises. It is a private document and a Word file. It is not in this repository. AI helpers checked it. No person has checked it yet.
-- Request 2: before step 50, I show you the full line you will paste, with one plain sentence beside each command. You have it checked independently before you paste. Steps 49 to 54 now say so.
+- Request 2: before step 50, I show you the full line you will paste, with one plain sentence beside each command. You have it checked independently before you paste. Steps 49 to 54 now say so. First showing on 15 November 2026, with three blanks. AI helpers checked it in three rounds and one last reading, and I changed it after each. No person has checked it yet. The final line comes after step 49.
 - Request 3: I send the links and the steps one sitting at a time. The first sitting is steps 1 to 17.
+- After the approval: The line for step 50 does more than this plan said. And the list for the lawyer showed that Part A said too much about three promises. So I proposed changes, showed them to you, and changed only what you said yes to. The changed places are these. The top of the plan. One line of What changed since the earlier plan. The word list. The three promises in Part A. The holding place in Part B. The diary in Part B. Account 1 in Part C. Account 2 in Part C, with the part named Hand the building over to me. One point of How we work in Part D. One rule of the build in Part D. Two points of stage 1 in Part D. Point F9. Point F10. The list of what was checked. And Request 2, above.
 - The first thing I need from you: the new private repository named egoagent-app, with Claude allowed to work in it.
 - This plan is saved as PLAN.md on the branch named thin-path-plan. The main branch and every other file are untouched.
