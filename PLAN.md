@@ -16,7 +16,7 @@ Written 15 November 2026. Changed the same day: the app now starts on Google Clo
 - Every test can be done by sight and with VoiceOver. Each test names the words you should see and hear.
 - Part F is new. It lists what must be done before the first real patient recording, and what can start now.
 - One to three months: three is realistic only if the build is finished by about week nine. One is unlikely. That is my judgement. I cannot promise a date. Each stage still waits for your test.
-- I need three new answers from you. They are near the end.
+- Your three new answers are recorded near the end: your own name as Individual, the iPad only, and a United States billing address.
 
 ## What changed since the earlier plan
 
@@ -195,7 +195,7 @@ Five rules first.
 
 #### Before you start
 
-1. Use the device you name in new question 2. Do not start in the Google Cloud app for the iPhone or iPad. It cannot do the sign-up.
+1. Use the device you named in new question 2: the iPad, with Safari. Google names no browser for the iPad, so every screen is untested there. Do not start in the Google Cloud app for the iPhone or iPad. It cannot do the sign-up.
 2. Check the browser. If you use Gmail, YouTube or another Google service in it, you are already signed in to a Google account. Sign out there first, or use a browser where you never sign in to Google. Otherwise the card and the sign-up can land on the wrong account. Treat that as final. Do not use a private window. In Safari, Google's command window does not work in one.
 3. Put these within reach: the inbox of your EgoAgent email address, your iPhone, your password app, and one card. A credit card is the safer choice. Prepaid cards are refused. So are debit cards that ask for a code from your bank at each payment.
 4. Know your answer to new question 1: Individual or Business. It can never be changed later.
@@ -283,7 +283,7 @@ What kind of step this is. You paste one line of text that I wrote. For about tw
 49. Open the link named Welcome. After the heading Welcome come the project name, the project number and the project ID. The name must be the one from step 33. If it is My First Project, find the project picker at the top of the page and choose your project. Tell me the number and the ID. Neither is a secret.
 50. I send you one line of text. Open our chat on the same device as the Google page. Copy the line. Copy nothing else after it.
 51. Open the link named Command window. The window opens in the lower part of the page. Wait one full minute. Not confirmed: on a first visit a small window may ask you to continue or to agree to terms. Read it to me before you press.
-52. Paste the line. On a Mac, press Command and V. Then press Return. The focus must be inside the command window. Not confirmed: whether it lands there by itself. If nothing happens, tell me, and press nothing else.
+52. Paste the line. On a Mac, or on an iPad with a keyboard attached, press Command and V. Then press Return. Not confirmed: how to paste there on an iPad without a keyboard. The focus must be inside the command window. Not confirmed: whether it lands there by itself. If nothing happens, tell me, and press nothing else.
 53. If a small window named Authorize Cloud Shell appears, press the button named Authorize. It lets the command window act with your sign-in for this one visit.
 54. Wait two minutes. You do not need to read anything in that window. Two keys from Google's own page: Control and M frees the Tab key, and Control and comma reads the current line. Then tell me: pasted. I check from my side and tell you whether it worked.
 
@@ -512,7 +512,13 @@ From that day on, never paste real transcript text, real names or real server re
 
 Questions 2 to 5 were answered on 15 November 2026, with the recommended answers. Question 1 is your own choice. Parts B, C and D are rewritten for it.
 
-## Three new questions for you
+Your answers to the three new questions, given 15 November 2026. The questions follow below, kept for the record.
+
+- New question 1: your own name, as Individual, for the test copy only. So in step 22 you choose Individual. Who must own the live copy is now a question for the lawyer, in point F2. If the lawyer says a company, you open a second Google Cloud account in its name before point F9.
+- New question 2: the iPad only. So the Google set-up runs in Safari on the iPad, and every screen there is untested. Plan for a second person beside you at the card screen in step 24 and at the paste in steps 50 to 54. The paste is the riskiest step on an iPad. If you can borrow a Mac for that one sitting, it is the safer way. That is my judgement.
+- New question 3: yes, the United States. The steps and the prices apply as written.
+
+## Three new questions, now answered
 
 ### New question 1. In whose name do you open the Google Cloud account?
 
@@ -554,6 +560,6 @@ Google fixes the country and the currency at sign-up, for good. Every price in t
 
 - I stop here. I build nothing until you approve.
 - Your change to question 1 is recorded above.
-- I need your answers to the three new questions.
+- Your answers to the three new questions are recorded above.
 - Say approved, or tell me what to change.
 - This plan is saved as PLAN.md on the branch named thin-path-plan. The main branch and every other file are untouched.
