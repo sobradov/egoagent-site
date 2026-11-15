@@ -236,6 +236,16 @@ This decides where the app runs.
 - Answer 1, recommended: one email address that you will keep for EgoAgent. If EgoAgent is a registered company, use the company's name. Each HIPAA agreement is later signed for the organization that owns the account. Changing the owner later is extra work.
 - Answer 2: your personal name and email for now. That is fine for made-up data. We may have to open new accounts before real patients.
 
+## Your answers, given 15 November 2026
+
+- Question 1: not soon, or unsure. The app starts on Render.
+- Question 2: English, plus one short Serbian memo in stage 5.
+- Question 3: private. A new repository named egoagent-app.
+- Question 4: only you sign in.
+- Question 5: one EgoAgent email on the three accounts.
+
+All five are the recommended answers. So Parts B, C and D stand as written.
+
 ## What was checked, and what was not
 
 - Read on each company's own pages on 15 November 2026. Render: prices and HIPAA terms. AssemblyAI: prices, languages, deletion and agreement terms. Anthropic: prices and agreement terms. Google Cloud: prices and agreement terms.
@@ -248,6 +258,6 @@ This decides where the app runs.
 ## What I need from you now
 
 - I stop here. I build nothing until you approve.
-- Please answer the five questions in Part E. You can say: recommended for all five.
-- Then say approved, or tell me what to change.
+- Your five answers are recorded above.
+- Say approved, or tell me what to change.
 - This plan is saved as PLAN.md on a new branch named thin-path-plan. The main branch and every existing file are untouched.
