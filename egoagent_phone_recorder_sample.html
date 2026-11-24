@@ -43,6 +43,7 @@ button.pick .sub{display:block;font-size:16px;color:var(--dim)}
 .box.ok{border-color:var(--green)}
 .who{font-size:26px;font-weight:700}
 a{color:var(--gold)}
+a.home{display:inline-flex;align-items:center;min-height:48px}
 .toggle{display:flex;align-items:center;gap:12px;min-height:48px;font-size:17px;color:var(--dim);margin:14px 0 0}
 .toggle input{width:28px;height:28px;accent-color:var(--gold)}
 #dim{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;color:#8a8580;text-align:center;padding:20px}
@@ -70,7 +71,8 @@ a{color:var(--gold)}
 <p class="step">Step 1 of 4</p>
 <h1 tabindex="-1">Who is this session with?</h1>
 <div id="list1" role="radiogroup" aria-label="Patients"></div>
-<button class="main" type="button" id="toready" disabled>Continue</button>
+<button class="main" type="button" id="toready" disabled aria-describedby="why1">Continue</button>
+<p class="small" id="why1">Choose a patient first.</p>
 </section>
 
 <!-- 2 · ready -->
@@ -107,7 +109,8 @@ a{color:var(--gold)}
 <button type="button" id="mmB"></button>
 <button type="button" id="mmDel">Delete this recording</button>
 </div>
-<button class="main" type="button" id="tosend" disabled>Continue</button>
+<button class="main" type="button" id="tosend" disabled aria-describedby="why4">Continue</button>
+<p class="small" id="why4">Choose the patient again first.</p>
 </section>
 
 <!-- 5 · send -->
@@ -119,7 +122,7 @@ a{color:var(--gold)}
 <p class="small">The recording stays on this phone until the workspace confirms that it has all of it. Then it is deleted here.</p>
 <label class="toggle"><input type="checkbox" id="offline"> Try it with no connection</label>
 <div id="waiting" class="box warn" hidden>
-<p><strong>No connection.</strong> One recording is waiting on this phone. It will be sent when you are online.</p>
+<p><strong>No connection.</strong> One recording is waiting on this phone. In the real app it is sent by itself when you are online. In this sample, tap the button.</p>
 <button class="main" type="button" id="online">Connection is back · Send now</button>
 </div>
 <p id="sending" class="small" hidden>Sending…</p>
@@ -135,15 +138,15 @@ a{color:var(--gold)}
 </div>
 <p>The transcript is made in the workspace. It never comes to this phone.</p>
 <button class="main" type="button" id="again">Record another session</button>
-<p class="small"><a href="index.html">Back to the EgoAgent site</a></p>
+<p class="small"><a class="home" href="index.html">Back to the EgoAgent site</a></p>
 </section>
 
-<div id="dim" role="dialog" aria-label="Recording, screen dimmed">
+</main>
+<div id="dim" role="dialog" aria-modal="true" aria-label="Recording, screen dimmed">
 <p>Recording</p>
 <p class="t" id="dimclock">0:00</p>
 <button type="button" id="undim">Show the recorder</button>
 </div>
-</main>
 
 <script>
 (function(){
@@ -166,13 +169,14 @@ function go(n){
 }
 function say(t){ $('live').textContent=''; setTimeout(function(){ $('live').textContent=t; },50); }
 function list(box, chosen, onpick){
-  box.innerHTML='';
+  if(box.dataset.built){ box.querySelectorAll('button.pick').forEach(function(b){ b.setAttribute('aria-checked',b.dataset.id===chosen?'true':'false'); }); return; }
+  box.dataset.built='1'; box.innerHTML='';
   var groups=[['Today',P.filter(function(p){return p.today;})],['Other patients',P.filter(function(p){return !p.today;})]];
   groups.forEach(function(g){
     if(!g[1].length) return;
     var h=document.createElement('p'); h.className='group'; h.textContent=g[0]; box.appendChild(h);
     g[1].forEach(function(p){
-      var b=document.createElement('button'); b.type='button'; b.className='pick'; b.setAttribute('role','radio');
+      var b=document.createElement('button'); b.type='button'; b.className='pick'; b.setAttribute('role','radio'); b.dataset.id=p.id;
       var ok=p.consent==='signed';
       b.setAttribute('aria-checked',chosen===p.id?'true':'false');
       b.innerHTML='<span>'+p.name+'</span>'+(p.when?'<span class="sub">'+p.when+'</span>':'')+(ok?'':'<span class="why">Consent form not signed yet. Cannot be recorded.</span>');
@@ -182,13 +186,13 @@ function list(box, chosen, onpick){
     });
   });
 }
-function draw1(){ list($('list1'),S.first,function(id){ S.first=id; draw1(); $('toready').disabled=false; say('Chosen: '+byId(id).name); }); }
+function draw1(){ list($('list1'),S.first,function(id){ S.first=id; draw1(); $('toready').disabled=false; $('why1').hidden=true; say('Chosen: '+byId(id).name); }); }
 function draw4(){ list($('list4'),S.second,function(id){ S.second=id; draw4(); check(); }); }
 function check(){
   var a=S.first, b=S.second;
   if(!b) return;
-  if(a===b){ $('mismatch').hidden=true; $('tosend').disabled=false; say(byId(b).name+' It matches.'); return; }
-  $('tosend').disabled=true; $('mismatch').hidden=false;
+  if(a===b){ var wasOpen=!$('mismatch').hidden; $('mismatch').hidden=true; $('tosend').disabled=false; $('why4').hidden=true; say(byId(b).name+' It matches.'); if(wasOpen) $('tosend').focus(); return; }
+  $('tosend').disabled=true; $('why4').hidden=false; $('mismatch').hidden=false;
   $('mmtext').textContent='This does not match. Before recording you chose '+byId(a).name+' Now you chose '+byId(b).name+' Nothing has been sent. Which is right?';
   $('mmA').textContent='It was '+byId(a).name; $('mmB').textContent='It was '+byId(b).name;
   $('mmA').onclick=function(){ S.first=a; S.second=a; draw4(); check(); };
@@ -196,31 +200,34 @@ function check(){
   say('This does not match. Nothing has been sent.');
   try{ $('mmtext').setAttribute('tabindex','-1'); $('mmtext').focus(); }catch(e){}
 }
-$('faceid').onclick=function(){ S.first=null; draw1(); $('toready').disabled=true; go(1); };
-$('toready').onclick=function(){ if(!S.first) return; var p=byId(S.first); $('who2').textContent=p.name; $('cons2').textContent='Consent form signed. '+TODAY+'.'; go(2); };
+function reset1(){ S.first=null; draw1(); $('toready').disabled=true; $('why1').hidden=false; }
+$('faceid').onclick=function(){ reset1(); go(1); };
+$('toready').onclick=function(){ if(!S.first) return; var p=byId(S.first); $('who2').textContent=p.name; $('cons2').textContent='Consent form signed. Today is '+TODAY+' 2026.'; go(2); };
 $('back2').onclick=function(){ go(1); };
 $('recbtn').onclick=function(){
+  if(S.tm) return;
   $('who3').textContent=byId(S.first).name; S.start=Date.now(); $('clock').textContent='0:00'; $('dimclock').textContent='0:00';
   S.tm=setInterval(function(){ var t=mmss(Date.now()-S.start); $('clock').textContent=t; $('dimclock').textContent=t; S.lv=Math.max(Math.random()*85, S.lv*0.8); $('lvl').style.width=Math.round(S.lv)+'%'; },250);
   go(3); say('Recording.');
 };
-$('stopbtn').onclick=function(){ clearInterval(S.tm); S.len=Date.now()-S.start; $('lvl').style.width='0'; S.second=null; $('mismatch').hidden=true; $('tosend').disabled=true; draw4(); go(4); say('Stopped. '+words(S.len)+'. Now choose the patient again.'); };
-$('dimbtn').onclick=function(){ $('dim').classList.add('on'); $('undim').focus(); };
-$('undim').onclick=function(){ $('dim').classList.remove('on'); $('stopbtn').focus(); };
-$('mmDel').onclick=function(){ S.first=null; S.second=null; draw1(); $('toready').disabled=true; go(1); say('The recording was deleted from this phone. Nothing was sent.'); };
-$('tosend').onclick=function(){ var p=byId(S.first); $('who5').textContent=p.name; $('len5').textContent=TODAY+' · '+words(S.len)+' of sound.'; $('waiting').hidden=true; $('sending').hidden=true; $('sendbtn').hidden=false; go(5); };
+$('stopbtn').onclick=function(){ if(!S.tm) return; clearInterval(S.tm); S.tm=0; undim(); S.len=Date.now()-S.start; $('lvl').style.width='0'; S.second=null; $('mismatch').hidden=true; $('tosend').disabled=true; $('why4').hidden=false; draw4(); go(4); say('Stopped. '+words(S.len)+'. Now choose the patient again.'); };
+function undim(){ $('dim').classList.remove('on'); try{ document.querySelector('main').inert=false; }catch(e){} }
+$('dimbtn').onclick=function(){ $('dim').classList.add('on'); try{ document.querySelector('main').inert=true; }catch(e){} $('undim').focus(); };
+$('undim').onclick=function(){ undim(); $('stopbtn').focus(); };
+$('mmDel').onclick=function(){ S.second=null; reset1(); go(1); say('The recording was deleted from this phone. Nothing was sent.'); };
+$('tosend').onclick=function(){ var p=byId(S.first); $('who5').textContent=p.name; $('len5').textContent=TODAY+' 2026 · '+words(S.len)+' of sound.'; $('waiting').hidden=true; $('sending').hidden=true; $('sendbtn').hidden=false; $('offline').disabled=false; $('offline').checked=false; go(5); };
 function send(){
-  $('sendbtn').hidden=true; $('waiting').hidden=true; $('sending').hidden=false; say('Sending.');
+  $('sendbtn').hidden=true; $('waiting').hidden=true; $('offline').disabled=true; $('sending').hidden=false; $('sending').setAttribute('tabindex','-1'); $('sending').focus(); say('Sending.');
   setTimeout(function(){
     var p=byId(S.first);
-    $('who6').textContent=p.name; $('len6').textContent=TODAY+' · '+words(S.len)+' of sound.';
+    $('who6').textContent=p.name; $('len6').textContent=TODAY+' 2026 · '+words(S.len)+' of sound.';
     $('del6').textContent='The recording was deleted from this phone just now.';
     go(6); say('Received in the workspace. The recording was deleted from this phone.');
   },1600);
 }
-$('sendbtn').onclick=function(){ if($('offline').checked){ $('sendbtn').hidden=true; $('waiting').hidden=false; say('No connection. One recording is waiting on this phone.'); return; } send(); };
+$('sendbtn').onclick=function(){ if($('offline').checked){ $('sendbtn').hidden=true; $('offline').disabled=true; $('waiting').hidden=false; $('online').focus(); say('No connection. One recording is waiting on this phone.'); return; } send(); };
 $('online').onclick=function(){ $('offline').checked=false; send(); };
-$('again').onclick=function(){ S.first=null; S.second=null; draw1(); $('toready').disabled=true; go(1); };
+$('again').onclick=function(){ S.second=null; reset1(); go(1); };
 go(0);
 })();
 </script>
