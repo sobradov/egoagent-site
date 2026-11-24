@@ -8,6 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f1a14">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Cpath d=%27M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15%27 fill=%27none%27 stroke=%27%23C4553F%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -411,8 +412,12 @@
   .wsfoot a { margin: 0; white-space: nowrap; }
   .mailprev:focus { outline: none; }
   /* a long word with no spaces (a name, a note, a comment) wraps instead of pushing its box wider */
-  .pt, .day, #day, .cmt, .qa, .seg, .paper, .note, .row > div, .uplrow, .toast, .invite, .mailprev, #egolist li, .egoinfo, .recsheet li, .recstat, #calname, .tag, .scopeseg, .check { overflow-wrap: anywhere; }
+  .pt, .day, #day, .cmt, .qa, .seg, .paper, .note, .row > div, .uplrow, .toast, .invite, .mailprev, #egolist li, .egoinfo, .recsheet li, .recstat, #calname, .tag, .scopeseg, .check { overflow-wrap: anywhere; word-break: break-word; }
   .pt { min-width: 0; }
+  /* second independent check: larger tap targets, and the recorder's "cannot be recorded" line */
+  .banner .reset { padding: 8px 4px; }
+  .wsfoot a { padding: 8px 2px; }
+  .recno { border: 1.5px solid #c98a3d; border-radius: 10px; padding: 10px 12px; text-align: left; color: var(--text); }
 </style>
 </head>
 <body>
@@ -1116,6 +1121,13 @@ function plan(){ var p=sget('ea-plan'); if(p) return p; return (DEMO||S.kind!=='
   var c=sget('ea-consent')||{}, sg=Q.get('signed'), mode=DEMO?'d':'w';
   Object.keys(S.pts).forEach(function(id){ var p=S.pts[id], r=c[p.code];
     if(p.consent.st!=='signed'&&((r&&r.st==='signed'&&r.m===mode)||sg===p.code)) p.consent={st:'signed',date:(r&&r.date)||'14 Aug 2026'}; });
+  /* each patient's consent address shows that patient, the therapist, and whether it is signed */
+  var MONTHS={Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
+  function longDate(d){ var m=/^(\d+) (\w+) (\d+)$/.exec(d||''); return m?MONTHS[m[2]]+' '+m[1]+', '+m[3]:'August 14, 2026'; }
+  Object.keys(S.pts).forEach(function(id){ var p=S.pts[id]; if(c[p.code]||p.consent.st==='none') return;
+    c[p.code]=p.consent.st==='signed'?{name:p.name,st:'signed',signed:true,typed:p.name,dr:drName(),date:p.consent.date,longdate:longDate(p.consent.date),m:mode}
+                                      :{name:p.name,st:'sent',dr:drName(),date:p.consent.date,longdate:'August 14, 2026',m:mode}; });
+  sset('ea-consent',c);
   sdel('ea-from'); save();
 })();
 function P(id){return S.pts[id||S.cur];}
@@ -1154,10 +1166,13 @@ if(!DEMO){
   $('wssite').hidden=false;
   each([$('signout'),b2],function(a){ a.addEventListener('click',function(){ var m=sget('ea-auth'); if(m){ m['in']=false; sset('ea-auth',m); } }); });
 }
-(function(){ var armed=false, b=$('reset');
+(function(){ var armed=false, b=$('reset'), own=!DEMO&&S.kind==='new', idle=own?'Start over with an empty workspace':'Start the sample again';
+  b.textContent=idle;
   b.onclick=function(){
-    if(!armed){ armed=true; b.textContent='Tap again to start the sample over'; setTimeout(function(){ armed=false; b.textContent='Start the sample again'; },5000); return; }
-    sdel(SKEY); sdel('ea-consent'); if(!DEMO){ sdel('ea-plan'); sdel('ea-pend'); } location.href=HERE;
+    if(!armed){ armed=true; b.textContent=own?'Tap again to empty the workspace':'Tap again to start the sample over'; setTimeout(function(){ armed=false; b.textContent=idle; },5000); return; }
+    sdel(SKEY); sdel('ea-consent'); if(!DEMO){ sdel('ea-plan'); sdel('ea-pend'); }
+    sset('ea-toast',own?'Started over. Your workspace is empty again, and your plan has not started.':'Started again. The sample patients are as they were at the beginning.');
+    location.href=HERE;
   };
 })();
 
@@ -1174,7 +1189,9 @@ secs.forEach(function(sec){
   sec.appendChild(head); sec.appendChild(body);
   head.onclick=function(){ setOpen(sec,!sec.classList.contains('open')); };
 });
-function setOpen(sec,o){ sec.classList.toggle('open',o); sec.querySelector('.shead').setAttribute('aria-expanded',o?'true':'false'); syncAll(); }
+function setOpen(sec,o){ sec.classList.toggle('open',o); sec.querySelector('.shead').setAttribute('aria-expanded',o?'true':'false'); syncAll();
+  if(ready){ S.open=secs.map(function(x,i){ return x.classList.contains('open')?i+1:0; }).filter(Boolean); save(); } }
+var ready=false;
 function syncAll(){ var b=$('toggleall'); var allOpen=secs.every(function(x){return x.classList.contains('open');}); b.textContent=allOpen?'Collapse all':'Expand all'; b.setAttribute('aria-label',allOpen?'Collapse all stages':'Expand all stages'); }
 $('toggleall').onclick=function(){ var o=this.textContent==='Expand all'; secs.forEach(function(sec){ setOpen(sec,o); }); };
 function openStage(i,scroll){ var sec=$('st'+i); setOpen(sec,true); if(scroll){ sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash'); setTimeout(function(){ sec.classList.remove('flash'); },1400); try{ sec.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ sec.scrollIntoView(); } var h=sec.querySelector('.shead'); try{ h.focus({preventScroll:true}); }catch(e){} } }
@@ -1201,8 +1218,9 @@ function nostage(text,btns){ return '<p>'+text+'</p>'+(btns||[]).map(function(b)
   setSel(sels[0],me.country||'United States'); setSel(sels[1],me.state||'New York'); setSel(sels[2],me.prof||'');
   each(cks,function(c){ c.checked=true; c.disabled=true; });
   cont.hidden=true;
-  var p=plan(), last=steps[5].querySelector('.muted');
-  if(last) last.innerHTML='Your plan: Individual practice · $20 per month. The price is a placeholder. '+(p.active?'Active'+(p.since?' since '+p.since:'')+'.':'It begins when you invite your first patient.')+' <a href="index.html#plan" style="color:var(--gold)">Open your plan</a>';
+  var last=steps[5].querySelector('.muted');
+  window.__planLine=function(){ var p=plan(); if(last) last.innerHTML='Your plan: Individual practice · $20 per month. The price is a placeholder. '+(p.active?'Active'+(p.since?' since '+p.since:'')+'.':(p.ready?'Ready. It begins when you send your first invitation.':'It begins when you invite your first patient.'))+' <a href="index.html#plan" style="color:var(--gold)">Open your plan</a>'; };
+  window.__planLine();
 })();
 
 /* ============================================================ STAGE 2: patients, calendar ============================================================ */
@@ -1214,7 +1232,7 @@ function drawRail(){
     b.innerHTML=esc(p.name)+'<span class="small">'+esc(railLine(p))+'</span>'; b.onclick=function(){ selectPatient(id); }; rail.appendChild(b); });
   var a=document.createElement('button'); a.type='button'; a.className='add'; a.id='addopen'; a.textContent='+ Add a patient'; a.onclick=openAdd; rail.appendChild(a);
 }
-var mailFor=null, mailJust=false;
+var mailFor=null, mailJust=false, planJust=false;
 function selectPatient(id){ S.cur=id; picked=null; adding=false; mailFor=null; save(); drawPatients(); }
 function consentLine(p){ var c=p.consent;
   if(c.st==='signed') return '✓ Consent signed '+c.date+' · recording allowed';
@@ -1224,7 +1242,7 @@ function noteConsent(p,st){ var c=sget('ea-consent')||{}; c[p.code]={name:p.name
 function drawConsent(){
   var p=P(), c=$('consent'), box=$('cact'); c.textContent=consentLine(p); c.style.color=p.consent.st==='signed'?'':'#c98a3d'; box.innerHTML='';
   if(p.consent.st==='signed') return;
-  if(p.consent.st==='none'&&!plan().active){
+  if(p.consent.st==='none'&&!plan().active&&!plan().ready){
     box.innerHTML='<div class="planbox"><strong>Your plan begins when you invite your first patient.</strong><br>Individual practice · $20 per month. <span class="small">The price is a placeholder.</span><br><a class="btn" id="planstart" href="index.html#plan">Start the plan</a></div>';
     $('planstart').onclick=function(){ sset('ea-pend',{send:S.cur}); save(); };
     return;
@@ -1237,12 +1255,14 @@ function drawConsent(){
     (sent?'<a class="act ask" id="csopen" href="index.html#consent/'+p.code+'">Open the consent form the patient receives</a>':'')+
     '<a class="act" id="cspage" href="index.html#everyone">Preview the patient page</a>'+
     '<p class="small">'+(sent?'When the patient signs, this line turns green and recording is allowed.':'The link opens the patient page, then the consent form. EgoAgent sends nothing by itself: use your own email, or copy the link.')+'</p>'+
-    (mailFor===S.cur?'<div class="mailprev" id="mailprev" role="status"><strong>In this '+WORD+' nothing is sent.</strong> The consent form is now marked as sent. On the real site this opens a message in your own mail program, ready for you to address and send:<br><span class="small">Subject: '+esc(SUBJ)+'</span><p class="mailbody">'+esc(BODY).replace(/\n/g,'<br>')+'</p><button class="act" type="button" id="mailcopy">Copy the message</button></div>':'');
-  function markSent(){ if(p.consent.st!=='sent'){ p.consent={st:'sent',date:'14 Aug 2026'}; } noteConsent(p,'sent'); save(); setTimeout(function(){ drawPatients(); drawEgo(); },60); }
+    (mailFor===S.cur?'<div class="mailprev" id="mailprev" role="status"><strong>In this '+WORD+' nothing is sent.</strong> The consent form is now marked as sent.'+(planJust?' Your plan begins with this first invitation.':'')+' On the real site this opens a message in your own mail program, ready for you to address and send:<br><span class="small">Subject: '+esc(SUBJ)+'</span><p class="mailbody">'+esc(BODY).replace(/\n/g,'<br>')+'</p><button class="act" type="button" id="mailcopy">Copy the message</button></div>':'');
+  function markSent(){ if(p.consent.st!=='sent'){ p.consent={st:'sent',date:'14 Aug 2026'}; } noteConsent(p,'sent'); save();
+    var pl=plan(); if(!pl.active&&pl.ready){ sset('ea-plan',{active:true,since:'14 Aug 2026'}); if(window.__planLine) window.__planLine(); planJust=true; }
+    setTimeout(function(){ drawPatients(); drawEgo(); },60); }
   $('csmail').addEventListener('click',function(){ mailFor=S.cur; mailJust=true; markSent(); });
-  if($('mailprev')&&mailJust){ mailJust=false; var mp=$('mailprev'); mp.setAttribute('tabindex','-1'); try{ mp.scrollIntoView({block:'nearest'}); mp.focus({preventScroll:true}); }catch(e){} }
+  if($('mailprev')&&mailJust){ mailJust=false; planJust=false; var mp=$('mailprev'); mp.setAttribute('tabindex','-1'); try{ mp.scrollIntoView({block:'nearest'}); mp.focus({preventScroll:true}); }catch(e){} }
   if($('mailcopy')) $('mailcopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText(SUBJ+'\n\n'+BODY).catch(function(){}); }catch(e){} toast('Message copied.'); };
-  $('cscopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText('https://'+link).catch(function(){}); }catch(e){} toast('Link copied: https://'+link); markSent(); };
+  $('cscopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText('https://'+link).catch(function(){}); }catch(e){} markSent(); toast('Link copied: https://'+link+(planJust?' Your plan begins with this first invitation.':'')); planJust=false; };
   if($('csopen')) $('csopen').addEventListener('click',function(){ noteConsent(p,'sent'); sset('ea-from',HERE); save(); });
   $('cspage').addEventListener('click',function(){
     /* before the invitation is sent, the consent form behind the patient page is a preview: a signature there is not filed */
@@ -1320,7 +1340,7 @@ function resetUpl(){ files=[]; ulist.innerHTML=''; ugo.hidden=true; uok.checked=
   if(p.consent.st!=='signed'){ uok.disabled=true; uok.parentElement.style.opacity=.5; ulist.innerHTML='<p class="small">'+esc(p.name)+' has not signed the consent form, so nothing can be uploaded.</p>'; }
   else { uok.disabled=false; uok.parentElement.style.opacity=1; } }
 function showList(pre){
-  ulist.innerHTML=(pre||'')+files.map(function(f,i){ return '<div class="uplrow"><strong>'+esc(f.name)+'</strong> <span class="small">· '+f.size+'</span><br>'+(f.err?'<span class="small uplerr" role="status">'+esc(f.err)+'</span><br>':'')+'<span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'" aria-label="Session date for '+esc(f.name)+'"></div>'; }).join('');
+  ulist.innerHTML=(pre||'')+files.map(function(f,i){ return '<div class="uplrow"><strong>'+esc(f.name)+'</strong> <span class="small">· '+f.size+'</span><br>'+(f.err?'<span class="small uplerr" role="status">'+esc(f.err)+'</span><br>':'')+'<span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'" min="2026-08-01" max="2026-08-14" aria-label="Session date for '+esc(f.name)+'"></div>'; }).join('');
   each(ulist.querySelectorAll('input[type=date]'),function(d){ d.onchange=function(){ files[+d.dataset.i].date=d.value; }; });
   ugo.hidden=!files.length;
 }
@@ -1330,18 +1350,21 @@ pickBox.addEventListener('click',function(e){ if(uok.checked) return; e.preventD
   toast(p.consent.st!=='signed'?p.name+' has not signed the consent form, so nothing can be uploaded.':'First tick the box above: the patient consented to these recordings.');
   if(!uok.disabled){ try{ uok.focus(); }catch(x){} } },true);
 uinput.onchange=function(){ files=[].map.call(uinput.files,function(f){ var mb=f.size/1048576; return {name:f.name,size:(mb>=1?mb.toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'),date:iso(new Date(f.lastModified))}; }); uinput.value=''; showList(); };
-$('uplsample').onclick=function(){ files=[{name:'Session recording 3 Aug.m4a',size:'38.2 MB',date:'2026-08-03'},{name:'Session recording 4 Aug.m4a',size:'41.7 MB',date:'2026-08-04'},{name:'Session recording 7 Aug.m4a',size:'39.5 MB',date:'2026-08-07'}]; showList(); };
+$('uplsample').onclick=function(){ var again=files.length===3&&ulist.querySelectorAll('input[type=date]').length===3; files=[{name:'Session recording 3 Aug.m4a',size:'38.2 MB',date:'2026-08-03'},{name:'Session recording 4 Aug.m4a',size:'41.7 MB',date:'2026-08-04'},{name:'Session recording 7 Aug.m4a',size:'39.5 MB',date:'2026-08-07'}]; showList(); if(again) toast('The three sample files are listed below, each with its date.'); };
 ugo.onclick=function(){
   var p=P(), out=[], left=[];
   files.forEach(function(f){
     var d=new Date((f.date||'2026-08-01')+'T12:00:00'), label=DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();
-    if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY&&!p.days[d.getDate()]){
+    var inMonth=d.getFullYear()===YEAR&&d.getMonth()===MONTH, past=d<new Date(YEAR,MONTH,TODAY+1);
+    if(inMonth&&d.getDate()<=TODAY&&!p.days[d.getDate()]){
       p.days[d.getDate()]={k:'temp',sid:'s4',an:[],src:'uploaded'};
       out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted</span></div>');
-    } else if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY){
+    } else if(inMonth&&d.getDate()<=TODAY){
       f.err='Not filed: '+label+' already has an entry on the calendar. Change the date below, then file it again.'; left.push(f);
+    } else if(!past){
+      f.err='Not filed: '+label+' is after today, Friday 14 August 2026. A past recording needs a past date. Change the date below, then file it again.'; left.push(f);
     } else {
-      out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted. In this '+WORD+' the calendar shows August 2026 up to the 14th only.</span></div>');
+      f.err='Not filed: this '+WORD+' holds August 2026 only, from the 1st to the 14th. Change the date below, then file it again.'; left.push(f);
     }
   });
   save(); drawGrid(); drawScope(); drawEgo(); files=left; showList(out.join(''));
@@ -1353,12 +1376,20 @@ function recWhy(id){ var p=S.pts[id]; if(p.consent.st!=='signed') return 'consen
 function recStop(){ if(R.tick){ clearInterval(R.tick); R.tick=null; } R.timers.forEach(clearTimeout); R.timers=[]; }
 function mmss(t){ return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
 function openRec(pid){
-  recStop(); var ok=S.order.filter(function(id){ return !recWhy(id); });
-  R.p=(pid&&!recWhy(pid))?pid:(ok[0]||null); R.ph='idle'; R.t=0; R.ask=false; R.from=document.activeElement;
+  recStop(); if(!pid||!S.pts[pid]) pid=S.cur;
+  R.p=(pid&&S.pts[pid])?pid:(S.order[0]||null); R.ph='idle'; R.t=0; R.ask=false; R.from=document.activeElement;
+  try{ history.scrollRestoration='manual'; history.pushState({ea:'rec'},''); R.hist=true; }catch(e){ R.hist=false; }   /* the browser's Back button closes the recorder, and asks first while a recording runs */
   var o=document.querySelector('.toast'); if(o) o.remove();
   rec.hidden=false; document.body.style.overflow='hidden'; drawRec(); $('recclose').focus();
 }
-function closeRec(){ recStop(); hush(); R.ask=false; rec.hidden=true; document.body.style.overflow=''; if(R.from&&R.from.focus){ try{ R.from.focus(); }catch(e){} } }
+function closeRec(){ recStop(); hush(); R.ask=false; rec.hidden=true; document.body.style.overflow=''; if(R.from&&R.from.focus){ try{ R.from.focus(); }catch(e){} }
+  if(R.hist){ R.hist=false; try{ if(history.state&&history.state.ea==='rec'){ R.skipPop=true; history.back(); } }catch(e){} } }
+window.addEventListener('popstate',function(){
+  if(R.skipPop){ R.skipPop=false; try{ history.scrollRestoration='auto'; }catch(e){} return; }
+  if(rec.hidden) return;
+  R.hist=false;
+  if(R.ph==='on'||R.ph==='stopped'){ try{ history.pushState({ea:'rec'},''); R.hist=true; }catch(e){} askClose(); } else { closeRec(); try{ history.scrollRestoration='auto'; }catch(e){} }
+});
 /* closing while a recording runs, or before it is sent, asks first */
 function askClose(){ if(R.ph==='on'||R.ph==='stopped'){ R.ask=true; drawRec(); try{ $('recstay').focus(); }catch(e){} return; } closeRec(); }
 $('recclose').onclick=askClose;
@@ -1368,12 +1399,17 @@ rec.addEventListener('click',function(e){ if(e.target===rec) askClose(); });
 function drawRec(){
   var h='';
   if(!S.order.length||!R.p){
-    h='<p><strong>No patient can be recorded right now.</strong></p>'+(S.order.length?'<ul>'+S.order.map(function(id){ return '<li>'+esc(S.pts[id].name)+': '+recWhy(id)+'</li>'; }).join('')+'</ul>':'<p class="muted">There is no patient in the workspace yet.</p>')+
-      '<p class="muted">A session can be recorded once a patient has signed the consent form, once a day. To try the recorder again, add a patient or start the sample again.</p><button class="recbig plain" type="button" id="recdone">Close</button>';
+    h='<p><strong>No patient can be recorded right now.</strong></p><p class="muted">There is no patient in the workspace yet.</p>'+
+      '<p class="muted">A session can be recorded once a patient has signed the consent form, once a day.</p><button class="recbig plain" type="button" id="recdone">Close</button>';
     recBody.innerHTML=h; $('recdone').onclick=closeRec; return;
   }
-  var p=S.pts[R.p];
-  h+='<div class="field"><span>Patient</span><span class="selw"><select id="recp" aria-label="Patient to record"'+(R.ph==='idle'?'':' disabled')+'>'+S.order.map(function(id){ var w=recWhy(id); return '<option value="'+id+'"'+(id===R.p?' selected':'')+(w?' disabled':'')+'>'+esc(S.pts[id].name)+(w?' · '+w:'')+'</option>'; }).join('')+'</select></span></div>';
+  var p=S.pts[R.p], why=recWhy(R.p), others=S.order.filter(function(id){ return !recWhy(id); });
+  h+='<div class="field"><span>Patient</span><span class="selw"><select id="recp" aria-label="Patient to record"'+(R.ph==='idle'?'':' disabled')+'>'+S.order.map(function(id){ var w=recWhy(id); return '<option value="'+id+'"'+(id===R.p?' selected':'')+((w&&id!==R.p)?' disabled':'')+'>'+esc(S.pts[id].name)+(w?' · '+w:'')+'</option>'; }).join('')+'</select></span></div>';
+  if(why&&R.ph==='idle'){
+    /* the recorder stays with the patient it was opened for, and says why that patient cannot be recorded now */
+    h+='<p class="recstat recno" role="status"><strong>'+esc(p.name)+' cannot be recorded now: '+why+'.</strong><br>'+(others.length?'To record someone else, choose that patient in the list above.':'A session can be recorded once a patient has signed the consent form, once a day.')+'</p><button class="recbig plain" type="button" id="recdone">Close</button>';
+    recBody.innerHTML=h; var sel0=$('recp'); sel0.onchange=function(){ R.p=sel0.value; drawRec(); }; $('recdone').onclick=closeRec; return;
+  }
   h+='<p class="recstat">✓ Consent signed '+esc(p.consent.date)+' · recording allowed · '+dlabel(TODAY)+'</p>';
   h+='<div class="rectime" id="rect" aria-live="off">'+mmss(R.t)+'</div>';
   if(R.ask){
@@ -1793,9 +1829,12 @@ each(document.querySelectorAll('.wsfoot a[href^="index.html"]'),function(a){ a.a
 function drawAll(){ drawPatients(); drawAfter(); drawScope(); drawNote(); drawSaved(); drawEgo(); }
 drawAll(); syncAll();
 (function(){
-  var pend=sget('ea-pend');
-  if(!DEMO){ openStage(2,false); }
-  if(pend&&pend.send&&S.pts[pend.send]){ S.cur=pend.send; sdel('ea-pend'); save(); drawPatients(); if(plan().active){ openStage(2,true); toast('Your plan is active. You can now send the consent form.'); } }
+  var pend=sget('ea-pend'), was=S.open;
+  if(was&&was.length){ was.forEach(function(i){ var s=$('st'+i); if(s) setOpen(s,true); }); }   /* a reload keeps the stages that were open */
+  else if(!DEMO){ openStage(2,false); }
+  ready=true;
+  var tm=sget('ea-toast'); if(tm){ sdel('ea-toast'); toast(tm); }
+  if(pend&&pend.send&&S.pts[pend.send]){ S.cur=pend.send; sdel('ea-pend'); save(); drawPatients(); if(plan().active||plan().ready){ openStage(2,true); toast(plan().active?'Your plan is active. You can now send the consent form.':'Your plan is ready. It begins when you send the consent form.'); } }
   if(Q.get('signed')) openStage(2,false);
 })();
 if(DEMO){ var g=document.createElement('script'); g.src='egoagent_guide_v305.js'; g.defer=true; document.body.appendChild(g); }

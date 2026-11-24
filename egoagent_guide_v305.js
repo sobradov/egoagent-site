@@ -48,7 +48,8 @@
   '.gd-mic{width:46px;height:46px;flex:none;border-radius:50%;border:1.5px solid #E0B658;background:#3E6B58;color:#fff;font-size:20px;cursor:pointer}' +
   '.gd-mic.on{background:#8E2F22;border-color:#F0CF7E}' +
   '.gd-send{flex:none}' +
-  '.gd-lit{outline:3px solid #E0B658 !important;outline-offset:3px;border-radius:8px}';
+  '.gd-lit{outline:3px solid #E0B658 !important;outline-offset:3px;border-radius:8px}' +
+  '.gd-panel:focus{outline:none}';
   var st = D.createElement('style'); st.textContent = css; D.head.appendChild(st);
 
   var MARK = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg>';
@@ -93,7 +94,7 @@
   var NOSEE = 'No. I explain the screens and take you where you want to go. I am built with no access to cases, transcripts, analyses or notes.';
   var WHOAMI = 'I am the guide to this site, not a person and not the AI that writes analyses. I find the passage on the EgoAgent site that best answers your question and read it to you. I cannot see cases, transcripts, analyses or notes.';
   var VOICE = 'A note on voice: your browser turns your speech into text, and with some browsers that happens on the browser maker’s own servers. EgoAgent keeps nothing of it. You can always type instead.';
-  var voiceTold = false;
+  var voiceTold = false, emptyTold = false;
   var COST = 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder. Your patients pay nothing.';
   var CUR = {
     everyone: { hi: 'Hello. Ask me anything about EgoAgent, by voice or in writing. Or start with one of these.', qs: [
@@ -182,7 +183,8 @@
   /* ---------- answering ---------- */
   function onPage() { var v = view(); return { everyone: 'the patient page', therapists: 'the therapist page', register: 'the registration page', consent: 'the consent page' }[v] || (isDemo ? 'this page' : ''); }
   function ask(q) {
-    q = String(q || '').trim(); if (!q) return; add(q, 'u'); inp.value = '';
+    q = String(q || '').trim(); if (!q) { if (!emptyTold) { emptyTold = true; add('Type your question in the box first' + (SR ? ', or tap the microphone.' : '.'), 'g'); } try { inp.focus(); } catch (e) {} return; }
+    emptyTold = false; add(q, 'u'); inp.value = '';
     if (/\b(this page|on the page|page about|summar)/i.test(q)) {
       var heads = [], root = isDemo ? D.body : D.querySelector('main[id^="pane-"]:not([hidden])');
       if (root) root.querySelectorAll('h1,h2').forEach(function (h) { if (!h.closest('details')) { var t = clean(h.textContent); if (t && heads.indexOf(t) < 0) heads.push(t); } });
@@ -190,6 +192,8 @@
     }
     if (WORK[view()] && /\b(patient|miriam|transcript|session|note|analys)/i.test(q) && /\b(said|say|wrote|read|show|tell|what did)/i.test(q)) { say(NOSEE); return; }
     if (view() !== 'everyone' && view() !== 'consent' && /\b(cost|costs|price|priced|pricing|fee|fees|pay|paid|charge|charged|subscription|how much|free)\b/i.test(q)) { say(COST, 'From the plan page'); return; }
+    if ((view() === 'everyone' || view() === 'consent') && /\b(say no|refuse|decline|opt out|do i have to|must i|have to agree|don.?t want|do not want|not agree|turn it down)\b/i.test(q)) { say(CUR.everyone.qs[2][1], 'From the patient page'); return; }
+    if (isDemo && /\b(recording|recordings|audio|sound file|sound)\b/i.test(q)) { say(CUR.demo.qs[1][1], 'From this page'); return; }
     if (/\b(are|r) (you|u)\b.*\b(ai|a\.i\.|real|human|person|robot|bot|machine|alive|chatgpt|claude)\b|\bwho are you\b|\bwhat are you\b/i.test(q)) { say(WHOAMI); return; }
     var go = function () {
       var d = search(q);
@@ -213,7 +217,7 @@
     c.qs.forEach(function (q) { btn(q[0], 'q', function () { add(q[0], 'u'); say(q[1], 'From ' + (onPage() || 'EgoAgent')); }); });
   }
   var lastView = null;
-  function open() { pan.hidden = false; D.body.classList.add('gd-open'); fab.setAttribute('aria-expanded', 'true'); if (lastView !== view()) { lastView = view(); log.innerHTML = ''; home(); } if (!KB) buildKB(); }
+  function open() { pan.hidden = false; D.body.classList.add('gd-open'); fab.setAttribute('aria-expanded', 'true'); pan.setAttribute('aria-modal', 'false'); if (!pan.hasAttribute('tabindex')) pan.setAttribute('tabindex', '-1'); try { pan.focus({ preventScroll: true }); } catch (e) {} if (lastView !== view()) { lastView = view(); log.innerHTML = ''; home(); } if (!KB) buildKB(); }
   function close() { pan.hidden = true; D.body.classList.remove('gd-open'); fab.setAttribute('aria-expanded', 'false'); hush(); }
   /* Start over: clears the conversation, the typed question, any highlight and any form-filling in progress, then greets again */
   pan.querySelector('.gd-new').onclick = function () { hush(); filling = false; step = 0; inp.value = ''; log.innerHTML = ''; D.querySelectorAll('.gd-lit').forEach(function (x) { x.classList.remove('gd-lit'); }); lastView = view(); home(); inp.focus(); };
