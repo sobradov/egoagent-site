@@ -984,6 +984,7 @@
   /* found by the separate checker */
   #cn-go:disabled{opacity:.45;cursor:not-allowed}
   #cn-clear:disabled{opacity:.4;cursor:default}
+  #cn-pad[hidden],#cn-go[hidden],#cn-clear[hidden]{display:none}
   .cn-draft{margin:0 0 1em;font-size:.85em;color:#B9C6CE}
   .cn-draft .lg-draft{margin:0 .6em 0 0}
   .invited-go{color:var(--head-gold);font-weight:600}
@@ -2183,6 +2184,7 @@
   function fillCheckout(){
     var a=auth(), p=planState(); if(a) $('co-name').textContent=fullName(a)||'[Name as registered]';
     var done=p.active||(!!sget('ea-plan')&&p.ready);
+    var ch=panes.checkout.querySelector('h1'); if(ch) ch.textContent=p.active?'Your plan is active.':(done?'Your plan is ready.':'Set up your plan.');
     $('co-acts').hidden=done; $('co-done').hidden=!done; $('co-after').hidden=!done;
     if(done) $('co-done').textContent=p.active?'Your plan is active'+(p.since?' since '+p.since:'')+'. There is nothing to set up.':'Your plan is ready. It begins when you send your first invitation. This was a sample: no payment was taken. Return to your workspace to send the invitation.';
   }
@@ -2223,6 +2225,14 @@
     /* said at the top too, where a returning reader starts; the sign button and the clear button have no more work to do */
     $('cn-go').hidden=true; $('cn-clear').hidden=true;
     var top=$('cn-pv'); top.hidden=false; top.textContent='This form is signed'+(r.longdate?' ('+r.longdate+')':'')+'. This is the signed copy.'+((r.st==='preview')?' It was signed as a '+(r.sample?'sample':'preview')+', so it is not filed.':'');
+    /* the rest of the page speaks of a signed form too: heading, the line under it, the labels, the end of the document */
+    var h1=$('cn-dr').parentNode, sub=$('cn-init').parentNode, end=document.querySelector('#cn-doc .cn-end'), l1=document.querySelector('label[for="cn-typed"]'), l2=document.querySelector('label[for="cn-pad"]');
+    if(h1.lastChild&&h1.lastChild.nodeType===3) h1.lastChild.nodeValue=' asked you to read and sign this consent. It is signed.';
+    if(sub.lastChild&&sub.lastChild.nodeType===3) sub.lastChild.nodeValue=' \u00b7 Signed'+(r.longdate?' on '+r.longdate:'')+'. Consent can be withdrawn whenever you say.';
+    if(end) end.textContent='\u2014 End of document. \u2014';
+    if(l1) l1.textContent='The name typed to sign';
+    if(l2) l2.textContent=r.sig?'The signature':'The signature is on file. Its drawing is not part of this sample.';
+    if(!r.sig) pad.hidden=true;
     fitPad();
     if(r.sig&&!pad.dataset.drawn){ pad.dataset.drawn='1'; var im=new Image(); im.onload=function(){ var b=pad.getBoundingClientRect(); try{ pad.getContext('2d').drawImage(im,0,0,b.width,170); }catch(e){} }; im.src=r.sig; }
   }
