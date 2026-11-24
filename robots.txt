@@ -1,0 +1,11 @@
+# EgoAgent. The public pages may be read. The workspace and the test pages may not.
+# Note: on this preview address this file sits in a sub-folder, where crawlers do not look.
+# It takes effect when the site moves to its own address, egoagent.ai.
+User-agent: *
+Disallow: /egoagent_workspace.html
+Disallow: /egoagent_workspace_demo.html
+Disallow: /egoagent_recorder_test.html
+Disallow: /egoagent_phone_recorder_sample.html
+Allow: /
+
+Sitemap: https://egoagent.ai/sitemap.xml

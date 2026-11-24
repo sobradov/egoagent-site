@@ -1,0 +1,25 @@
+# EgoAgent
+
+> AI to help your therapist help you.
+
+Your session, thought through again by your therapist, with AI.
+
+## For patients
+
+- Free for you. Your therapist subscribes.
+- Processed and stored securely. Never used to train AI.
+- Informed consent: Written and HIPAA-compliant. Withdraw at any time.
+
+## For therapists
+
+- The patient leaves. Something stays behind to be understood. Bring it here.
+- One session, or the whole treatment.
+- Another perspective, not another authority.
+- Beyond a professional boundary, the working space opens only to verified clinicians.
+
+## Pages
+
+- [For patients](https://egoagent.ai/): what EgoAgent is, and the patient's choice.
+- [For therapists](https://egoagent.ai/#therapists): how a therapist uses it.
+
+The clinician workspace is private and is not for automated reading.
