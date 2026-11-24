@@ -1030,11 +1030,9 @@
   }
 
 /* audit item 61: touch targets at least 44 points tall */
-.wfoot a{min-height:44px;box-sizing:border-box;padding:.75em 0}
 /* a larger touch area without moving anything on the page */
-footer .fmini a,.r-back,.t-faqctl button,.np-cancel,.np-save,.r-fill,.lg-back button,.lg-back a,a.wordmark{position:relative}
-footer .fmini a::before,.r-back::before,.t-faqctl button::before,.seg button::before,.np-cancel::before,.np-save::before,.r-fill::before,.lg-back button::before,.lg-back a::before,a.wordmark::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}
-.explore summary{display:inline-flex;align-items:center;min-height:44px}
+footer .fmini a,.wfoot a,.explore summary,.r-back,.t-faqctl button,.np-cancel,.np-save,.r-fill,.lg-back button,.lg-back a,a.wordmark{position:relative}
+footer .fmini a::before,.wfoot a::before,.explore summary::before,.r-back::before,.t-faqctl button::before,.seg button::before,.np-cancel::before,.np-save::before,.r-fill::before,.lg-back button::before,.lg-back a::before,a.wordmark::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}
 .lang summary{min-height:44px;min-width:44px;justify-content:center;box-sizing:border-box}
 .explore li a{display:flex;align-items:center;min-height:44px;box-sizing:border-box}
 .door .att{min-height:44px;align-items:center}
@@ -1092,7 +1090,7 @@ summary > h3.q > span{font:inherit}
     </div>
     <!-- v208: language menu, same place on the patient and therapist pages. Translations: patient page first (pinned: therapist page, forms). -->
     <details class="lang" id="lang">
-      <summary aria-label="EN, language: English"><svg class="globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9s1.3-6.2 3.9-9z"/></svg><span class="lang-cur">EN</span></summary>
+      <summary aria-label="EN, English"><svg class="globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9s1.3-6.2 3.9-9z"/></svg><span class="lang-cur">EN</span></summary>
       <ul class="lang-list">
         <li><button type="button" data-lang="en" class="on" lang="en">English</button></li>
         <li><button type="button" data-lang="es" lang="es">Español</button></li>
@@ -1372,7 +1370,6 @@ summary > h3.q > span{font:inherit}
       <div class="r-outcome" id="reg-out" hidden>
         <h2 id="reg-out-h" tabindex="-1"></h2>
         <p id="reg-out-t"></p>
-        <p class="r-prevnote">On the real site this answer is also sent to your professional email.</p>
         <button type="button" class="btn" id="reg-out-back">Back to the form</button>
       </div>
       <div class="then"><p>Verification is the match between your license on the public licensing record and your affirmation. When both are in place, the workspace opens.</p></div>
@@ -2058,7 +2055,7 @@ summary > h3.q > span{font:inherit}
     const l=eff();
     [document.getElementById('pane-everyone'),document.querySelector('footer'),document.querySelector('.crumbs .seg'),document.getElementById('explore'),document.getElementById('tagline')].forEach(r=>run(r,l));
     document.documentElement.lang=(l==='en')?'en':l; document.documentElement.dir=(l==='ar')?'rtl':'ltr';
-    const cur=document.querySelector('#lang .lang-cur'); if(cur) cur.textContent=CODE[l]||'EN'; const ls=document.querySelector('#lang summary'); const lb=document.querySelector('#lang .lang-list button[data-lang="'+l+'"]'); if(ls) ls.setAttribute('aria-label',(CODE[l]||'EN')+', language: '+(lb?lb.textContent.trim():'English'));
+    const cur=document.querySelector('#lang .lang-cur'); if(cur) cur.textContent=CODE[l]||'EN'; const ls=document.querySelector('#lang summary'); const lb=document.querySelector('#lang .lang-list button[data-lang="'+l+'"]'); if(ls) ls.setAttribute('aria-label',(CODE[l]||'EN')+', '+(lb?lb.textContent.trim():'English'));
     document.querySelectorAll('#lang .lang-list button[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
   }
   if(typeof show==='function'){ const _show=show; window.show=function(){ const r=_show.apply(this,arguments); apply(); return r; }; }
@@ -2447,17 +2444,17 @@ summary > h3.q > span{font:inherit}
   var h=m&&(m.querySelector('h1')||m.querySelector('h2')); var t=h||m; if(!t) return;
   if(!t.hasAttribute('tabindex')) t.setAttribute('tabindex','-1'); t.focus(); try{ t.scrollIntoView({block:'start'}); }catch(e){} }); })();
 </script>
-<script>try{ if(new URLSearchParams(location.search).get("from")==="patient"){ var fp=document.getElementById("from-patient"); if(fp) fp.hidden=false; } }catch(e){}</script>
+<script>try{ if(new URLSearchParams(location.search).get("from")==="patient"){ var fp=document.getElementById("from-patient"); if(fp) fp.hidden=false; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}</script>
 <script>
 /* audit item 12: sample answers from the licensing record */
 (function(){
   var T={name:['The name does not match.','The public licensing record shows a different name for this license number. Check the spelling, or use the name exactly as it appears on your license.'],
          none:['No current license found.','No current New York license was found for this number and profession. Check the number and the profession you chose.'],
-         down:['The licensing record could not be reached.','Your registration is saved. We will check your license by hand and email you when your workspace opens.']};
+         down:['The licensing record could not be reached.','On the real site, a registration waits here until the license can be checked. Nothing else is needed from you.']};
   var box=document.getElementById('reg-out'); if(!box) return; var form=box.previousElementSibling, last=null;
   document.querySelectorAll('.r-out').forEach(function(b){ b.addEventListener('click',function(){ var t=T[b.dataset.out]; last=b;
     document.getElementById('reg-out-h').textContent=t[0]; document.getElementById('reg-out-t').textContent=t[1];
-    form.hidden=true; box.hidden=false; try{ document.getElementById('reg-out-h').focus(); box.scrollIntoView({block:'start'}); }catch(e){} }); });
+    form.hidden=true; box.hidden=false; try{ var h=document.getElementById('reg-out-h'); h.focus({preventScroll:true}); var hd=document.querySelector('header.top'); var off=hd?hd.getBoundingClientRect().bottom:0; window.scrollTo(0, window.scrollY+box.getBoundingClientRect().top-Math.max(0,off)-16); }catch(e){} }); });
   document.getElementById('reg-out-back').addEventListener('click',function(){ box.hidden=true; form.hidden=false; try{ (last||form).focus(); }catch(e){} });
 })();
 </script>
