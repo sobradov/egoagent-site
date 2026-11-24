@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>EgoAgent recorder · sample</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EgoAgent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#111010">
+<link rel="manifest" href="egoagent_phone_recorder_sample.webmanifest">
+<link rel="apple-touch-icon" href="egoagent_icon_180.png">
+<link rel="icon" type="image/png" href="egoagent_icon_192.png">
+<style>
+:root{--bg:#111010;--ink:#f4efe6;--dim:#c9c0b2;--gold:#e0b85a;--red:#e0604a;--green:#7fc79a;--line:#3a3532;--card:#1d1b1a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:max(12px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto}
+.banner{font-size:16px;color:var(--dim);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 10px}
+.banner strong{color:var(--gold)}
+h1{color:var(--gold);font-size:28px;line-height:1.2;margin:14px 0 8px}
+p{margin:8px 0}
+.small{font-size:17px;color:var(--dim)}
+.step{font-size:16px;color:var(--dim);margin:0;letter-spacing:.5px;text-transform:uppercase}
+button{font:inherit;color:var(--ink);background:var(--card);border:2px solid #6b6360;border-radius:16px;min-height:56px;padding:10px 18px;width:100%;margin:8px 0;text-align:left}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button[disabled]{opacity:.5}
+button.main{text-align:center;font-weight:700;font-size:24px;min-height:84px;border-radius:20px}
+#recbtn{background:#3a1410;border-color:var(--red);color:#fff;min-height:120px;font-size:30px}
+#stopbtn{min-height:120px;font-size:30px;border-color:var(--ink)}
+button.pick[aria-checked="true"]{border-color:var(--gold);background:#2a2416}
+button.pick .why{display:block;font-size:16px;color:#ffb4a6}
+button.pick .sub{display:block;font-size:16px;color:var(--dim)}
+.group{font-size:16px;color:var(--dim);margin:16px 0 0}
+.big{font-size:56px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;margin:6px 0}
+.meter{height:26px;border:2px solid var(--line);border-radius:13px;overflow:hidden;margin:10px 0}
+.meter i{display:block;height:100%;width:0;background:var(--green);transition:width .15s linear}
+.box{border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:12px 0}
+.box.warn{border-color:var(--red)}
+.box.ok{border-color:var(--green)}
+.who{font-size:26px;font-weight:700}
+a{color:var(--gold)}
+.toggle{display:flex;align-items:center;gap:12px;min-height:48px;font-size:17px;color:var(--dim);margin:14px 0 0}
+.toggle input{width:28px;height:28px;accent-color:var(--gold)}
+#dim{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;color:#8a8580;text-align:center;padding:20px}
+#dim.on{display:flex}
+#dim .t{font-size:44px;font-variant-numeric:tabular-nums}
+#dim button{background:#000;border-color:#3a3532;color:#8a8580;text-align:center;max-width:320px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<p class="banner"><strong>Sample.</strong> Fictional patients. Nothing is recorded and nothing is sent. This shows how the phone recorder will work.</p>
+<p id="live" class="small" role="status" aria-live="polite" style="position:absolute;left:-9999px"></p>
+
+<!-- 0 · open -->
+<section id="s0" data-title="Open EgoAgent">
+<h1 tabindex="-1">EgoAgent</h1>
+<p>Recorder for your sessions.</p>
+<button class="main" type="button" id="faceid">Open with Face ID</button>
+<p class="small">In this sample, the button opens the recorder without Face ID.</p>
+</section>
+
+<!-- 1 · choose -->
+<section id="s1" hidden data-title="Choose the patient">
+<p class="step">Step 1 of 4</p>
+<h1 tabindex="-1">Who is this session with?</h1>
+<div id="list1" role="radiogroup" aria-label="Patients"></div>
+<button class="main" type="button" id="toready" disabled>Continue</button>
+</section>
+
+<!-- 2 · ready -->
+<section id="s2" hidden data-title="Ready to record">
+<p class="step">Step 2 of 4</p>
+<h1 tabindex="-1">Ready to record</h1>
+<p class="who" id="who2"></p>
+<p class="small" id="cons2"></p>
+<button type="button" id="recbtn">● Record</button>
+<button type="button" id="back2">Choose another patient</button>
+</section>
+
+<!-- 3 · recording -->
+<section id="s3" hidden data-title="Recording">
+<p class="step">Step 2 of 4</p>
+<h1 tabindex="-1">Recording</h1>
+<p class="who" id="who3"></p>
+<p class="big" id="clock" aria-hidden="true">0:00</p>
+<div class="meter" aria-hidden="true"><i id="lvl"></i></div>
+<p class="small">The green bar moves when the phone hears the room. Saved on the phone as it goes.</p>
+<button type="button" id="stopbtn">■ Stop</button>
+<button type="button" id="dimbtn">Dim the screen</button>
+</section>
+
+<!-- 4 · confirm -->
+<section id="s4" hidden data-title="Check the patient">
+<p class="step">Step 3 of 4</p>
+<h1 tabindex="-1">Check: who was this session with?</h1>
+<p class="small">Choose again. Nothing is chosen for you. It must match your first choice.</p>
+<div id="list4" role="radiogroup" aria-label="Patients"></div>
+<div id="mismatch" class="box warn" hidden>
+<p id="mmtext"></p>
+<button type="button" id="mmA"></button>
+<button type="button" id="mmB"></button>
+<button type="button" id="mmDel">Delete this recording</button>
+</div>
+<button class="main" type="button" id="tosend" disabled>Continue</button>
+</section>
+
+<!-- 5 · send -->
+<section id="s5" hidden data-title="Send">
+<p class="step">Step 4 of 4</p>
+<h1 tabindex="-1">Send for transcription</h1>
+<div class="box"><p class="who" id="who5"></p><p id="len5"></p></div>
+<button class="main" type="button" id="sendbtn">Send for transcription</button>
+<p class="small">The recording stays on this phone until the workspace confirms that it has all of it. Then it is deleted here.</p>
+<label class="toggle"><input type="checkbox" id="offline"> Try it with no connection</label>
+<div id="waiting" class="box warn" hidden>
+<p><strong>No connection.</strong> One recording is waiting on this phone. It will be sent when you are online.</p>
+<button class="main" type="button" id="online">Connection is back · Send now</button>
+</div>
+<p id="sending" class="small" hidden>Sending…</p>
+</section>
+
+<!-- 6 · done -->
+<section id="s6" hidden data-title="Received">
+<h1 tabindex="-1">Received in the workspace</h1>
+<div class="box ok">
+<p class="who" id="who6"></p>
+<p id="len6"></p>
+<p id="del6"></p>
+</div>
+<p>The transcript is made in the workspace. It never comes to this phone.</p>
+<button class="main" type="button" id="again">Record another session</button>
+<p class="small"><a href="index.html">Back to the EgoAgent site</a></p>
+</section>
+
+<div id="dim" role="dialog" aria-label="Recording, screen dimmed">
+<p>Recording</p>
+<p class="t" id="dimclock">0:00</p>
+<button type="button" id="undim">Show the recorder</button>
+</div>
+</main>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var P=[
+ {id:'m',name:'Miriam S.',today:true,consent:'signed',when:'Mondays, Tuesdays, Wednesdays and Fridays'},
+ {id:'d',name:'David K.',today:false,consent:'signed',when:'Mondays, Wednesdays and Thursdays'},
+ {id:'a',name:'Anna L.',today:false,consent:'sent',when:''}
+];
+var S={first:null,second:null,start:0,len:0,tm:0,lv:0};
+var TODAY='Friday 14 August';
+function byId(id){ return P.filter(function(p){ return p.id===id; })[0]; }
+function mmss(ms){ var s=Math.max(0,Math.round(ms/1000)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function words(ms){ var s=Math.round(ms/1000), m=Math.floor(s/60), x=s%60; return (m?m+' minute'+(m===1?'':'s'):'')+(m&&x?' ':'')+(x||!m?x+' second'+(x===1?'':'s'):''); }
+function go(n){
+  for(var i=0;i<=6;i++) $('s'+i).hidden=(i!==n);
+  var sec=$('s'+n); document.title='EgoAgent recorder · '+sec.dataset.title;
+  var h=sec.querySelector('h1'); try{ h.focus(); }catch(e){} window.scrollTo(0,0);
+}
+function say(t){ $('live').textContent=''; setTimeout(function(){ $('live').textContent=t; },50); }
+function list(box, chosen, onpick){
+  box.innerHTML='';
+  var groups=[['Today',P.filter(function(p){return p.today;})],['Other patients',P.filter(function(p){return !p.today;})]];
+  groups.forEach(function(g){
+    if(!g[1].length) return;
+    var h=document.createElement('p'); h.className='group'; h.textContent=g[0]; box.appendChild(h);
+    g[1].forEach(function(p){
+      var b=document.createElement('button'); b.type='button'; b.className='pick'; b.setAttribute('role','radio');
+      var ok=p.consent==='signed';
+      b.setAttribute('aria-checked',chosen===p.id?'true':'false');
+      b.innerHTML='<span>'+p.name+'</span>'+(p.when?'<span class="sub">'+p.when+'</span>':'')+(ok?'':'<span class="why">Consent form not signed yet. Cannot be recorded.</span>');
+      if(!ok){ b.disabled=true; b.setAttribute('aria-disabled','true'); }
+      b.onclick=function(){ onpick(p.id); };
+      box.appendChild(b);
+    });
+  });
+}
+function draw1(){ list($('list1'),S.first,function(id){ S.first=id; draw1(); $('toready').disabled=false; say('Chosen: '+byId(id).name); }); }
+function draw4(){ list($('list4'),S.second,function(id){ S.second=id; draw4(); check(); }); }
+function check(){
+  var a=S.first, b=S.second;
+  if(!b) return;
+  if(a===b){ $('mismatch').hidden=true; $('tosend').disabled=false; say(byId(b).name+' It matches.'); return; }
+  $('tosend').disabled=true; $('mismatch').hidden=false;
+  $('mmtext').textContent='This does not match. Before recording you chose '+byId(a).name+' Now you chose '+byId(b).name+' Nothing has been sent. Which is right?';
+  $('mmA').textContent='It was '+byId(a).name; $('mmB').textContent='It was '+byId(b).name;
+  $('mmA').onclick=function(){ S.first=a; S.second=a; draw4(); check(); };
+  $('mmB').onclick=function(){ S.first=b; S.second=b; draw4(); check(); };
+  say('This does not match. Nothing has been sent.');
+  try{ $('mmtext').setAttribute('tabindex','-1'); $('mmtext').focus(); }catch(e){}
+}
+$('faceid').onclick=function(){ S.first=null; draw1(); $('toready').disabled=true; go(1); };
+$('toready').onclick=function(){ if(!S.first) return; var p=byId(S.first); $('who2').textContent=p.name; $('cons2').textContent='Consent form signed. '+TODAY+'.'; go(2); };
+$('back2').onclick=function(){ go(1); };
+$('recbtn').onclick=function(){
+  $('who3').textContent=byId(S.first).name; S.start=Date.now(); $('clock').textContent='0:00'; $('dimclock').textContent='0:00';
+  S.tm=setInterval(function(){ var t=mmss(Date.now()-S.start); $('clock').textContent=t; $('dimclock').textContent=t; S.lv=Math.max(Math.random()*85, S.lv*0.8); $('lvl').style.width=Math.round(S.lv)+'%'; },250);
+  go(3); say('Recording.');
+};
+$('stopbtn').onclick=function(){ clearInterval(S.tm); S.len=Date.now()-S.start; $('lvl').style.width='0'; S.second=null; $('mismatch').hidden=true; $('tosend').disabled=true; draw4(); go(4); say('Stopped. '+words(S.len)+'. Now choose the patient again.'); };
+$('dimbtn').onclick=function(){ $('dim').classList.add('on'); $('undim').focus(); };
+$('undim').onclick=function(){ $('dim').classList.remove('on'); $('stopbtn').focus(); };
+$('mmDel').onclick=function(){ S.first=null; S.second=null; draw1(); $('toready').disabled=true; go(1); say('The recording was deleted from this phone. Nothing was sent.'); };
+$('tosend').onclick=function(){ var p=byId(S.first); $('who5').textContent=p.name; $('len5').textContent=TODAY+' · '+words(S.len)+' of sound.'; $('waiting').hidden=true; $('sending').hidden=true; $('sendbtn').hidden=false; go(5); };
+function send(){
+  $('sendbtn').hidden=true; $('waiting').hidden=true; $('sending').hidden=false; say('Sending.');
+  setTimeout(function(){
+    var p=byId(S.first);
+    $('who6').textContent=p.name; $('len6').textContent=TODAY+' · '+words(S.len)+' of sound.';
+    $('del6').textContent='The recording was deleted from this phone just now.';
+    go(6); say('Received in the workspace. The recording was deleted from this phone.');
+  },1600);
+}
+$('sendbtn').onclick=function(){ if($('offline').checked){ $('sendbtn').hidden=true; $('waiting').hidden=false; say('No connection. One recording is waiting on this phone.'); return; } send(); };
+$('online').onclick=function(){ $('offline').checked=false; send(); };
+$('again').onclick=function(){ S.first=null; S.second=null; draw1(); $('toready').disabled=true; go(1); };
+go(0);
+})();
+</script>
+</body>
+</html>
