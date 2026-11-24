@@ -398,6 +398,21 @@
   .wsfoot { text-align: center; font-size: 14px; margin: 6px 0 0; }
   .wsfoot a { color: var(--muted); margin: 0 10px; }
   .wsfoot a:hover, .wsfoot a:focus-visible { color: var(--gold); }
+  /* found by the separate checker */
+  .uplpick { pointer-events: auto; }                       /* dimmed until the box is ticked, but a tap now says why */
+  .uplerr { color: #e39a90; }
+  .mailprev { border: 1.5px solid var(--gold); border-radius: 10px; padding: 12px; background: #15241c; margin: 10px 0 0; font-size: 15px; }
+  .mailprev .mailbody { margin: 8px 0; padding: 8px 10px; background: #0c1510; border-radius: 6px; }
+  .recask { border: 2px solid #c0574a; border-radius: 12px; padding: 12px 14px; margin: 12px 0; background: rgba(192,87,74,.10); }
+  .recask p { margin: 0 0 10px; }
+  .need { color: #e39a90; }
+  .wsfoot a[hidden] { display: none; }
+  .wsfoot { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px; }
+  .wsfoot a { margin: 0; white-space: nowrap; }
+  .mailprev:focus { outline: none; }
+  /* a long word with no spaces (a name, a note, a comment) wraps instead of pushing its box wider */
+  .pt, .day, #day, .cmt, .qa, .seg, .paper, .note, .row > div, .uplrow, .toast, .invite, .mailprev, #egolist li, .egoinfo, .recsheet li, .recstat, #calname, .tag, .scopeseg, .check { overflow-wrap: anywhere; }
+  .pt { min-width: 0; }
 </style>
 </head>
 <body>
@@ -556,7 +571,7 @@
   <section class="screen" id="st2">
     <p class="label">Stage 2 of 6 · Your patients</p>
     <h2>One space for each patient, one calendar of the treatment.</h2>
-    <p class="muted">Choose a patient. Her calendar opens. Each session day is coloured by what is waiting there. Tap a day to open it.</p>
+    <p class="muted">Choose a patient. The calendar opens. Each session day is coloured by what is waiting there. Tap a day to open it.</p>
     <div class="pl">
       <div class="rail" id="rail"></div>
       <div class="cal">
@@ -718,7 +733,7 @@
   </section>
 
   <p style="text-align:center;margin:28px 0 8px"><a class="homebtn" id="backbtn2" href="index.html#therapists">← Back to EgoAgent</a></p>
-  <p class="wsfoot"><a href="index.html#privacy">Privacy</a><a href="index.html#terms">Terms</a><a href="index.html#contact">Contact</a></p>
+  <p class="wsfoot"><a href="index.html#therapists" id="wssite" hidden>EgoAgent site</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a><a href="index.html#privacy">Privacy</a><a href="index.html#terms">Terms</a></p>
 </div>
 
 <div class="dgwrap" id="rec" hidden role="dialog" aria-modal="true" aria-labelledby="rectitle">
@@ -1123,6 +1138,8 @@ function sayAll(btn,parts){
   parts.forEach(function(t,i){ var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.95; if(i===parts.length-1) u.onend=hush; window.speechSynthesis.speak(u); });
 }
 window.addEventListener('pagehide',hush);
+/* coming back with the browser's Back button: draw from what is stored now, not from a frozen copy of the page */
+window.addEventListener('pageshow',function(e){ if(e.persisted) location.reload(); });
 
 /* ---------- the two ways in look a little different ---------- */
 if(DEMO) document.title='EgoAgent Workspace Demo';
@@ -1134,6 +1151,7 @@ if(!DEMO){
   $('intro').textContent='Open any stage below. Patients never enter this workspace.';
   $('uplnote').textContent='In this preview nothing leaves your device: the files are only listed here, never uploaded or played.';
   var b2=$('backbtn2'); b2.textContent='Sign out'; b2.id='signout2';
+  $('wssite').hidden=false;
   each([$('signout'),b2],function(a){ a.addEventListener('click',function(){ var m=sget('ea-auth'); if(m){ m['in']=false; sset('ea-auth',m); } }); });
 }
 (function(){ var armed=false, b=$('reset');
@@ -1184,7 +1202,7 @@ function nostage(text,btns){ return '<p>'+text+'</p>'+(btns||[]).map(function(b)
   each(cks,function(c){ c.checked=true; c.disabled=true; });
   cont.hidden=true;
   var p=plan(), last=steps[5].querySelector('.muted');
-  if(last) last.innerHTML='Your plan: Individual practice · $20 per month. '+(p.active?'Active'+(p.since?' since '+p.since:'')+'.':'It begins when you invite your first patient.')+' <a href="index.html#plan" style="color:var(--gold)">Open your plan</a>';
+  if(last) last.innerHTML='Your plan: Individual practice · $20 per month. The price is a placeholder. '+(p.active?'Active'+(p.since?' since '+p.since:'')+'.':'It begins when you invite your first patient.')+' <a href="index.html#plan" style="color:var(--gold)">Open your plan</a>';
 })();
 
 /* ============================================================ STAGE 2: patients, calendar ============================================================ */
@@ -1196,7 +1214,8 @@ function drawRail(){
     b.innerHTML=esc(p.name)+'<span class="small">'+esc(railLine(p))+'</span>'; b.onclick=function(){ selectPatient(id); }; rail.appendChild(b); });
   var a=document.createElement('button'); a.type='button'; a.className='add'; a.id='addopen'; a.textContent='+ Add a patient'; a.onclick=openAdd; rail.appendChild(a);
 }
-function selectPatient(id){ S.cur=id; picked=null; adding=false; save(); drawPatients(); }
+var mailFor=null, mailJust=false;
+function selectPatient(id){ S.cur=id; picked=null; adding=false; mailFor=null; save(); drawPatients(); }
 function consentLine(p){ var c=p.consent;
   if(c.st==='signed') return '✓ Consent signed '+c.date+' · recording allowed';
   if(c.st==='sent') return 'Consent sent '+c.date+', not yet signed · nothing can be recorded until it is signed';
@@ -1211,18 +1230,24 @@ function drawConsent(){
     return;
   }
   var sent=p.consent.st==='sent', link='egoagent.ai/i/'+p.code;
-  var mail='mailto:?subject='+encodeURIComponent('EgoAgent: information and consent form')+'&body='+encodeURIComponent('Here is the page that explains EgoAgent, and the consent form to read and sign if you agree:\n\nhttps://'+link);
+  var SUBJ='EgoAgent: information and consent form', BODY='Here is the page that explains EgoAgent, and the consent form to read and sign if you agree:\n\nhttps://'+link;
   box.innerHTML='<p class="invite">Invitation link for '+esc(p.name)+': <code>'+link+'</code></p>'+
-    '<a class="act" id="csmail" href="'+mail+'">'+(sent?'Send it again by email':'Send it by email')+'</a>'+
+    '<button class="act" type="button" id="csmail">'+(sent?'Send it again by email':'Send it by email')+'</button>'+
     '<button class="act" type="button" id="cscopy">Copy the link</button>'+
     (sent?'<a class="act ask" id="csopen" href="index.html#consent/'+p.code+'">Open the consent form the patient receives</a>':'')+
     '<a class="act" id="cspage" href="index.html#everyone">Preview the patient page</a>'+
-    '<p class="small">'+(sent?'When the patient signs, this line turns green and recording is allowed.':'The link opens the patient page, then the consent form. EgoAgent sends nothing by itself: use your own email, or copy the link.')+'</p>';
+    '<p class="small">'+(sent?'When the patient signs, this line turns green and recording is allowed.':'The link opens the patient page, then the consent form. EgoAgent sends nothing by itself: use your own email, or copy the link.')+'</p>'+
+    (mailFor===S.cur?'<div class="mailprev" id="mailprev" role="status"><strong>In this '+WORD+' nothing is sent.</strong> The consent form is now marked as sent. On the real site this opens a message in your own mail program, ready for you to address and send:<br><span class="small">Subject: '+esc(SUBJ)+'</span><p class="mailbody">'+esc(BODY).replace(/\n/g,'<br>')+'</p><button class="act" type="button" id="mailcopy">Copy the message</button></div>':'');
   function markSent(){ if(p.consent.st!=='sent'){ p.consent={st:'sent',date:'14 Aug 2026'}; } noteConsent(p,'sent'); save(); setTimeout(function(){ drawPatients(); drawEgo(); },60); }
-  $('csmail').addEventListener('click',markSent);
+  $('csmail').addEventListener('click',function(){ mailFor=S.cur; mailJust=true; markSent(); });
+  if($('mailprev')&&mailJust){ mailJust=false; var mp=$('mailprev'); mp.setAttribute('tabindex','-1'); try{ mp.scrollIntoView({block:'nearest'}); mp.focus({preventScroll:true}); }catch(e){} }
+  if($('mailcopy')) $('mailcopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText(SUBJ+'\n\n'+BODY).catch(function(){}); }catch(e){} toast('Message copied.'); };
   $('cscopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText('https://'+link).catch(function(){}); }catch(e){} toast('Link copied: https://'+link); markSent(); };
   if($('csopen')) $('csopen').addEventListener('click',function(){ noteConsent(p,'sent'); sset('ea-from',HERE); save(); });
-  $('cspage').addEventListener('click',function(){ sset('ea-invited',{dr:drName()}); sset('ea-from',HERE); });
+  $('cspage').addEventListener('click',function(){
+    /* before the invitation is sent, the consent form behind the patient page is a preview: a signature there is not filed */
+    if(p.consent.st==='none'){ var c=sget('ea-consent')||{}; c[p.code]={name:p.name,st:'preview',dr:drName(),date:'14 Aug 2026',longdate:'August 14, 2026',m:DEMO?'d':'w'}; sset('ea-consent',c); } else noteConsent(p,'sent');
+    sset('ea-invited',{dr:drName(),code:p.code}); sset('ea-from',HERE); save(); });
 }
 function drawGrid(){
   var p=P(); $('calname').textContent=p.name; drawConsent(); grid.innerHTML='';
@@ -1294,29 +1319,32 @@ function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'
 function resetUpl(){ files=[]; ulist.innerHTML=''; ugo.hidden=true; uok.checked=false; pickBox.classList.remove('on'); var p=P(); $('uplname').textContent=p.name;
   if(p.consent.st!=='signed'){ uok.disabled=true; uok.parentElement.style.opacity=.5; ulist.innerHTML='<p class="small">'+esc(p.name)+' has not signed the consent form, so nothing can be uploaded.</p>'; }
   else { uok.disabled=false; uok.parentElement.style.opacity=1; } }
-function showList(){
-  ulist.innerHTML=files.map(function(f,i){ return '<div class="uplrow"><strong>'+esc(f.name)+'</strong> <span class="small">· '+f.size+'</span><br><span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'" aria-label="Session date for '+esc(f.name)+'"></div>'; }).join('');
+function showList(pre){
+  ulist.innerHTML=(pre||'')+files.map(function(f,i){ return '<div class="uplrow"><strong>'+esc(f.name)+'</strong> <span class="small">· '+f.size+'</span><br>'+(f.err?'<span class="small uplerr" role="status">'+esc(f.err)+'</span><br>':'')+'<span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'" aria-label="Session date for '+esc(f.name)+'"></div>'; }).join('');
   each(ulist.querySelectorAll('input[type=date]'),function(d){ d.onchange=function(){ files[+d.dataset.i].date=d.value; }; });
   ugo.hidden=!files.length;
 }
 $('uplopen').onclick=function(){ upl.hidden=!upl.hidden; this.setAttribute('aria-expanded',upl.hidden?'false':'true'); if(!upl.hidden) resetUpl(); };
 uok.onchange=function(){ pickBox.classList.toggle('on',uok.checked); };
+pickBox.addEventListener('click',function(e){ if(uok.checked) return; e.preventDefault(); e.stopPropagation(); var p=P();
+  toast(p.consent.st!=='signed'?p.name+' has not signed the consent form, so nothing can be uploaded.':'First tick the box above: the patient consented to these recordings.');
+  if(!uok.disabled){ try{ uok.focus(); }catch(x){} } },true);
 uinput.onchange=function(){ files=[].map.call(uinput.files,function(f){ var mb=f.size/1048576; return {name:f.name,size:(mb>=1?mb.toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'),date:iso(new Date(f.lastModified))}; }); uinput.value=''; showList(); };
 $('uplsample').onclick=function(){ files=[{name:'Session recording 3 Aug.m4a',size:'38.2 MB',date:'2026-08-03'},{name:'Session recording 4 Aug.m4a',size:'41.7 MB',date:'2026-08-04'},{name:'Session recording 7 Aug.m4a',size:'39.5 MB',date:'2026-08-07'}]; showList(); };
 ugo.onclick=function(){
-  var p=P(), out=[];
+  var p=P(), out=[], left=[];
   files.forEach(function(f){
     var d=new Date((f.date||'2026-08-01')+'T12:00:00'), label=DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();
     if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY&&!p.days[d.getDate()]){
       p.days[d.getDate()]={k:'temp',sid:'s4',an:[],src:'uploaded'};
       out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted</span></div>');
     } else if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY){
-      out.push('<div class="uplrow">'+esc(f.name)+'<br><span class="small">Not filed: '+label+' already has an entry on the calendar. Change the date and try again.</span></div>');
+      f.err='Not filed: '+label+' already has an entry on the calendar. Change the date below, then file it again.'; left.push(f);
     } else {
       out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted. In this '+WORD+' the calendar shows August 2026 up to the 14th only.</span></div>');
     }
   });
-  save(); drawGrid(); drawScope(); drawEgo(); ulist.innerHTML=out.join(''); ugo.hidden=true; files=[];
+  save(); drawGrid(); drawScope(); drawEgo(); files=left; showList(out.join(''));
 };
 
 /* ============================================================ THE RECORDER ============================================================ */
@@ -1326,15 +1354,17 @@ function recStop(){ if(R.tick){ clearInterval(R.tick); R.tick=null; } R.timers.f
 function mmss(t){ return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
 function openRec(pid){
   recStop(); var ok=S.order.filter(function(id){ return !recWhy(id); });
-  R.p=(pid&&!recWhy(pid))?pid:(ok[0]||null); R.ph='idle'; R.t=0; R.from=document.activeElement;
+  R.p=(pid&&!recWhy(pid))?pid:(ok[0]||null); R.ph='idle'; R.t=0; R.ask=false; R.from=document.activeElement;
   var o=document.querySelector('.toast'); if(o) o.remove();
   rec.hidden=false; document.body.style.overflow='hidden'; drawRec(); $('recclose').focus();
 }
-function closeRec(){ recStop(); hush(); rec.hidden=true; document.body.style.overflow=''; if(R.from&&R.from.focus){ try{ R.from.focus(); }catch(e){} } }
-$('recclose').onclick=closeRec;
+function closeRec(){ recStop(); hush(); R.ask=false; rec.hidden=true; document.body.style.overflow=''; if(R.from&&R.from.focus){ try{ R.from.focus(); }catch(e){} } }
+/* closing while a recording runs, or before it is sent, asks first */
+function askClose(){ if(R.ph==='on'||R.ph==='stopped'){ R.ask=true; drawRec(); try{ $('recstay').focus(); }catch(e){} return; } closeRec(); }
+$('recclose').onclick=askClose;
 $('recsay').onclick=function(){ var c=recBody.cloneNode(true); each(c.querySelectorAll('select,button,svg'),function(x){ x.remove(); }); var w=document.createElement('div'); w.style.cssText='position:absolute;left:-9999px;top:0;width:600px'; w.appendChild(c); document.body.appendChild(w);
   var parts=['Record a session. Sound only. You press start, and you press stop.'].concat(R.p?['Patient: '+S.pts[R.p].name+'.']:[]).concat(c.innerText.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean)); w.remove(); sayAll(this,parts); };
-rec.addEventListener('click',function(e){ if(e.target===rec) closeRec(); });
+rec.addEventListener('click',function(e){ if(e.target===rec) askClose(); });
 function drawRec(){
   var h='';
   if(!S.order.length||!R.p){
@@ -1346,6 +1376,14 @@ function drawRec(){
   h+='<div class="field"><span>Patient</span><span class="selw"><select id="recp" aria-label="Patient to record"'+(R.ph==='idle'?'':' disabled')+'>'+S.order.map(function(id){ var w=recWhy(id); return '<option value="'+id+'"'+(id===R.p?' selected':'')+(w?' disabled':'')+'>'+esc(S.pts[id].name)+(w?' · '+w:'')+'</option>'; }).join('')+'</select></span></div>';
   h+='<p class="recstat">✓ Consent signed '+esc(p.consent.date)+' · recording allowed · '+dlabel(TODAY)+'</p>';
   h+='<div class="rectime" id="rect" aria-live="off">'+mmss(R.t)+'</div>';
+  if(R.ask){
+    h+='<div class="recask" role="alertdialog" aria-label="Close the recorder?"><p><strong>'+(R.ph==='on'?'The recording is still running.':'This recording has not been sent.')+'</strong> Closing now discards it. Nothing is kept.</p>'+
+       '<button class="recbig stop" type="button" id="recdrop">Discard and close</button><button class="recbig plain" type="button" id="recstay">'+(R.ph==='on'?'Keep recording':'Go back')+'</button></div>';
+    recBody.innerHTML=h;
+    $('recdrop').onclick=function(){ closeRec(); toast('The recording was discarded. Nothing was kept.'); };
+    $('recstay').onclick=function(){ R.ask=false; drawRec(); try{ ($('recstopb')||$('recsend')).focus(); }catch(e){} };
+    return;
+  }
   if(R.ph==='idle') h+='<button class="recbig" type="button" id="recstart">● Start recording</button>';
   if(R.ph==='on') h+='<p class="recstat recon" role="status"><span class="recdot"></span>Recording · sound only</p><button class="recbig stop" type="button" id="recstopb">■ Stop</button>';
   if(R.ph==='stopped') h+='<p class="recstat" role="status">Recording stopped. Nothing has been sent yet.</p><button class="recbig" type="button" id="recsend">Process and send</button><button class="recbig plain" type="button" id="recdiscard">Discard this recording</button>';
@@ -1428,10 +1466,14 @@ function drawScopeMini(){
   if(!$('wkmini').hidden) mini($('wkmini'),earlierDays(),wkSel,S.W.n,function(){ drawScope(); });
 }
 each(document.querySelectorAll('[data-sc]'),function(b){ b.onclick=function(){ var k=b.dataset.sc;
-  if(k==='week'){ ctxSel=thisWeek(false); $('ctxmini').hidden=true; } else if(k==='ten'){ ctxSel=earlierDays().slice(-10); $('ctxmini').hidden=true; } else { $('ctxmini').hidden=!$('ctxmini').hidden; }
+  if(k==='week'){ ctxSel=thisWeek(false); $('ctxmini').hidden=true; toast(ctxSel.length?'This week: '+listDays(ctxSel)+'.':'No earlier session this week has anything to read.'); }
+  else if(k==='ten'){ ctxSel=earlierDays().slice(-10); $('ctxmini').hidden=true; toast(ctxSel.length?'Chosen: the last '+ctxSel.length+' earlier session'+(ctxSel.length===1?'':'s')+'.':'There are no earlier sessions to read yet.'); }
+  else { $('ctxmini').hidden=!$('ctxmini').hidden; }
   drawScope(); }; });
 each(document.querySelectorAll('[data-wk]'),function(b){ b.onclick=function(){ var k=b.dataset.wk, n=S.W.n;
-  if(k==='week'){ wkSel=thisWeek(true); $('wkmini').hidden=true; } else if(k==='two'){ var from=weekSpan(n)[0]-7; wkSel=earlierDays().filter(function(x){return x>=from;}).concat([n]); $('wkmini').hidden=true; } else { $('wkmini').hidden=!$('wkmini').hidden; }
+  if(k==='week'){ wkSel=thisWeek(true); $('wkmini').hidden=true; toast(wkSel.length>1?'This week: '+listDays(wkSel)+'.':'No earlier session this week: this session is read alone.'); }
+  else if(k==='two'){ var from=weekSpan(n)[0]-7; wkSel=earlierDays().filter(function(x){return x>=from;}).concat([n]); $('wkmini').hidden=true; toast(wkSel.length>1?'Last two weeks: '+wkSel.length+' sessions, '+listDays(wkSel)+'.':'No earlier session in the last two weeks: this session is read alone.'); }
+  else { $('wkmini').hidden=!$('wkmini').hidden; }
   drawScope(); }; });
 function drawMine(){
   var box=$('mine'), list=$('mylist'); box.hidden=!S.lib.length;
@@ -1453,7 +1495,8 @@ function chosen(){
   var early=earlierDays(), days=mode==='ctx'?ctxSel.slice():(mode==='week'?wkSel.slice():[]);
   if(mode==='ctx'&&!days.length) mode='one';
   if(mode==='week'&&days.length<2) mode='one';
-  list.forEach(function(a){ a.mode=mode; a.days=days; if(inst&&!a.mine) a.inst=inst; if(mode==='ctx') a.oldai=$('oldai').checked; });
+  var withAI=mode==='ctx'&&$('oldai').checked&&days.some(function(k){ var x=Wp().days[k]; return !!(x&&x.an&&x.an.length); });
+  list.forEach(function(a){ a.mode=mode; a.days=days; if(inst&&!a.mine) a.inst=inst; if(mode==='ctx') a.oldai=withAI; });
   return {list:list,mode:mode,days:days};
 }
 function upd(){
@@ -1552,12 +1595,13 @@ function openSeg(seg,range){
   function draft(kind){
     if(kind==='q'&&!S.ego.on){ setEgo(true); }
     var box=document.createElement('div'); box.className=(kind==='c'?'cmt':'qa')+' draft';
-    box.innerHTML=(quote?'<span class="quote">“'+esc(quote)+'”</span>':'')+'<textarea class="ta" placeholder="'+(kind==='c'?'Your comment':'Your question to your EgoAgent')+'" aria-label="'+(kind==='c'?'Your comment':'Your question')+'"></textarea><button class="keep" type="button">'+(kind==='c'?'Keep':'Ask')+'</button> <button class="act" type="button">Cancel</button>';
+    box.innerHTML=(quote?'<span class="quote">“'+esc(quote)+'”</span>':'')+'<textarea class="ta" placeholder="'+(kind==='c'?'Your comment':'Your question to your EgoAgent. Example: What do these words suggest?')+'" aria-label="'+(kind==='c'?'Your comment':'Your question')+'"></textarea><button class="keep" type="button">'+(kind==='c'?'Keep':'Ask')+'</button> <button class="act" type="button">Cancel</button> <span class="small need" role="status"></span>';
     a.remove(); seg.classList.remove('on'); lastBox(seg).after(box);
-    var ta=box.querySelector('textarea'); ta.focus();
+    var ta=box.querySelector('textarea'); try{ box.scrollIntoView({block:'nearest'}); }catch(e){} try{ ta.focus({preventScroll:true}); }catch(e){ ta.focus(); }
     box.querySelector('.act').onclick=function(){ box.remove(); };
     box.querySelector('.keep').onclick=function(){
-      var v=ta.value.trim()||(kind==='c'?'(empty comment)':'What do these words suggest?'), mk=marksOf(d)[seg.dataset.p], key=seg.dataset.k, m={t:kind,text:v};
+      var v=ta.value.trim(); if(!v){ box.querySelector('.need').textContent=kind==='c'?'Write the comment first.':'Write the question first.'; ta.focus(); return; }
+      var mk=marksOf(d)[seg.dataset.p], key=seg.dataset.k, m={t:kind,text:v};
       if(quote) m.quote=quote; if(kind==='q'){ m.ans=answerFor(seg); m.read=readLine(); }
       (mk[key]=mk[key]||[]).push(m); save(); drawNote();
     };
@@ -1581,12 +1625,13 @@ function segClick(seg){
 $('keepedit').onclick=function(){ $('keepmsg').hidden=false; try{ $('own').focus(); }catch(e){} };
 $('savenote').onclick=function(){
   var d=Wd(); if(!d||d.k!=='temp') return;
-  d.k='saved'; d.when=dshort(S.W.n)+', 9:40 pm'; d.later=[]; d.own=$('own').value; d.carry=$('carry').value;
+  d.k='saved'; d.when=dshort(TODAY)+', '+stamp(); d.later=[]; d.own=$('own').value; d.carry=$('carry').value;
   save(); drawAll(); openStage(6,true); toast('Saved. The note is kept; the temporary items are deleted.');
 };
 
 /* ============================================================ STAGE 6: saved ============================================================ */
-var LTIMES=['7:15 am','8:02 pm','6:50 am'];
+/* the calendar stands at the evening of Friday 14 August: the first thing stamped is 9:40 pm, each next one a quarter of an hour later */
+function stamp(){ var c=S.clock||0; S.clock=c+1; var m=21*60+40+Math.min(c,9)*15; return (Math.floor(m/60)-12)+':'+String(m%60).padStart(2,'0')+' pm'; }
 function drawSaved(){
   var box=$('saved'), d=Wd();
   if(!d||d.k!=='saved'){ box.innerHTML='<div class="nostage">'+((d&&d.k==='temp')?nostage('The note for '+dlabel(S.W.n)+' is not saved yet. It is saved in Stage 5.',[['Go to the note',5],['Go to the calendar',2,1]]):nostage('No saved note is open. Tap a green day on the calendar to open its note.',[['Go to the calendar',2]]))+'</div>'; return; }
@@ -1606,7 +1651,7 @@ function drawSaved(){
   box.innerHTML=h;
   $('fnopen').onclick=openNote;
   $('laterbtn').onclick=function(){ var t=$('latertxt'), v=t.value.trim(); if(!v){ $('latermsg').textContent='Write the thought first.'; t.focus(); return; }
-    d.later=d.later||[]; var i=d.later.length; d.later.push({when:(Math.max(n+1,TODAY)+i)+' Aug 2026, '+LTIMES[i%3],text:v}); save(); drawSaved(); try{ $('latertxt').focus(); }catch(e){} };
+    d.later=d.later||[]; d.later.push({when:TODAY+' Aug 2026, '+stamp(),text:v}); save(); drawSaved(); try{ $('latertxt').focus(); }catch(e){} };
 }
 /* the full note, read only */
 var fn=$('fn');
@@ -1645,7 +1690,7 @@ var HOW=['I read the full text of your saved process notes every time. I keep no
   'For the work itself I look across the whole workspace: what is waiting, what is about to be deleted, which consent forms are unsigned.',
   'For anything clinical I open one patient\'s notes at a time, inside that patient\'s space. I never mix two patients.',
   'I speak first only about the work. I never open with an interpretation. I speak about the ideas in an analysis only when you ask.',
-  'When you speak to me, your words are kept as text in that day\'s note. The sound is deleted, the same as session audio.',
+  'Speaking to me is not part of this '+WORD+'. When it is, your words will be kept as text in that day\'s note, and the sound deleted, the same as session audio.',
   'You can turn me off at any time and work in manual mode.'];
 function readingNow(){ var d=Wd(); if(!d||!S.W) return ['No patient\'s notes are open, so I am reading nothing clinical. I see only the list of work that is waiting.'];
   var p=Wp(); return ['Open now: '+p.name+', '+dlabel(S.W.n)+'. No other patient is being read.', d.k==='absent'?'That day is an absence, so there is nothing to read.':readLine().replace('Read for this answer: ','If you ask me about this day I read: ')]; }
@@ -1709,7 +1754,7 @@ $('egosay').onclick=function(){ var parts=[]; if(!$('egofirst').hidden) parts.pu
   window.__closeTour=function(){ if(!o.hidden) close(); };
 })();
 document.addEventListener('keydown',function(e){ if(e.key!=='Escape') return;
-  if(!rec.hidden) closeRec(); else if(!fn.hidden) closeNote(); else { window.__closeDg&&window.__closeDg(); window.__closeTour&&window.__closeTour(); } });
+  if(!rec.hidden) askClose(); else if(!fn.hidden) closeNote(); else { window.__closeDg&&window.__closeDg(); window.__closeTour&&window.__closeTour(); } });
 /* read this page aloud: the heading, the introduction, your EgoAgent's words, every stage title, and the full text of any stage that is open */
 $('pgsay').onclick=function(){
   function clean(t){ return String(t||'').replace(/\s*·\s*/g,': ').replace(/[ \t]+/g,' ').trim(); }
@@ -1726,12 +1771,19 @@ $('pgsay').onclick=function(){
 };
 ['tourwatch','dgopen','recopen'].forEach(function(id){ var x=$(id); if(x) x.addEventListener('click',function(){ if($('pgsay').getAttribute('aria-pressed')==='true') hush(); }); });
 (function(){ var b=$('pgfs'), de=document.documentElement;
+  var FSI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  /* the recorder, the full note and the diagram cover the page, so each carries its own full-screen button beside Read aloud */
+  each(document.querySelectorAll('#rec .dghead .fsay, #fn .dghead .fsay, #dg .dghead .fsay'),function(s){
+    var f=document.createElement('button'); f.type='button'; f.className='fsay ofs'; f.setAttribute('aria-pressed','false'); f.innerHTML=FSI+'<span>Full screen</span>'; s.after(f); s.after(document.createTextNode(' ')); });
+  var all=[].slice.call(document.querySelectorAll('.ofs'));
   function on(){ return document.fullscreenElement||document.webkitFullscreenElement; }
-  function sync(){ b.setAttribute('aria-pressed',on()?'true':'false'); b.setAttribute('aria-label',on()?'Leave full screen':'Full screen'); }
-  b.onclick=function(){ var req=de.requestFullscreen||de.webkitRequestFullscreen, tip='On an iPhone, full screen works from the Home Screen: tap Share, then Add to Home Screen.';
+  function sync(){ var o=!!on(); b.setAttribute('aria-pressed',o?'true':'false'); b.setAttribute('aria-label',o?'Leave full screen':'Full screen');
+    all.forEach(function(f){ f.setAttribute('aria-pressed',o?'true':'false'); f.querySelector('span').textContent=o?'Leave full screen':'Full screen'; }); }
+  function toggle(){ var req=de.requestFullscreen||de.webkitRequestFullscreen, tip='On an iPhone, full screen works from the Home Screen: tap Share, then Add to Home Screen.';
     if(!req){ toast(tip); return; }
     if(on()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
-    try{ var r=req.call(de); if(r&&r.catch) r.catch(function(){ toast(tip); }); }catch(e){ toast(tip); } };
+    try{ var r=req.call(de); if(r&&r.catch) r.catch(function(){ toast(tip); }); }catch(e){ toast(tip); } }
+  b.onclick=toggle; all.forEach(function(f){ f.onclick=toggle; });
   document.addEventListener('fullscreenchange',sync); document.addEventListener('webkitfullscreenchange',sync);
 })();
 

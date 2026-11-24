@@ -91,6 +91,10 @@
 
   /* ---------- three likely questions per page (answers from what the site says) ---------- */
   var NOSEE = 'No. I explain the screens and take you where you want to go. I am built with no access to cases, transcripts, analyses or notes.';
+  var WHOAMI = 'I am the guide to this site, not a person and not the AI that writes analyses. I find the passage on the EgoAgent site that best answers your question and read it to you. I cannot see cases, transcripts, analyses or notes.';
+  var VOICE = 'A note on voice: your browser turns your speech into text, and with some browsers that happens on the browser maker’s own servers. EgoAgent keeps nothing of it. You can always type instead.';
+  var voiceTold = false;
+  var COST = 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder. Your patients pay nothing.';
   var CUR = {
     everyone: { hi: 'Hello. Ask me anything about EgoAgent, by voice or in writing. Or start with one of these.', qs: [
       ['How does EgoAgent work for patients?', 'With your written permission, your therapist records the session. The sound is turned into a written transcript and then permanently deleted. An AI reads the transcript and writes an analysis for your therapist alone, who decides what in it, if anything, is useful. It never speaks with you, and it costs you nothing.'],
@@ -110,7 +114,7 @@
       ['Can you see my patients?', NOSEE]] },
     work: { hi: 'Hello. I can explain your profile and your plan. I never read your patients’ material.', qs: [
       ['How do I add a patient?', 'In your workspace, open Stage 2, Your patients, and tap Add a patient. Enter the first name and the last initial. The patient appears in your list, and you send the consent form from there.'],
-      ['When does my plan begin?', 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder until pricing is set.'],
+      ['When does my plan begin?', 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder.'],
       ['Can you see my patients?', NOSEE]] },
     demo: { hi: 'Hello. Ask me anything about how the working space works, by voice or in writing. Or start with one of these.', qs: [
       ['How does it work, step by step?', 'Six steps. Set up your workspace. Each patient gets one space and one calendar of the treatment. After the session, the recording is transcribed, the sound file is deleted, and the transcript waits as a temporary item. You choose one or more perspectives for the AI’s analysis. You read, think, and save one process note for the day. Then the day is complete: the note is kept, and the transcript and analyses are deleted.'],
@@ -155,7 +159,7 @@
     harvest(D.body, 'this page', out);
     fetch('index.html').then(function (r) { return r.text(); }).then(function (h) {
       var doc = new DOMParser().parseFromString(h, 'text/html');
-      [['everyone', 'the patient page'], ['therapists', 'the therapist page'], ['register', 'the registration page']].forEach(function (p) { var m = doc.getElementById('pane-' + p[0]); if (m) harvest(m, p[1], out); });
+      [['therapists', 'the therapist page'], ['register', 'the registration page']].forEach(function (p) { var m = doc.getElementById('pane-' + p[0]); if (m) harvest(m, p[1], out); });
     }).catch(function () {}).then(function () { KB = out; done && done(); });
   }
   var STOP = ' a an the and or of to in on for is are am be it its this that with as at by from my your you i me we our do does did can could would should will how what why when where who which whom there their they them if so not no yes about into than then also just have has had was were been any some more most such only own same very one ';
@@ -185,6 +189,8 @@
       if (heads.length) { say('This page has these parts:\n' + heads.slice(0, 8).join('\n')); return; }
     }
     if (WORK[view()] && /\b(patient|miriam|transcript|session|note|analys)/i.test(q) && /\b(said|say|wrote|read|show|tell|what did)/i.test(q)) { say(NOSEE); return; }
+    if (view() !== 'everyone' && view() !== 'consent' && /\b(cost|costs|price|priced|pricing|fee|fees|pay|paid|charge|charged|subscription|how much|free)\b/i.test(q)) { say(COST, 'From the plan page'); return; }
+    if (/\b(are|r) (you|u)\b.*\b(ai|a\.i\.|real|human|person|robot|bot|machine|alive|chatgpt|claude)\b|\bwho are you\b|\bwhat are you\b/i.test(q)) { say(WHOAMI); return; }
     var go = function () {
       var d = search(q);
       if (!d) { say('I could not find that on the EgoAgent site. Try asking it another way. If the site does not cover it, the Contact page reaches a person.'); home(false); return; }
@@ -215,7 +221,7 @@
   D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pan.hidden) close(); });
   pan.querySelector('.gd-send').onclick = function () { ask(inp.value); };
   inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') ask(inp.value); });
-  mic.onclick = function () { listen(function (t) { if (filling) fillAnswer(t); else ask(t); }); };
+  mic.onclick = function () { if (!voiceTold) { voiceTold = true; add(VOICE, 'g'); } listen(function (t) { if (filling) fillAnswer(t); else ask(t); }); };
   /* hide behind full-screen films and tours; follow page changes */
   setInterval(function () {
     var cover = D.querySelector('.fsfilm:not([hidden]), #rec:not([hidden]), #fn:not([hidden])'); fab.style.display = cover ? 'none' : '';
