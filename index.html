@@ -1048,6 +1048,15 @@ summary > h3.q > span{font:inherit}
 .skip:not(:focus){width:1px;height:1px;min-height:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* audit item 30: a therapist sent here by a patient */
 .from-patient{max-width:40em;margin:0 auto 1.2em;padding:.8em 1.1em;border:1px solid #2A3D55;border-radius:.7em;color:#EAF0F4;text-align:center;font-size:1em}
+
+/* audit item 12: sample answers from the licensing record */
+.r-outs{margin:1em 0 0;padding-top:.8em;border-top:1px solid var(--rline)}
+.r-outlab{margin:0 0 .4em;font-size:.84em;color:var(--rdim)}
+.r-out{display:block;width:100%;text-align:left;font:inherit;font-size:.9em;color:var(--ochre);background:none;border:1px solid var(--rline2);border-radius:.6em;padding:.6em .9em;margin:.4em 0;min-height:44px;cursor:pointer}
+.r-outcome{margin:1.2em 0 0;padding:1em 1.1em;border:1px solid #F0C46A;border-radius:.8em}
+.r-outcome h2{color:var(--head-gold);font-size:1.3em;margin:0 0 .4em}
+.r-outcome p{margin:.4em 0}
+.r-outcome .btn{margin-top:.8em;min-height:44px}
 </style>
 </head>
 <body class="vb">
@@ -1354,7 +1363,18 @@ summary > h3.q > span{font:inherit}
         <div class="acts"><button class="btn fill" type="button" id="reg-go">Register and open your workspace</button><span class="signin">Already registered? <a href="#signin">Sign in</a></span></div>
         <p class="r-msg" id="reg-msg" role="alert" hidden></p>
         <p class="r-prev"><button type="button" class="r-fill" id="reg-fill">Preview only: fill in sample details</button> <span class="r-prevnote">In this preview no license check is made: any number opens the workspace.</span></p>
+        <div class="r-outs"><p class="r-outlab">Preview only: the other answers the licensing record can give.</p>
+          <button type="button" class="r-out" data-out="name">The name does not match</button>
+          <button type="button" class="r-out" data-out="none">No current license found</button>
+          <button type="button" class="r-out" data-out="down">The record could not be reached</button>
+        </div>
       </form>
+      <div class="r-outcome" id="reg-out" hidden>
+        <h2 id="reg-out-h" tabindex="-1"></h2>
+        <p id="reg-out-t"></p>
+        <p class="r-prevnote">On the real site this answer is also sent to your professional email.</p>
+        <button type="button" class="btn" id="reg-out-back">Back to the form</button>
+      </div>
       <div class="then"><p>Verification is the match between your license on the public licensing record and your affirmation. When both are in place, the workspace opens.</p></div>
     </div></div>
   </section>
@@ -2428,5 +2448,18 @@ summary > h3.q > span{font:inherit}
   if(!t.hasAttribute('tabindex')) t.setAttribute('tabindex','-1'); t.focus(); try{ t.scrollIntoView({block:'start'}); }catch(e){} }); })();
 </script>
 <script>try{ if(new URLSearchParams(location.search).get("from")==="patient"){ var fp=document.getElementById("from-patient"); if(fp) fp.hidden=false; } }catch(e){}</script>
+<script>
+/* audit item 12: sample answers from the licensing record */
+(function(){
+  var T={name:['The name does not match.','The public licensing record shows a different name for this license number. Check the spelling, or use the name exactly as it appears on your license.'],
+         none:['No current license found.','No current New York license was found for this number and profession. Check the number and the profession you chose.'],
+         down:['The licensing record could not be reached.','Your registration is saved. We will check your license by hand and email you when your workspace opens.']};
+  var box=document.getElementById('reg-out'); if(!box) return; var form=box.previousElementSibling, last=null;
+  document.querySelectorAll('.r-out').forEach(function(b){ b.addEventListener('click',function(){ var t=T[b.dataset.out]; last=b;
+    document.getElementById('reg-out-h').textContent=t[0]; document.getElementById('reg-out-t').textContent=t[1];
+    form.hidden=true; box.hidden=false; try{ document.getElementById('reg-out-h').focus(); box.scrollIntoView({block:'start'}); }catch(e){} }); });
+  document.getElementById('reg-out-back').addEventListener('click',function(){ box.hidden=true; form.hidden=false; try{ (last||form).focus(); }catch(e){} });
+})();
+</script>
 </body>
 </html>
