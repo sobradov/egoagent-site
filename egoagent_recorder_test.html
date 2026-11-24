@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>EgoAgent · recorder test</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rec test">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#111010">
+<link rel="manifest" href="egoagent_recorder_test.webmanifest">
+<link rel="apple-touch-icon" href="egoagent_icon_180.png">
+<link rel="icon" type="image/png" href="egoagent_icon_192.png">
+<style>
+:root{--bg:#111010;--ink:#f4efe6;--dim:#c9c0b2;--gold:#e0b85a;--red:#e0604a;--green:#7fc79a;--line:#3a3532;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:max(16px,env(safe-area-inset-top)) 18px max(28px,env(safe-area-inset-bottom))}
+main{max-width:640px;margin:0 auto}
+h1{color:var(--gold);font-size:30px;line-height:1.2;margin:8px 0 6px}
+h2{color:var(--gold);font-size:23px;margin:30px 0 8px}
+p{margin:8px 0}
+.small{font-size:17px;color:var(--dim)}
+.note{border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+a{color:var(--gold)}
+button,select,a.btn{font:inherit;color:var(--ink);background:#1d1b1a;border:2px solid #6b6360;border-radius:14px;min-height:52px;padding:10px 18px}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button[disabled]{opacity:.45}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;text-align:center}
+.big{display:block;width:100%;min-height:96px;font-size:28px;font-weight:700;border-radius:20px;margin:14px 0}
+#go{background:#3a1410;border-color:var(--red);color:#fff}
+#go.on{background:#1d1b1a;border-color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.row > *{flex:1 1 auto}
+#clock{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center;margin:6px 0 0;letter-spacing:1px}
+#saved{text-align:center}
+.meter{height:26px;border:2px solid var(--line);border-radius:13px;overflow:hidden;margin:10px 0}
+.meter i{display:block;height:100%;width:0;background:var(--green);transition:width .1s linear}
+#state{font-size:22px;font-weight:600;text-align:center;min-height:1.5em}
+ol li,ul li{margin:6px 0}
+#log{list-style:none;padding:0;margin:0;font-size:17px}
+#log li{border-top:1px solid var(--line);padding:6px 0}
+#log li b{color:var(--gold);font-weight:600}
+#dim{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;color:#8a8580;text-align:center}
+#dim.on{display:flex}
+#dim .t{font-size:44px;font-variant-numeric:tabular-nums}
+#dim button{margin-top:28px;background:#000;border-color:#3a3532;color:#8a8580}
+audio{width:100%;margin:10px 0}
+.res{font-size:21px}
+.res strong{color:var(--gold)}
+.warn{color:#ffb4a6}
+.ok{color:var(--green)}
+</style>
+</head>
+<body>
+<main>
+<h1>Recorder test</h1>
+<p>This page tests one question: can your iPhone record a whole session from a web page?</p>
+<div class="note">
+<p><strong>Your own voice only. No patient.</strong> The sound stays on this phone. Nothing is sent anywhere. You can delete it at the end.</p>
+</div>
+
+<h2 id="h-test">Which test is this?</h2>
+<p class="small">Choose before you start. The report below remembers it.</p>
+<select id="which" aria-labelledby="h-test">
+<option value="">Choose a test</option>
+<option>1. Fifty minutes with the screen kept on</option>
+<option>2. Lock the screen for two minutes</option>
+<option>3. Switch to another app and back</option>
+<option>4. Take a phone call</option>
+<option>5. Opened from the Home Screen icon</option>
+<option>6. Two voices in the room</option>
+<option>Other</option>
+</select>
+
+<p id="state" role="status" aria-live="polite">Ready.</p>
+<button class="big" id="go" type="button">● Start recording</button>
+<p id="clock" aria-hidden="true">0:00</p>
+<p id="saved" class="small">Saved on this phone: nothing yet.</p>
+<div class="meter" aria-hidden="true"><i id="lvl"></i></div>
+<p class="small" id="lvltxt">The green bar moves when the phone hears sound.</p>
+<div class="row">
+<button type="button" id="darkbtn" disabled>Dim the screen while recording</button>
+</div>
+
+<section id="result" hidden>
+<h2 id="h-res" tabindex="-1">Result</h2>
+<div class="res" id="restext"></div>
+<audio id="play" controls preload="metadata"></audio>
+<div class="row">
+<a id="dl" class="btn" href="#" download>Save the recording to Files</a>
+<button type="button" id="del">Delete the recording</button>
+</div>
+</section>
+
+<section id="found" hidden>
+<h2>An interrupted recording was found</h2>
+<p id="foundtxt"></p>
+<div class="row">
+<button type="button" id="keep">Show it</button>
+<button type="button" id="drop">Delete it</button>
+</div>
+</section>
+
+<h2>The six tests</h2>
+<ol>
+<li>Fifty minutes with the screen kept on. Put the phone on its charger.</li>
+<li>Start, lock the screen, wait two minutes, unlock, then stop.</li>
+<li>Start, open another app for one minute, come back, then stop.</li>
+<li>Start, and ask someone to call you. Answer or decline, come back, then stop.</li>
+<li>Add this page to the Home Screen: tap Share, then Add to Home Screen. Open it from the new icon, and run test 2 again.</li>
+<li>With a second person, made-up conversation, phone on the table between you. Listen afterwards: are both voices clear?</li>
+</ol>
+
+<h2 id="h-rep">Report</h2>
+<p class="small">Everything the phone did, in order. When a test ends, tap Copy the report and paste it to me in our chat.</p>
+<div class="row">
+<button type="button" id="copy">Copy the report</button>
+<button type="button" id="clear">Clear the report</button>
+</div>
+<ul id="log" aria-labelledby="h-rep"></ul>
+
+<div id="dim" role="dialog" aria-label="Recording, screen dimmed">
+<p>Recording</p>
+<p class="t" id="dimclock">0:00</p>
+<button type="button" id="undim">Tap to show the page</button>
+</div>
+</main>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var DB=null, REC=null, STREAM=null, AC=null, AN=null, WL=null;
+var S={on:false,id:null,start:0,chunks:0,bytes:0,mime:'',lastTick:0,paused:0,raf:0,tick:0};
+var LOGKEY='ea-rectest-log';
+var log=[];
+try{ log=JSON.parse(localStorage.getItem(LOGKEY)||'[]'); }catch(e){ log=[]; }
+
+function hhmmss(t){ var d=new Date(t); return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'}); }
+function mmss(ms){ var s=Math.max(0,Math.round(ms/1000)); var h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0'); }
+function words(ms){ var s=Math.round(ms/1000); if(s<60) return s+' second'+(s===1?'':'s'); var m=Math.floor(s/60), x=s%60; return m+' minute'+(m===1?'':'s')+(x?' '+x+' second'+(x===1?'':'s'):''); }
+function note(text, important){
+  var e={t:Date.now(),x:text,b:!!important}; log.push(e);
+  try{ localStorage.setItem(LOGKEY,JSON.stringify(log.slice(-400))); }catch(er){}
+  drawLog();
+}
+function drawLog(){
+  var ul=$('log'); ul.innerHTML='';
+  log.slice().reverse().forEach(function(e){ var li=document.createElement('li'); li.innerHTML='<b>'+hhmmss(e.t)+'</b> · '; li.appendChild(document.createTextNode(e.x)); ul.appendChild(li); });
+}
+function say(t){ $('state').textContent=t; }
+
+/* ---------- storage on the phone ---------- */
+function openDB(){ return new Promise(function(res,rej){ var r=indexedDB.open('ea-rectest',1); r.onupgradeneeded=function(){ var d=r.result; if(!d.objectStoreNames.contains('chunks')) d.createObjectStore('chunks',{autoIncrement:true}).createIndex('sid','sid'); if(!d.objectStoreNames.contains('sessions')) d.createObjectStore('sessions',{keyPath:'sid'}); }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }); }
+function put(store,val){ return new Promise(function(res,rej){ var tx=DB.transaction(store,'readwrite'); tx.objectStore(store).put(val); tx.oncomplete=res; tx.onerror=function(){ rej(tx.error); }; }); }
+function getAll(store){ return new Promise(function(res,rej){ var tx=DB.transaction(store,'readonly'); var q=tx.objectStore(store).getAll(); q.onsuccess=function(){ res(q.result||[]); }; q.onerror=function(){ rej(q.error); }; }); }
+function chunksOf(sid){ return new Promise(function(res,rej){ var tx=DB.transaction('chunks','readonly'); var q=tx.objectStore('chunks').index('sid').getAll(sid); q.onsuccess=function(){ res(q.result||[]); }; q.onerror=function(){ rej(q.error); }; }); }
+function wipe(sid){ return new Promise(function(res){ var tx=DB.transaction(['chunks','sessions'],'readwrite'); var ix=tx.objectStore('chunks').index('sid'); var c=ix.openCursor(IDBKeyRange.only(sid)); c.onsuccess=function(){ var cur=c.result; if(cur){ cur.delete(); cur.continue(); } }; tx.objectStore('sessions').delete(sid); tx.oncomplete=res; tx.onerror=res; }); }
+
+/* ---------- recording ---------- */
+function pickMime(){ var c=['audio/mp4','audio/mp4;codecs=mp4a.40.2','audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus']; if(!window.MediaRecorder) return null; for(var i=0;i<c.length;i++){ try{ if(MediaRecorder.isTypeSupported(c[i])) return c[i]; }catch(e){} } return ''; }
+
+async function start(){
+  if(!window.MediaRecorder||!navigator.mediaDevices){ say('This browser cannot record.'); note('This browser has no recorder. Test cannot run.',true); return; }
+  var which=$('which').value; if(!which){ say('Choose a test first.'); $('which').focus(); return; }
+  $('result').hidden=true;
+  try{
+    STREAM=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});
+  }catch(e){ say('The microphone was not allowed.'); note('Microphone refused: '+(e&&e.name||e),true); return; }
+  S.mime=pickMime(); S.id='s'+Date.now(); S.start=Date.now(); S.chunks=0; S.bytes=0; S.paused=0; S.lastTick=Date.now();
+  await put('sessions',{sid:S.id,start:S.start,which:which,mime:S.mime,done:false,lastSave:S.start});
+  try{ REC=new MediaRecorder(STREAM,S.mime?{mimeType:S.mime}:undefined); }catch(e){ REC=new MediaRecorder(STREAM); }
+  S.mime=REC.mimeType||S.mime||'unknown';
+  REC.ondataavailable=function(ev){ if(!ev.data||!ev.data.size) return; S.chunks++; S.bytes+=ev.data.size; var now=Date.now(); put('chunks',{sid:S.id,n:S.chunks,t:now,blob:ev.data}).then(function(){ return put('sessions',{sid:S.id,start:S.start,which:which,mime:S.mime,done:false,lastSave:now,chunks:S.chunks}); }).catch(function(e){ note('Could not save a piece of sound on the phone: '+(e&&e.name||e),true); }); $('saved').textContent='Saved on this phone: up to '+mmss(now-S.start)+' ('+(S.bytes/1048576).toFixed(1)+' MB).'; };
+  REC.onpause=function(){ note('The recorder paused itself.',true); };
+  REC.onresume=function(){ note('The recorder resumed.',true); };
+  REC.onerror=function(e){ note('The recorder reported an error: '+(e&&e.error&&e.error.name||'unknown'),true); };
+  REC.onstop=function(){ if(S.on){ S.on=false; clearInterval(S.tick); cancelAnimationFrame(S.raf); note('The phone stopped the recorder by itself.',true); } finish(); };
+  STREAM.getAudioTracks().forEach(function(tr){ tr.onended=function(){ note('The microphone was taken away from the page.',true); if(S.on) stop('ended'); }; tr.onmute=function(){ note('The microphone went silent (muted by the phone).',true); }; tr.onunmute=function(){ note('The microphone came back.',true); }; });
+  try{ AC=new (window.AudioContext||window.webkitAudioContext)(); var src=AC.createMediaStreamSource(STREAM); AN=AC.createAnalyser(); AN.fftSize=512; src.connect(AN); AC.onstatechange=function(){ if(AC) note('Sound engine is now '+AC.state+'.'); }; }catch(e){ AN=null; }
+  REC.start(5000);
+  S.on=true; note('Started: '+which+'. Format: '+S.mime+'. '+(standalone()?'Opened from the Home Screen.':'Opened in the browser.'),true);
+  $('go').textContent='■ Stop recording'; $('go').classList.add('on'); $('darkbtn').disabled=false;
+  say('Recording.');
+  await lock();
+  S.tick=setInterval(tick,1000); loop();
+}
+function tick(){
+  var now=Date.now(), gap=now-S.lastTick;
+  if(gap>3500){ S.paused+=gap-1000; note('The page was asleep for '+words(gap)+', from '+hhmmss(S.lastTick)+' to '+hhmmss(now)+'.',true); }
+  S.lastTick=now; try{ localStorage.setItem('ea-rectest-alive',String(now)); }catch(e){}
+  var t=mmss(now-S.start); $('clock').textContent=t; $('dimclock').textContent=t;
+}
+function loop(){
+  if(!S.on) return;
+  if(AN){ var a=new Uint8Array(AN.fftSize); AN.getByteTimeDomainData(a); var m=0; for(var i=0;i<a.length;i++){ var v=Math.abs(a[i]-128); if(v>m) m=v; } S.lv=Math.max(Math.min(100,m/128*160),(S.lv||0)*0.9); $('lvl').style.width=Math.round(S.lv)+'%'; }
+  S.raf=requestAnimationFrame(loop);
+}
+function stop(why){
+  if(!S.on) return; S.on=false;
+  clearInterval(S.tick); cancelAnimationFrame(S.raf); $('lvl').style.width='0';
+  note(why==='ended'?'Recording ended because the microphone was lost.':'Stop pressed.',true);
+  say('Finishing…');
+  try{ if(REC&&REC.state!=='inactive') REC.stop(); else finish(); }catch(e){ finish(); }
+}
+async function finish(){
+  try{ STREAM&&STREAM.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+  try{ AC&&AC.close(); }catch(e){} AC=null; AN=null;
+  unlock(); undim();
+  $('go').textContent='● Start recording'; $('go').classList.remove('on'); $('darkbtn').disabled=true;
+  var end=Date.now();
+  var rows=await chunksOf(S.id); rows.sort(function(a,b){ return a.n-b.n; });
+  var sess=(await getAll('sessions')).filter(function(x){ return x.sid===S.id; })[0]||{};
+  sess.done=true; sess.end=end; await put('sessions',sess);
+  show(S.id, rows, S.start, end, S.mime, S.paused);
+}
+async function show(sid, rows, startT, endT, mime, pausedMs){
+  var blob=new Blob(rows.map(function(r){ return r.blob; }),{type:(mime||'audio/mp4').split(';')[0]});
+  var url=URL.createObjectURL(blob);
+  var a=$('play'); a.src=url;
+  var ext=/webm/.test(mime)?'webm':(/ogg/.test(mime)?'ogg':'m4a');
+  $('dl').href=url; $('dl').download='egoagent_recorder_test_'+(function(d){ var z=function(n){ return String(n).padStart(2,'0'); }; return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+'_'+z(d.getHours())+'-'+z(d.getMinutes()); })(new Date(startT))+'.'+ext;
+  $('del').onclick=async function(){ await wipe(sid); URL.revokeObjectURL(url); a.removeAttribute('src'); $('result').hidden=true; note('The recording was deleted from this phone.',true); say('Deleted.'); };
+  var clock=endT-startT;
+  var dur=await duration(a);
+  var lines=['Clock time: <strong>'+words(clock)+'</strong>.'];
+  if(dur!=null){ lines.push('Sound recorded: <strong>'+words(dur*1000)+'</strong>.'); var miss=clock-dur*1000; if(miss>8000) lines.push('<span class="warn">About '+words(miss)+' of the session is missing from the sound.</span>'); else lines.push('<span class="ok">Nothing is missing.</span>'); }
+  else lines.push('The phone could not tell the length of the sound. Listen to the end of it to check.');
+  if(pausedMs>0) lines.push('The page was asleep for '+words(pausedMs)+' in total.');
+  lines.push('Size: '+(blob.size/1048576).toFixed(1)+' MB.');
+  $('restext').innerHTML=lines.map(function(l){ return '<p>'+l+'</p>'; }).join('');
+  note('Result: clock '+words(clock)+(dur!=null?', sound '+words(dur*1000):', sound length unknown')+', size '+(blob.size/1048576).toFixed(1)+' MB.',true);
+  $('result').hidden=false; say('Done. The result is below.');
+  try{ $('h-res').focus(); }catch(e){}
+}
+function duration(a){ return new Promise(function(res){ var done=false; function fin(v){ if(done) return; done=true; res(v); }
+  a.onloadedmetadata=function(){ if(isFinite(a.duration)&&a.duration>0) return fin(a.duration); a.ondurationchange=function(){ if(isFinite(a.duration)&&a.duration>0){ var d=a.duration; a.currentTime=0; fin(d); } }; try{ a.currentTime=1e7; }catch(e){ fin(null); } };
+  a.onerror=function(){ fin(null); }; setTimeout(function(){ fin(isFinite(a.duration)&&a.duration>0?a.duration:null); },6000); a.load(); }); }
+
+/* ---------- keep awake ---------- */
+async function lock(){
+  if(!('wakeLock' in navigator)){ note('This phone cannot keep the screen awake from a web page.',true); return; }
+  try{ WL=await navigator.wakeLock.request('screen'); note('The screen will stay awake.'); WL.addEventListener('release',function(){ if(S.on) note('The phone let the screen sleep again.',true); WL=null; }); }
+  catch(e){ note('Keeping the screen awake was refused: '+(e&&e.name||e),true); }
+}
+function unlock(){ try{ WL&&WL.release(); }catch(e){} WL=null; }
+
+/* ---------- dim screen ---------- */
+function dim(){ $('dim').classList.add('on'); $('undim').focus(); }
+function undim(){ $('dim').classList.remove('on'); }
+
+function standalone(){ return !!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)); }
+
+/* ---------- page events ---------- */
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'){ note(S.on?'The page left the screen while recording.':'The page left the screen.',S.on); }
+  else { note(S.on?'The page is back on the screen. Recording: '+(REC?REC.state:'none')+'.':'The page is back on the screen.',S.on); if(S.on&&!WL) lock(); if(S.on&&AC&&AC.state==='suspended'){ AC.resume().catch(function(){}); } }
+});
+window.addEventListener('pagehide',function(){ if(S.on) note('The phone is closing the page while recording.',true); });
+window.addEventListener('online',function(){ note('Internet connection is back.'); });
+window.addEventListener('offline',function(){ note('No internet connection. Recording does not need it.'); });
+
+$('go').onclick=function(){ if(S.on) stop(); else start(); };
+$('darkbtn').onclick=dim; $('undim').onclick=undim; $('dim').onclick=function(e){ if(e.target===this) undim(); };
+$('which').onchange=function(){ if(this.value) note('Test chosen: '+this.value+'.'); };
+$('copy').onclick=function(){
+  var head='EgoAgent recorder test report\nPhone: '+navigator.userAgent+'\n'+(standalone()?'Opened from the Home Screen':'Opened in the browser')+'\n\n';
+  var body=log.map(function(e){ return hhmmss(e.t)+' · '+e.x; }).join('\n');
+  var txt=head+body;
+  (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ say('Report copied. Paste it in our chat.'); }).catch(function(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); say('Report copied. Paste it in our chat.'); }catch(e){ say('Copy did not work. Select the report and copy it.'); } ta.remove(); });
+};
+$('clear').onclick=function(){ log=[]; try{ localStorage.removeItem(LOGKEY); }catch(e){} drawLog(); say('Report cleared.'); };
+
+/* ---------- start-up ---------- */
+openDB().then(async function(d){
+  DB=d;
+  try{ if(navigator.storage&&navigator.storage.persist){ var p=await navigator.storage.persist(); if(!p) {} } }catch(e){}
+  var open=(await getAll('sessions')).filter(function(x){ return !x.done; });
+  var alive=+(localStorage.getItem('ea-rectest-alive')||0);
+  if(open.length){
+    var s=open.sort(function(a,b){ return b.start-a.start; })[0];
+    var rows=await chunksOf(s.sid);
+    var len=(s.lastSave||s.start)-s.start;
+    $('foundtxt').textContent='A recording started at '+hhmmss(s.start)+' did not finish. About '+words(len)+' of sound was saved on this phone'+(alive?', and the page last ran at '+hhmmss(alive):'')+'.';
+    note('Found an interrupted recording: about '+words(len)+' saved. The page last ran at '+(alive?hhmmss(alive):'an unknown time')+'.',true);
+    $('found').hidden=false;
+    $('keep').onclick=async function(){ s.done=true; s.end=s.lastSave; await put('sessions',s); $('found').hidden=true; rows.sort(function(a,b){ return a.n-b.n; }); show(s.sid,rows,s.start,s.lastSave||s.start,s.mime,0); };
+    $('drop').onclick=async function(){ await wipe(s.sid); $('found').hidden=true; note('The interrupted recording was deleted.',true); say('Deleted.'); };
+  }
+}).catch(function(e){ note('This phone would not let the page store sound: '+(e&&e.name||e),true); });
+drawLog();
+note('Page opened'+(standalone()?' from the Home Screen.':' in the browser.')+' Keep awake: '+(('wakeLock' in navigator)?'possible':'not possible')+'. Recorder format: '+(pickMime()||'none')+'.');
+})();
+</script>
+</body>
+</html>
