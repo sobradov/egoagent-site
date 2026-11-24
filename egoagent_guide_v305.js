@@ -95,6 +95,7 @@
   var WHOAMI = 'I am the guide to this site, not a person and not the AI that writes analyses. I find the passage on the EgoAgent site that best answers your question and read it to you. I cannot see cases, transcripts, analyses or notes.';
   var VOICE = 'A note on voice: your browser turns your speech into text, and with some browsers that happens on the browser maker’s own servers. EgoAgent keeps nothing of it. You can always type instead.';
   var voiceTold = false, emptyTold = false;
+  var COUNT = 'Single sessions have no limit on their number. Several sessions read together count as that many sessions, up to 22 at a time. Longer spans are not priced yet.';
   var COST = 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder. Your patients pay nothing.';
   var CUR = {
     everyone: { hi: 'Hello. Ask me anything about EgoAgent, by voice or in writing. Or start with one of these.', qs: [
@@ -192,7 +193,9 @@
     }
     if (WORK[view()] && /\b(patient|miriam|transcript|session|note|analys)/i.test(q) && /\b(said|say|wrote|read|show|tell|what did)/i.test(q)) { say(NOSEE); return; }
     if (view() !== 'everyone' && view() !== 'consent' && /\b(cost|costs|price|priced|pricing|fee|fees|pay|paid|charge|charged|subscription|how much|free)\b/i.test(q)) { say(COST, 'From the plan page'); return; }
-    if ((view() === 'everyone' || view() === 'consent') && /\b(say no|refuse|decline|opt out|do i have to|must i|have to agree|don.?t want|do not want|not agree|turn it down)\b/i.test(q)) { say(CUR.everyone.qs[2][1], 'From the patient page'); return; }
+    if ((view() === 'everyone' || view() === 'consent') && /\b(therapist|doctor|analyst|psychiatrist)\b/i.test(q) && /\b(say no|says no|refuse|refuses|decline|declines|not want|doesn.?t want|does not want|won.?t|unwilling)\b/i.test(q)) { say('When you are ready, ask. It is a question, not a demand, and your therapist can say no.', 'From the patient page'); return; }
+    if ((view() === 'everyone' || view() === 'consent') && !/\b(therapist|doctor|analyst|psychiatrist)\b/i.test(q) && /\b(say no|refuse|decline|opt out|do i have to|must i|have to agree|don.?t want|do not want|not agree|turn it down)\b/i.test(q)) { say(CUR.everyone.qs[2][1], 'From the patient page'); return; }
+    if (view() !== 'everyone' && view() !== 'consent' && /\bsessions?\b/i.test(q) && /\b(count|counts|counted|counting|how many|limit|limits|included)\b/i.test(q)) { say(COUNT, 'From the plan page'); return; }
     if (isDemo && /\b(recording|recordings|audio|sound file|sound)\b/i.test(q)) { say(CUR.demo.qs[1][1], 'From this page'); return; }
     if (/\b(are|r) (you|u)\b.*\b(ai|a\.i\.|real|human|person|robot|bot|machine|alive|chatgpt|claude)\b|\bwho are you\b|\bwhat are you\b/i.test(q)) { say(WHOAMI); return; }
     var go = function () {

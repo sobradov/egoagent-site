@@ -994,7 +994,9 @@
   .pf-v{min-width:0;overflow-wrap:anywhere}
   .r-prevnote{display:block;color:var(--rdim);font-size:.95em;margin:.35em 0 0}
   .r-fill{padding:.5em 0;min-height:36px}
-  .wfoot a{display:inline-block;padding:.55em 0}
+  .wfoot a{padding:.55em 0}
+  .wfoot a:not(.wf-out){display:inline-block}
+  body.authed .wfoot .wf-out{display:inline-block}
   section[tabindex="-1"]:focus,details[tabindex="-1"]:focus,div[tabindex="-1"]:focus{outline:none}
   .top .acts .ws-link{white-space:nowrap}
   @media (max-width:380px){
@@ -1442,7 +1444,7 @@
           <p class="pf-row"><span class="pf-k">Status</span><span class="pf-v" id="pl-status">Not started</span></p>
         </fieldset>
         <p class="r-msg" id="pl-how" hidden>There is nothing to start yet. The plan begins when you invite your first patient: add a patient in your workspace, and the invitation step brings you back here.</p>
-        <div class="acts"><a class="btn fill" href="#checkout" id="pl-start" hidden>Start the plan</a><a class="btn fill" href="egoagent_workspace.html?in=1" id="pl-open">Open your workspace</a></div>
+        <div class="acts"><a class="btn fill" href="#checkout" id="pl-start" hidden>Set up the plan</a><a class="btn fill" href="egoagent_workspace.html?in=1" id="pl-open">Open your workspace</a></div>
       </form>
     </div></div>
   </section>
@@ -1453,7 +1455,7 @@
     <div class="wrap"><div class="door">
       <p class="wcrumb"><a href="#plan">Plan</a><span class="sep">&middot;</span><b>Checkout</b></p>
       <span class="r-eyebrow">Sample checkout &middot; no card is taken</span>
-      <h1>Start your plan.</h1>
+      <h1>Set up your plan.</h1>
       <p class="r-free">This is a sample of the checkout. It takes no card and no payment. On the real site, payment is made on the payment provider&rsquo;s own secure page.</p>
       <form onsubmit="return false">
         <fieldset>
@@ -1468,7 +1470,7 @@
           <legend>Payment</legend>
           <div class="pay-card">Sample card ending 4242<span class="pf-note">For this preview only. It is not a real card, and nothing can be typed here.</span></div>
         </fieldset>
-        <div class="acts" id="co-acts"><button class="btn fill" type="button" id="co-go">Start the plan (sample, no payment)</button><a class="plainlink" href="#plan">Cancel</a></div>
+        <div class="acts" id="co-acts"><button class="btn fill" type="button" id="co-go">Set up the plan (sample, no payment)</button><a class="plainlink" href="#plan">Cancel</a></div>
         <p class="r-msg" id="co-done" role="status" hidden>Your plan is active. This was a sample: no payment was taken.</p>
         <div class="acts" id="co-after" hidden><a class="btn fill" href="egoagent_workspace.html?in=1">Return to your workspace</a><a class="plainlink" href="#plan">Your plan</a></div>
       </form>
@@ -2180,12 +2182,12 @@
   }
   function fillCheckout(){
     var a=auth(), p=planState(); if(a) $('co-name').textContent=fullName(a)||'[Name as registered]';
-    var done=!!sget('ea-plan')&&(p.active||p.ready);
+    var done=p.active||(!!sget('ea-plan')&&p.ready);
     $('co-acts').hidden=done; $('co-done').hidden=!done; $('co-after').hidden=!done;
-    if(done) $('co-done').textContent=p.active?'Your plan is active. This was a sample: no payment was taken.':'Your plan is ready. It begins when you send your first invitation. This was a sample: no payment was taken. Return to your workspace to send the invitation.';
+    if(done) $('co-done').textContent=p.active?'Your plan is active'+(p.since?' since '+p.since:'')+'. There is nothing to set up.':'Your plan is ready. It begins when you send your first invitation. This was a sample: no payment was taken. Return to your workspace to send the invitation.';
   }
   (function(){ var go=$('co-go'); if(!go) return;
-    go.addEventListener('click',function(){ sset('ea-plan',{ready:true}); fillCheckout(); var l=$('co-after').querySelector('a'); if(l) l.focus(); });
+    go.addEventListener('click',function(){ if(!planState().active) sset('ea-plan',{ready:true}); fillCheckout(); var l=$('co-after').querySelector('a'); if(l) l.focus(); });
   })();
 
   /* ---------- the consent the patient signs: names from the invitation, and the signature goes back to the therapist ---------- */
@@ -2218,6 +2220,9 @@
     sign.dataset.signed='1'; sign.classList.add('open'); sign.setAttribute('aria-disabled','false');
     typed.value=r.typed||r.name; typed.disabled=true; $('cn-go').disabled=true; $('cn-clear').disabled=true; pad.classList.add('locked');
     $('cn-hint').textContent=''; $('cn-why').hidden=true; $('cn-done').hidden=false; $('cn-back').hidden=!backURL();
+    /* said at the top too, where a returning reader starts; the sign button and the clear button have no more work to do */
+    $('cn-go').hidden=true; $('cn-clear').hidden=true;
+    var top=$('cn-pv'); top.hidden=false; top.textContent='This form is signed'+(r.longdate?' ('+r.longdate+')':'')+'. This is the signed copy.'+((r.st==='preview')?' It was signed as a '+(r.sample?'sample':'preview')+', so it is not filed.':'');
     fitPad();
     if(r.sig&&!pad.dataset.drawn){ pad.dataset.drawn='1'; var im=new Image(); im.onload=function(){ var b=pad.getBoundingClientRect(); try{ pad.getContext('2d').drawImage(im,0,0,b.width,170); }catch(e){} }; im.src=r.sig; }
   }
@@ -2243,6 +2248,7 @@
       try{ r.sig=pad.toDataURL('image/png'); }catch(e){}
       if(!sset('ea-consent',all)){ delete r.sig; sset('ea-consent',all); }
       $('cn-back').hidden=!backURL();
+      pad.dataset.drawn='1'; showSigned(r);
     });
   })();
 

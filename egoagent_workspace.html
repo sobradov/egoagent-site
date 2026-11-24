@@ -1205,6 +1205,7 @@ function nostage(text,btns){ return '<p>'+text+'</p>'+(btns||[]).map(function(b)
   function swap(a,id){ var b=document.createElement('button'); b.type='button'; b.className=a.className; b.id=id; b.textContent=a.textContent; a.replaceWith(b); return b; }
   cont=swap(cont,'s1cont'); prev=swap(prev,'s1prev'); opn=swap(opn,'s1open');
   var steps=body.querySelectorAll('.step');
+  each(body.querySelectorAll('p.small'),function(q){ if(/public record before the workspace opens/.test(q.textContent)){ var n=document.createElement('span'); n.textContent=' In this '+WORD+' no license check is made.'; n.style.color='var(--gold)'; q.appendChild(n); } });
   cont.onclick=function(){ try{ steps[4].scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} prev.focus(); };
   prev.onclick=function(){ var c=sget('ea-consent')||{}; c.PREVIEW={name:'Miriam S.',st:'preview',dr:drName(),longdate:'August 14, 2026',m:DEMO?'d':'w'}; sset('ea-consent',c); sset('ea-from',HERE); location.href='index.html#consent/PREVIEW'; };
   opn.onclick=function(){ openStage(2,true); };
@@ -1243,7 +1244,7 @@ function drawConsent(){
   var p=P(), c=$('consent'), box=$('cact'); c.textContent=consentLine(p); c.style.color=p.consent.st==='signed'?'':'#c98a3d'; box.innerHTML='';
   if(p.consent.st==='signed') return;
   if(p.consent.st==='none'&&!plan().active&&!plan().ready){
-    box.innerHTML='<div class="planbox"><strong>Your plan begins when you invite your first patient.</strong><br>Individual practice · $20 per month. <span class="small">The price is a placeholder.</span><br><a class="btn" id="planstart" href="index.html#plan">Start the plan</a></div>';
+    box.innerHTML='<div class="planbox"><strong>Your plan begins when you invite your first patient.</strong><br>Individual practice · $20 per month. <span class="small">The price is a placeholder.</span><br><a class="btn" id="planstart" href="index.html#plan">Set up the plan</a></div>';
     $('planstart').onclick=function(){ sset('ea-pend',{send:S.cur}); save(); };
     return;
   }
@@ -1259,7 +1260,7 @@ function drawConsent(){
   function markSent(){ if(p.consent.st!=='sent'){ p.consent={st:'sent',date:'14 Aug 2026'}; } noteConsent(p,'sent'); save();
     var pl=plan(); if(!pl.active&&pl.ready){ sset('ea-plan',{active:true,since:'14 Aug 2026'}); if(window.__planLine) window.__planLine(); planJust=true; }
     setTimeout(function(){ drawPatients(); drawEgo(); },60); }
-  $('csmail').addEventListener('click',function(){ mailFor=S.cur; mailJust=true; markSent(); });
+  $('csmail').addEventListener('click',function(){ var o=document.querySelector('.toast'); if(o) o.remove(); mailFor=S.cur; mailJust=true; markSent(); });
   if($('mailprev')&&mailJust){ mailJust=false; planJust=false; var mp=$('mailprev'); mp.setAttribute('tabindex','-1'); try{ mp.scrollIntoView({block:'nearest'}); mp.focus({preventScroll:true}); }catch(e){} }
   if($('mailcopy')) $('mailcopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText(SUBJ+'\n\n'+BODY).catch(function(){}); }catch(e){} toast('Message copied.'); };
   $('cscopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText('https://'+link).catch(function(){}); }catch(e){} markSent(); toast('Link copied: https://'+link+(planJust?' Your plan begins with this first invitation.':'')); planJust=false; };
@@ -1834,7 +1835,7 @@ drawAll(); syncAll();
   else if(!DEMO){ openStage(2,false); }
   ready=true;
   var tm=sget('ea-toast'); if(tm){ sdel('ea-toast'); toast(tm); }
-  if(pend&&pend.send&&S.pts[pend.send]){ S.cur=pend.send; sdel('ea-pend'); save(); drawPatients(); if(plan().active||plan().ready){ openStage(2,true); toast(plan().active?'Your plan is active. You can now send the consent form.':'Your plan is ready. It begins when you send the consent form.'); } }
+  if(pend&&pend.send&&S.pts[pend.send]){ S.cur=pend.send; sdel('ea-pend'); save(); drawPatients(); if(plan().active||plan().ready){ openStage(2,true); toast(plan().active?'Your plan is active. You can now send the invitation.':'Your plan is ready. It begins when you send your first invitation.'); } }
   if(Q.get('signed')) openStage(2,false);
 })();
 if(DEMO){ var g=document.createElement('script'); g.src='egoagent_guide_v305.js'; g.defer=true; document.body.appendChild(g); }
