@@ -224,7 +224,7 @@
   mic.onclick = function () { if (!voiceTold) { voiceTold = true; add(VOICE, 'g'); } listen(function (t) { if (filling) fillAnswer(t); else ask(t); }); };
   /* hide behind full-screen films and tours; follow page changes */
   setInterval(function () {
-    var cover = D.querySelector('.fsfilm:not([hidden]), #rec:not([hidden]), #fn:not([hidden])'); fab.style.display = cover ? 'none' : '';
+    var cover = D.querySelector(isDemo ? '.fsfilm:not([hidden]), #rec:not([hidden]), #fn:not([hidden])' : '.fsfilm:not([hidden])');   /* on the main site, #fn is the first-name field of the registration form, not an overlay */ fab.style.display = cover ? 'none' : '';
     if (cover && !pan.hidden) close();
     if (!pan.hidden && lastView !== view()) { lastView = view(); log.innerHTML = ''; filling = false; home(); }
   }, 600);
