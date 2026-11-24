@@ -1,4 +1,5 @@
-/* EgoAgent Guide (v303) - one guide for every page of the site.
+/* EgoAgent Guide (v305) - one guide for every public page of the site, and for the workspace demo.
+   (v305: the working space has its own page and its own personal EgoAgent; this guide is not loaded there.)
    - A living EgoAgent mark on the right edge, vertically centred, clear of the reading column.
    - Three likely questions per page, with answers taken from what the site says.
    - Any other question, typed or spoken, is answered from the site's own text: the guide finds the passage that answers it and reads it aloud.
@@ -7,7 +8,7 @@
    - In the working space it explains the screens and never reads patient material. */
 (function () {
   if (window.__egoGuide) return; window.__egoGuide = true;
-  var D = document, isDemo = /workspace_demo/.test(location.pathname);
+  var D = document, isDemo = /egoagent_workspace/.test(location.pathname);
 
   /* ---------- look ---------- */
   var css = '' +
@@ -86,7 +87,7 @@
     if (isDemo) return 'demo';
     var m = D.querySelector('main[id^="pane-"]:not([hidden])'); return m ? m.id.replace('pane-', '') : 'everyone';
   }
-  var WORK = { casebook: 1, 'case': 1, hour: 1, profile: 1 };
+  var WORK = { profile: 1, plan: 1, checkout: 1 };
 
   /* ---------- three likely questions per page (answers from what the site says) ---------- */
   var NOSEE = 'No. I explain the screens and take you where you want to go. I am built with no access to cases, transcripts, analyses or notes.';
@@ -101,15 +102,15 @@
       ['Who can register?', 'Licensed physicians, psychologists, clinical social workers and psychoanalysts, each license verified individually. New York is open first; other states follow. The subscription belongs to you, not to a practice or an institute.']] },
     register: { hi: 'Hello. I can fill in this form with you by voice, or answer any question about EgoAgent.', fill: true, qs: [
       ['How is my license checked?', 'Your license or registration number is checked against the public licensing record where you practice. In New York, that is the State Education Department’s record. Your sworn affirmation completes it.'],
-      ['What happens after I register?', 'Your casebook opens: your cases, their hours, and the consultation on each. A sample hour is there if you want to try it first. Nothing is recorded and no patient is invited until you choose to.'],
+      ['What happens after I register?', 'Your workspace opens: one space for each patient, with one calendar of the treatment. Sample patients are there if you want to try it first. Nothing is recorded and no patient is invited until you choose to.'],
       ['Can you see my patients?', NOSEE]] },
     signin: { hi: 'Hello. Ask me anything about EgoAgent, by voice or in writing.', qs: [
-      ['What happens when I sign in?', 'Your casebook opens, with your cases, their hours and the consultation on each.'],
+      ['What happens when I sign in?', 'Your workspace opens, with one space for each patient and one calendar of the treatment.'],
       ['I am not registered yet.', 'Tap Register under the sign-in button. Registration is free; your license is checked against the public licensing record and your sworn affirmation completes it.'],
       ['Can you see my patients?', NOSEE]] },
-    work: { hi: 'Hello. I can explain any screen of your working space. I never read your cases.', qs: [
-      ['How do I add a new case?', 'On the Casebook, tap + New case. Enter the patient’s first name and last initial, and one short line of your own. The case appears in your list.'],
-      ['How do I analyze an hour?', 'Open the patient, tap a day on the calendar to open that hour, choose one or more perspectives, and tap Analyze. Each analysis is kept beside the transcript.'],
+    work: { hi: 'Hello. I can explain your profile and your plan. I never read your patients’ material.', qs: [
+      ['How do I add a patient?', 'In your workspace, open Stage 2, Your patients, and tap Add a patient. Enter the first name and the last initial. The patient appears in your list, and you send the consent form from there.'],
+      ['When does my plan begin?', 'Registration is free. The plan begins when you invite your first patient. The price shown, 20 dollars per month, is a placeholder until pricing is set.'],
       ['Can you see my patients?', NOSEE]] },
     demo: { hi: 'Hello. Ask me anything about how the working space works, by voice or in writing. Or start with one of these.', qs: [
       ['How does it work, step by step?', 'Six steps. Set up your workspace. Each patient gets one space and one calendar of the treatment. After the session, the recording is transcribed, the sound file is deleted, and the transcript waits as a temporary item. You choose one or more perspectives for the AI’s analysis. You read, think, and save one process note for the day. Then the day is complete: the note is kept, and the transcript and analyses are deleted.'],
@@ -217,7 +218,7 @@
   mic.onclick = function () { listen(function (t) { if (filling) fillAnswer(t); else ask(t); }); };
   /* hide behind full-screen films and tours; follow page changes */
   setInterval(function () {
-    var cover = D.querySelector('.fsfilm:not([hidden])'); fab.style.display = cover ? 'none' : '';
+    var cover = D.querySelector('.fsfilm:not([hidden]), #rec:not([hidden]), #fn:not([hidden])'); fab.style.display = cover ? 'none' : '';
     if (cover && !pan.hidden) close();
     if (!pan.hidden && lastView !== view()) { lastView = view(); log.innerHTML = ''; filling = false; home(); }
   }, 600);

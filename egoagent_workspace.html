@@ -1,0 +1,1753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EgoAgent Workspace</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f1a14">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1a14; --panel: #15241c; --line: #2a3f33; --gold: #e0b658; --gold-soft: #b8924a;
+    --text: #efe9dc; --muted: #a9b5a9; --temp: #c98a3d; --final: #5fa67a; --dim: #5d6b61;
+    --serif: Georgia, "Times New Roman", serif; --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 48px; }
+  .banner { background: #3a2a12; color: var(--gold); border: 1px solid var(--gold-soft); padding: 12px 14px; border-radius: 8px; margin: 16px 0 8px; font-size: 15px; }
+  h1 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 30px; margin: 24px 0 6px; }
+  .intro { color: var(--muted); margin: 0 0 18px; }
+  .screen { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 22px 0; }
+  .label { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 6px; }
+  h2 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 24px; margin: 0 0 8px; }
+  h3 { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 19px; margin: 16px 0 6px; }
+  p { margin: 8px 0; }
+  .muted { color: var(--muted); font-size: 15px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+  .step:first-of-type { border-top: 0; }
+  .num { min-width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .field { margin: 10px 0; }
+  .field > span { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .input, select { width: 100%; background: #0c1510; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--text); font-size: 16px; font-family: var(--sans); }
+  select option:disabled { color: var(--dim); }
+  /* v296: every drop-down shows a gold downward triangle in its own compartment on the right, so it reads at once as a list to open */
+  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; cursor: pointer; padding-right: 54px; }
+  /* v298: triangle on a wrapper so phone autofill cannot erase it */
+  .selw { position: relative; display: block; }
+  .selw:after { content: ""; position: absolute; right: 17px; top: 50%; width: 13px; height: 9px; margin-top: -4.5px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M0 0h12L6 8z' fill='%23E0B658'/%3E%3C/svg%3E") no-repeat center/contain; pointer-events: none; }
+  .selw:before { content: ""; position: absolute; right: 44px; top: 20%; bottom: 20%; width: 1px; background: var(--line); pointer-events: none; z-index: 1; }
+  .btn { display: inline-block; background: #2f5d48; color: var(--text); border-radius: 8px; padding: 10px 16px; margin: 6px 6px 6px 0; font-size: 16px; }
+  .btn.ghost { background: transparent; border: 1px solid var(--gold-soft); color: var(--gold); }
+  .chip { display: inline-block; font-size: 13px; padding: 3px 9px; border-radius: 999px; margin: 2px 4px 2px 0; border: 1px solid; }
+  .chip.temp { color: var(--temp); border-color: var(--temp); }
+  .chip.final { color: var(--final); border-color: var(--final); }
+  .chip.wait { color: var(--muted); border-color: var(--line); }
+  .chip.soon { color: var(--dim); border-color: var(--dim); }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .row:first-of-type { border-top: 0; }
+  .opt { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; background: #0c1510; }
+  .opt.sel { border-color: var(--gold); }
+  .box { border-left: 3px solid var(--gold); padding: 8px 12px; background: #0c1510; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .transcript { background: #0c1510; border-radius: 8px; padding: 12px; font-size: 16px; line-height: 1.6; }
+  .transcript p { margin: 6px 0; }
+  .who { color: var(--gold-soft); font-weight: 600; }
+  .note { border: 1px solid var(--final); border-radius: 8px; padding: 12px; background: #0c1510; }
+  .small { font-size: 14px; color: var(--muted); }
+  .tag { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .check { display: block; margin: 8px 0; }
+  .check input { margin-right: 8px; transform: scale(1.2); }
+  .pl { display: grid; gap: 14px; }
+  @media (min-width: 700px) { .pl { grid-template-columns: 190px 1fr; } }
+  .rail { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: #0c1510; }
+  .rail .tag { margin: 2px 4px 8px; }
+  .pt { display: block; width: 100%; text-align: left; background: transparent; color: var(--text); border: 1px solid transparent; border-radius: 8px; padding: 9px 10px; margin: 2px 0; font: inherit; cursor: pointer; }
+  .pt .small { display: block; }
+  .pt.on { border-color: var(--gold); background: #15241c; }
+  .add { display: block; width: 100%; margin-top: 8px; background: transparent; border: 1px dashed var(--gold-soft); color: var(--gold); border-radius: 8px; padding: 9px; font: inherit; cursor: pointer; }
+  .cal { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0c1510; }
+  .calhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .calhead strong { font-family: var(--serif); color: var(--gold); font-size: 19px; font-weight: 400; }
+  .consent { font-size: 14px; color: var(--final); margin: 0 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .dow { text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+  .d { aspect-ratio: 1 / 1; border-radius: 8px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--muted); background: transparent; font-family: var(--sans); cursor: pointer; padding: 0; }
+  .d.blank { border: 0; cursor: default; }
+  .d.future { color: var(--dim); border-color: #1d2c24; cursor: default; }
+  .d.temp { background: #3a2a12; border-color: var(--temp); color: var(--gold); font-weight: 600; }
+  .d.saved { background: #1f3b2b; border-color: var(--final); color: #cfe9d8; font-weight: 600; }
+  .d.absent { border: 2px dashed #c0574a; color: #e39a90; }
+  .d.today { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .d.picked { box-shadow: 0 0 0 3px rgba(224,182,88,.55); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 5px; border: 1px solid; }
+  .sw.temp { background: #3a2a12; border-color: var(--temp); }
+  .sw.saved { background: #1f3b2b; border-color: var(--final); }
+  .sw.absent { border: 2px dashed #c0574a; }
+  .day { margin-top: 12px; }
+  .choice { display: inline-block; border: 1px solid #c0574a; color: #e39a90; border-radius: 999px; padding: 6px 12px; margin: 4px 6px 4px 0; font-size: 15px; background: transparent; cursor: pointer; font-family: var(--sans); }
+  .turn { display: block; width: 100%; text-align: left; background: transparent; color: var(--text); border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; margin: 4px 0; font: inherit; line-height: 1.55; cursor: pointer; }
+  .turn.on { border-color: var(--gold); background: #15241c; }
+  .acts { margin: 2px 0 8px 10px; }
+  .act { display: inline-block; background: transparent; border: 1px solid var(--gold-soft); color: var(--gold); border-radius: 999px; padding: 6px 12px; margin: 4px 6px 4px 0; font: inherit; font-size: 15px; cursor: pointer; }
+  .act.ask { border-color: #6f9fd8; color: #a9c8f0; }
+  .cmt { border-left: 3px solid var(--gold); background: #0c1510; padding: 6px 10px; margin: 4px 0 8px 10px; font-size: 15px; border-radius: 0 6px 6px 0; }
+  .qa { border-left: 3px solid #6f9fd8; background: #0c1510; padding: 6px 10px; margin: 4px 0 8px 10px; font-size: 15px; border-radius: 0 6px 6px 0; }
+  .qa .small { display: block; margin-top: 4px; }
+  .seg { border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; margin: 4px 0; line-height: 1.6; cursor: pointer; -webkit-user-select: text; user-select: text; }
+  .seg.on { border-color: var(--gold); background: #15241c; }
+  .paper { background: #0c1510; border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 10px 0; }
+  .paper h3 { margin: 4px 4px 6px; }
+  .paper .small { margin: 0 4px 6px; display: block; }
+  mark.c { background: rgba(224,182,88,.28); color: inherit; border-bottom: 2px solid var(--gold); padding: 0 1px; }
+  mark.q { background: rgba(111,159,216,.25); color: inherit; border-bottom: 2px solid #6f9fd8; padding: 0 1px; }
+  textarea.ta { width: 100%; min-height: 70px; background: #0c1510; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--text); font: 16px/1.5 var(--sans); }
+  .keep { display: inline-block; background: #2f5d48; color: var(--text); border: 0; border-radius: 8px; padding: 8px 14px; margin: 6px 6px 0 0; font: inherit; font-size: 15px; cursor: pointer; }
+  .quote { font-style: italic; color: var(--muted); display: block; margin-bottom: 4px; }
+  .papers { display: block; }
+  .seg.linked { border-color: #6f9fd8; background: rgba(111,159,216,.10); }
+  @media (min-width: 760px) {
+    .screen.wide.open { width: calc(min(1240px, 100vw) - 32px); position: relative; left: 50%; transform: translateX(-50%); }
+    .papers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+    .papers .paper { margin: 0; max-height: 68vh; overflow-y: auto; }
+    .papers .paper h3 { position: sticky; top: -10px; background: #0c1510; padding: 6px 0; margin: -4px 4px 4px; z-index: 1; }
+  }
+  .homebar { position: sticky; top: 0; z-index: 20; background: rgba(15,26,20,.96); border-bottom: 1px solid var(--line); }
+  .homebar .in { max-width: 760px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .homebtn { display: inline-block; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 8px 14px; text-decoration: none; font-size: 16px; }
+  .homebtn:hover, .homebtn:focus-visible { background: rgba(255,255,255,.10); }
+  .homebar .brand { color: var(--gold); font-family: var(--serif); font-size: 18px; }
+  .tour { margin: 6px 0 14px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #0c1510; }
+  .tour video { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: #0f1a14; }
+  .allctl { display: flex; gap: 10px; justify-content: flex-end; margin: 18px 0 6px; flex-wrap: wrap; }
+  .allbtn { background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 15px; cursor: pointer; }
+  .allbtn:hover, .allbtn:focus-visible { background: rgba(255,255,255,.10); }
+  .shead { display: flex; width: 100%; align-items: center; gap: 14px; background: transparent; border: 0; color: inherit; text-align: left; font: inherit; cursor: pointer; padding: 0; }
+  .shead .stext { flex: 1; }
+  .shead .label { margin: 0 0 4px; }
+  .shead h2 { margin: 0; }
+  .chev { flex: none; width: 38px; height: 38px; border-radius: 50%; border: 2px solid #FFFFFF; display: flex; align-items: center; justify-content: center; transition: transform .2s; }
+  .chev::before { content: ""; width: 10px; height: 10px; border-right: 2px solid #FFFFFF; border-bottom: 2px solid #FFFFFF; transform: translateY(-2px) rotate(45deg); }
+  .screen.open .chev { transform: rotate(180deg); }
+  .screen .sbody { display: none; margin-top: 12px; }
+  .screen.open .sbody { display: block; }
+  .screen { margin: 14px 0; }
+  [hidden] { display: none !important; }
+  .uplbtn { display: block; width: 100%; margin-top: 12px; background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 10px; font: inherit; font-size: 16px; cursor: pointer; }
+  .uplbtn:hover, .uplbtn:focus-visible { background: rgba(255,255,255,.10); }
+  .upl { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0f1a14; }
+  .upl p { margin: 4px 0; }
+  .uplpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; opacity: .45; pointer-events: none; }
+  .uplpick.on { opacity: 1; pointer-events: auto; }
+  .uplfile { display: inline-block; background: #2f5d48; color: var(--text); border-radius: 8px; padding: 9px 14px; cursor: pointer; font-size: 15px; }
+  .uplfile input { display: none; }
+  .uplsample { background: transparent; border: 0; color: var(--gold); text-decoration: underline; font: inherit; font-size: 15px; cursor: pointer; }
+  .uplrow { border-top: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
+  .uplrow input[type=date] { background: #0c1510; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 15px; color-scheme: dark; }
+  .allctl { justify-content: flex-end; align-items: center; }
+  .allgrp { display: flex; gap: 10px; flex-wrap: wrap; }
+  .diagbtn { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 2px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 15px; cursor: pointer; }
+  .diagbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .diagbtn:hover, .diagbtn:focus-visible { background: rgba(224,182,88,.12); }
+  @media (max-width: 480px) {
+    .allctl { flex-wrap: nowrap; gap: 6px; }
+    .allgrp { gap: 6px; flex-wrap: nowrap; }
+    .allbtn, .diagbtn { font-size: 14px; padding: 7px 10px; white-space: nowrap; }
+    .diagbtn { gap: 6px; } .diagbtn svg { width: 16px; height: 16px; }
+  }
+  .dgwrap { position: fixed; inset: 0; z-index: 50; background: #0f1a14; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  .dgcard { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; padding: 76px 16px 28px; animation: dgIn .28s ease-out; }
+  .dgin { width: 100%; max-width: 560px; margin: 0 auto; }
+  @keyframes dgIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes dnIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .dghead { margin-bottom: 14px; }
+  .dghead h2 { margin: 0; }
+  .dgclose { position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); z-index: 3; display: inline-flex; align-items: center; gap: 8px; background: #0f1a14; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 10px; padding: 10px 16px; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; box-shadow: 0 0 0 6px #0f1a14, 0 4px 18px rgba(0,0,0,.6); }
+  .dgclose:hover, .dgclose:focus-visible { background: #FFFFFF; color: #0f1a14; }
+  .dgclose .x { font-size: 20px; line-height: 1; }
+  @media (prefers-reduced-motion: reduce) { .ds, .dmerge, .dnote, .dfoot, .dgcard { animation: none; } }
+  @media (min-width: 640px) { .screen { padding: 22px; } }
+
+  /* v267: the tour opens from a small button, same style and frame as the patient page film */
+  .tourwrap { margin: 10px 0 14px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .watch{display:flex;align-items:center;gap:1em;margin:0;padding:.55em 1.3em .55em .55em;background:rgba(255,255,255,.04);border:1.5px solid #E0B658;border-radius:16px;color:#F2EDE4;font:inherit;cursor:pointer;text-align:left;max-width:22em}
+  .watch:hover,.watch:focus-visible{background:rgba(224,182,88,.10)}
+  .w-thumb{position:relative;flex:none;width:84px;height:84px;border-radius:10px;overflow:hidden;background:#000}
+  .w-thumb img{width:100%;height:100%;object-fit:cover;opacity:.8;display:block}
+  .w-tri{position:absolute;left:50%;top:50%;transform:translate(-40%,-50%);border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
+  .w-txt{display:flex;flex-direction:column;gap:.25em}
+  .w-txt .w-h{font-family:var(--serif);font-weight:600;font-size:1.25em;color:#E0B658}
+  .w-txt small{font-size:.85em;color:#bdb6aa}
+  .fsfilm{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center}
+  .fsfilm[hidden]{display:none}
+  .fsfilm video{width:100%;height:100%;object-fit:contain;background:#000}
+  .fsfilm .fsx{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:2;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:rgba(10,10,8,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:inset 0 0 0 1.5px #E0B658,0 0 0 4px rgba(224,182,88,.18),0 2px 10px rgba(0,0,0,.5);cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .fsfilm .fsx svg{width:16px;height:16px;stroke:#E0B658;stroke-width:2.2;stroke-linecap:round;fill:none}
+  .fsfilm .fsx:hover,.fsfilm .fsx:focus-visible{background:rgba(10,10,8,.7);box-shadow:inset 0 0 0 1.5px #F0CF7E,0 0 0 4px rgba(224,182,88,.3),0 2px 10px rgba(0,0,0,.5)}
+
+  /* v271: diagram rebuilt - three zones (room, workspace, kept), live connectors, plain-English rules */
+  .dgin { max-width: 680px; }
+  @media (min-width: 1400px) { .dgin { max-width: 1040px; } }
+  .dghead { margin-bottom: 26px; }
+  .fkick { margin: 0 0 6px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-soft); }
+  .dghead h2 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; }
+  .flede { margin: 8px 0 0; color: var(--muted); font-size: 17px; }
+  .flow { display: flex; flex-direction: column; align-items: stretch; }
+  .zone { position: relative; border-radius: 18px; padding: 18px 18px 16px; background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)); border: 1px solid rgba(224,182,88,.28); box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04); animation: zIn .5s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 90ms); }
+  .zone header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .zone h3 { margin: 0; font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 21px; flex: 1; }
+  .zn { font-size: 12px; letter-spacing: .12em; color: #0f1a14; background: var(--gold); border-radius: 999px; padding: 3px 8px; font-weight: 700; }
+  .ztag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+  .ztag svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ztag.tmp { color: var(--temp); border: 1.5px dashed var(--temp); }
+  .ztag.prv { color: #fff; background: #C4553F; }
+  .zone ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .zone li { display: flex; align-items: flex-start; gap: 12px; }
+  .fi { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(224,182,88,.10); border: 1px solid rgba(224,182,88,.35); color: var(--gold); }
+  .fi svg, .pparts svg, .gone svg, .frules svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .ft { display: flex; flex-direction: column; padding-top: 1px; }
+  .ft b { color: #fff; font-weight: 600; font-size: 17px; }
+  .ft span { color: var(--muted); font-size: 15px; line-height: 1.4; }
+  .z2 { border: 1.5px dashed rgba(201,138,61,.7); background: linear-gradient(180deg, rgba(201,138,61,.07), rgba(201,138,61,.02)); }
+  .z2 .fi { color: var(--temp); border-color: rgba(201,138,61,.5); background: rgba(201,138,61,.10); }
+  .gone { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.08); color: var(--muted); font-size: 14px; }
+  .gone svg { color: var(--dim); flex: none; }
+  .gone svg { position: relative; }
+  .z3 { border: 1.5px solid #C4553F; background: radial-gradient(120% 90% at 0% 0%, rgba(196,85,63,.20), rgba(196,85,63,.05) 60%); box-shadow: 0 0 0 1px rgba(196,85,63,.15), 0 14px 40px rgba(196,85,63,.18); }
+  .pnote { display: flex; flex-direction: column; margin-bottom: 12px; }
+  .pnote b { font-family: var(--serif); font-weight: 400; font-size: 24px; color: #fff; }
+  .pnote span { color: #f0b3a6; font-size: 15px; }
+  .pparts { gap: 8px !important; }
+  .pparts li { align-items: center; gap: 10px; background: rgba(10,16,12,.55); border: 1px solid rgba(255,255,255,.07); border-radius: 12px; padding: 10px 12px; color: var(--text); font-size: 15px; }
+  .pparts svg { color: #f0a597; flex: none; }
+  .flink { position: relative; height: 34px; margin: 0 auto; width: 2px; background: linear-gradient(180deg, rgba(224,182,88,.15), rgba(224,182,88,.7)); animation: zIn .5s ease-out both; animation-delay: calc(var(--i) * 90ms); }
+  .flink::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 9px; height: 9px; border-right: 2px solid var(--gold); border-bottom: 2px solid var(--gold); transform: translateX(-50%) rotate(45deg); }
+  .flink span { position: absolute; left: 50%; top: 0; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold); animation: flowY 1.8s ease-in-out infinite; }
+  .frules { display: grid; gap: 10px; margin-top: 18px; animation: zIn .5s ease-out both; animation-delay: calc(var(--i) * 90ms); }
+  .frules p { display: flex; align-items: center; gap: 12px; margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); color: var(--muted); font-size: 15px; }
+  .frules b { color: var(--text); font-weight: 600; }
+  .frules svg { color: var(--gold); flex: none; }
+  @keyframes zIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes flowY { 0% { top: 0; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 26px; opacity: 0; } }
+  @media (min-width: 1400px) {
+    .flow { flex-direction: row; align-items: stretch; }
+    .zone { flex: 1 1 0; }
+    .z3 { flex: 1.15 1 0; }
+    .flink { width: 40px; height: 2px; margin: auto 0; align-self: center; background: linear-gradient(90deg, rgba(224,182,88,.15), rgba(224,182,88,.7)); }
+    .flink::after { left: auto; right: -2px; bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+    .flink span { top: 50%; left: 0; margin: -3px 0 0; animation-name: flowX; }
+    .frules { grid-template-columns: 1fr 1fr; }
+  }
+  @keyframes flowX { 0% { left: 0; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { left: 32px; opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .zone, .flink, .frules { animation: none; } .flink span { display: none; } }
+
+  /* v271 colour code: indigo = the patient's side, amber = temporary, rust = kept and private; gold stays for titles */
+  .dgwrap { --c1: #7FA3C4; --c1d: #33608A; --c2: #E3A15A; --c2d: #c98a3d; --c3: #F08C76; --c3d: #C4553F; }
+  .flegend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 0; padding: 0; font-size: 14px; color: var(--muted); }
+  .flegend li { display: inline-flex; align-items: center; gap: 8px; }
+  .flegend li::before { content: ""; width: 12px; height: 12px; border-radius: 50%; }
+  .flegend .k1::before { background: var(--c1d); box-shadow: 0 0 0 2px var(--c1); }
+  .flegend .k2::before { border: 2px dashed var(--c2); width: 8px; height: 8px; }
+  .flegend .k3::before { background: var(--c3d); box-shadow: 0 0 0 2px var(--c3); }
+  .z1 { --zc: var(--c1); --zd: var(--c1d); border: 1.5px solid rgba(127,163,196,.55); background: radial-gradient(120% 90% at 0% 0%, rgba(51,96,138,.28), rgba(51,96,138,.06) 60%); }
+  .z2 { --zc: var(--c2); --zd: var(--c2d); border: 1.5px dashed rgba(227,161,90,.75); background: radial-gradient(120% 90% at 0% 0%, rgba(201,138,61,.18), rgba(201,138,61,.03) 60%); }
+  .z3 { --zc: var(--c3); --zd: var(--c3d); }
+  .zone .zn { background: var(--zd); color: #fff; }
+  .zone .fi { color: var(--zc); border-color: color-mix(in srgb, var(--zc) 55%, transparent); background: color-mix(in srgb, var(--zd) 22%, transparent); }
+  .ztag.tmp { color: var(--c2); border-color: var(--c2); }
+  .ztag.prv { background: var(--c3d); }
+  .pparts svg { color: var(--c3); }
+  .pnote span { color: #f4b7a9; }
+  .gone svg { color: #7d8a80; }
+  .gone b { color: var(--text); font-weight: 600; }
+  .gone::after { content: "Deleted"; margin-left: auto; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #8d9a90; border: 1px solid #3b4a40; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+  .flink.l12 { background: linear-gradient(180deg, var(--c1), var(--c2)); }
+  .flink.l23 { background: linear-gradient(180deg, var(--c2), var(--c3)); }
+  .flink.l12::after { border-color: var(--c2); } .flink.l23::after { border-color: var(--c3); }
+  .flink.l12 span { background: var(--c2); box-shadow: 0 0 10px var(--c2); } .flink.l23 span { background: var(--c3); box-shadow: 0 0 10px var(--c3); }
+  .frules p { border-color: rgba(227,161,90,.28); }
+  .frules svg { color: var(--c2); }
+  @media (min-width: 1400px) {
+    .flink.l12 { background: linear-gradient(90deg, var(--c1), var(--c2)); }
+    .flink.l23 { background: linear-gradient(90deg, var(--c2), var(--c3)); }
+  }
+
+  .fsay { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: transparent; border: 2px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 9px 18px; font: inherit; font-size: 16px; cursor: pointer; }
+  .fsay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .fsay:hover, .fsay:focus-visible { background: rgba(224,182,88,.12); }
+  .fsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
+
+  .tourbtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .htitle { display: flex; align-items: flex-start; gap: 14px; margin: 24px 0 6px; }
+  .htitle h1 { margin: 0; }
+  .hsay { flex: none; width: 46px; height: 46px; margin-top: -2px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 2px solid var(--gold); color: var(--gold); cursor: pointer; padding: 0; box-shadow: 0 0 0 4px rgba(224,182,88,.10); transition: background .15s, box-shadow .15s; }
+  .hsay svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .hsay:hover, .hsay:focus-visible { background: rgba(224,182,88,.14); box-shadow: 0 0 0 6px rgba(224,182,88,.16); }
+  .hsay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; animation: hsayPulse 1.6s ease-in-out infinite; }
+  @keyframes hsayPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(224,182,88,.25); } 50% { box-shadow: 0 0 0 10px rgba(224,182,88,.05); } }
+  @media (prefers-reduced-motion: reduce) { .hsay[aria-pressed="true"] { animation: none; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* v290: same button as "Meet your EgoAgent" on the therapist page (.btn.sea): colour, font, size, corners */
+  .tourend{position:fixed;left:50%;top:calc(50% + min(100vw,100vh)*0.27);transform:translate(-50%,-50%);z-index:3;background:#3E6B58;border:1px solid #3E6B58;color:#F2F7F4;border-radius:.6em;padding:.75em 1.35em;font-family:"Inter Tight",system-ui,sans-serif;font-weight:400;font-size:clamp(18px,3.9vmin,36px);line-height:1.5;text-decoration:none;white-space:nowrap;transition:transform .18s ease,background-color .18s ease;animation:teIn .5s ease-out}
+  .tourend[hidden]{display:none}
+  .tourend:hover,.tourend:focus-visible{background:#4A7D67;border-color:#4A7D67}
+  @keyframes teIn{from{opacity:0;transform:translate(-50%,-40%)}to{opacity:1;transform:translate(-50%,-50%)}}
+  /* v291: it reads as a real button above the film - lifted with a shadow, and a soft halo that breathes three times */
+  .tourend{box-shadow:0 0 0 2px #E0B658,0 10px 28px rgba(0,0,0,.55)}
+  .tourend:after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 0 rgba(224,182,88,.85);animation:teHalo 1.6s ease-out .5s infinite;pointer-events:none}
+  /* v293: a gold rim pulses outward from the button for as long as it is on screen, so it reads clearly as something to press */
+  @keyframes teHalo{0%{box-shadow:0 0 0 2px rgba(224,182,88,.9)}70%{box-shadow:0 0 0 20px rgba(224,182,88,0)}100%{box-shadow:0 0 0 20px rgba(224,182,88,0)}}
+  .tourend:active{transform:translate(-50%,-48%)}
+  /* v294: a steady gold rim always shows. Devices with "Reduce Motion" on (common with low vision) skip the outward pulse, so there the rim glows brighter and softer in place instead of disappearing */
+  @keyframes teGlow{0%,100%{box-shadow:0 0 0 2px rgba(224,182,88,.35)}50%{box-shadow:0 0 0 4px rgba(224,182,88,.95),0 0 22px 6px rgba(224,182,88,.45)}}
+  @media (prefers-reduced-motion: reduce){ .tourend{animation:none} .tourend:after{animation:teGlow 1.6s ease-in-out infinite} }
+  /* v292: the button is sized to the video card (about half its width), with the same shape and colour as "Meet your EgoAgent" on the home page */
+  @media (max-width:600px){ .tourend{top:calc(50% + min(100vw,100vh)*0.29)} }
+
+  /* v305: the six-stage flow is now the working space itself. Everything below is added for that; the look above is unchanged. */
+  button.btn { border: 0; font: inherit; font-size: 16px; cursor: pointer; }
+  button.btn.ghost { border: 1px solid var(--gold-soft); }
+  .btn[disabled], .keep[disabled] { opacity: .5; cursor: default; }
+  .btn.white { background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; }
+  .screen { scroll-margin-top: 76px; }
+  .hnav { display: flex; gap: 6px 16px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .hnav a { color: #FFFFFF; font-size: 16px; text-decoration: none; border: 2px solid #FFFFFF; border-radius: 8px; padding: 6px 12px; }
+  .hnav a:hover, .hnav a:focus-visible { background: rgba(255,255,255,.10); }
+  @media (max-width: 480px) { .hnav { gap: 6px 8px; } .hnav a { font-size: 15px; padding: 6px 9px; } .homebar .brand { font-size: 16px; } }
+  @media (max-width: 420px) { body.work .homebar .brand { display: none; } body.work .hnav { flex: 1; justify-content: space-between; } }
+  .htitle h1 { flex: 1; }
+  .hfs { flex: none; width: 46px; height: 46px; margin-top: -2px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 2px solid var(--gold); color: var(--gold); cursor: pointer; padding: 0; box-shadow: 0 0 0 4px rgba(224,182,88,.10); }
+  .hfs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .hfs:hover, .hfs:focus-visible { background: rgba(224,182,88,.14); }
+  .hfs[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
+  .banner .reset { background: transparent; border: 0; color: #FFFFFF; text-decoration: underline; font: inherit; cursor: pointer; padding: 0; margin-left: 4px; }
+  .ego { border: 1.5px solid var(--gold); border-radius: 14px; background: #0c1510; padding: 14px 16px; margin: 14px 0; }
+  .egohead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .egohead svg.mk { width: 28px; height: 28px; fill: none; stroke: #C8553D; stroke-width: 4.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .egohead strong { font-family: var(--serif); font-weight: 400; color: var(--gold); font-size: 22px; flex: 1; }
+  .egosw { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 999px; padding: 6px 14px 6px 8px; font: inherit; font-size: 16px; cursor: pointer; }
+  .egosw i { width: 36px; height: 22px; border-radius: 999px; background: #3b4a40; position: relative; display: inline-block; flex: none; }
+  .egosw i:after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF; transition: left .15s; }
+  .egosw[aria-checked="true"] i { background: var(--final); }
+  .egosw[aria-checked="true"] i:after { left: 17px; }
+  .egosay { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 2px solid var(--gold); color: var(--gold); cursor: pointer; padding: 0; }
+  .egosay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .egosay[aria-pressed="true"] { background: var(--gold); color: #0f1a14; }
+  .egomsg { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: #15241c; border: 1px solid var(--line); }
+  .egomsg p { margin: 4px 0; }
+  .egolist { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+  .egolist li { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 8px 12px; border-radius: 10px; background: #15241c; border: 1px solid var(--line); }
+  .egolist li span { flex: 1 1 14em; }
+  .egoacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ego .act { margin: 0; }
+  .ego .tag { margin: 12px 0 0; }
+  .egoone { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+  .ego.off .egobody { display: none; }
+  .ego .offnote { display: none; color: var(--muted); font-size: 15px; margin: 10px 0 0; }
+  .ego.off .offnote { display: block; }
+  .inp { width: 100%; background: #0c1510; border: 1px solid var(--line); border-radius: 6px; padding: 10px; color: var(--text); font: 16px/1.4 var(--sans); }
+  .inp:focus, textarea.ta:focus, select:focus { outline: none; border-color: var(--gold); }
+  .formrow { display: grid; gap: 10px; }
+  @media (min-width: 520px) { .formrow.two { grid-template-columns: 1fr 1fr; } }
+  .cact { margin: 0 0 10px; }
+  .cact .act { margin: 4px 6px 4px 0; }
+  .cact a.act { text-decoration: none; }
+  .invite { font-size: 14px; color: var(--muted); margin: 2px 0 6px; word-break: break-all; }
+  .invite code { color: var(--text); font-family: var(--sans); }
+  .planbox { border: 1.5px solid var(--gold); border-radius: 10px; padding: 12px; background: #15241c; margin: 0 0 10px; }
+  .recbtn { display: block; width: 100%; margin-top: 12px; background: #2f5d48; border: 2px solid #FFFFFF; color: #FFFFFF; border-radius: 8px; padding: 10px; font: inherit; font-size: 16px; cursor: pointer; }
+  .recbtn:hover, .recbtn:focus-visible { background: #3a7059; }
+  .rectime { font-family: var(--serif); font-size: clamp(54px, 16vw, 96px); color: #FFFFFF; text-align: center; margin: 14px 0 6px; font-variant-numeric: tabular-nums; }
+  .recdot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: #C4553F; margin-right: 8px; vertical-align: -1px; }
+  .recon .recdot { animation: recPulse 1.2s ease-in-out infinite; }
+  @keyframes recPulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .recon .recdot { animation: none; } }
+  .recbig { display: block; width: 100%; max-width: 420px; margin: 12px auto; border-radius: 12px; padding: 16px; font: inherit; font-size: 20px; cursor: pointer; border: 2px solid #FFFFFF; color: #FFFFFF; background: #2f5d48; }
+  .recbig.stop { background: #8E2F22; }
+  .recbig.plain { background: transparent; font-size: 17px; padding: 12px; }
+  .recbig[disabled] { opacity: .45; cursor: default; }
+  .recstat { text-align: center; color: var(--muted); margin: 6px 0; }
+  .recsteps { list-style: none; margin: 14px auto; padding: 0; max-width: 420px; display: grid; gap: 8px; }
+  .recsteps li { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #15241c; color: var(--muted); }
+  .recsteps li.ok { color: var(--text); border-color: var(--final); }
+  .recsteps li.ok:before { content: "✓ "; color: var(--final); }
+  .fndoc { max-width: 760px; margin: 0 auto; }
+  .fndoc .paper { margin: 14px 0; }
+  .fndoc .seg { cursor: default; }
+  .toast { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 300; max-width: min(520px, calc(100vw - 24px)); background: #0c1510; color: #FFFFFF; border: 2px solid var(--gold); border-radius: 12px; padding: 12px 16px; font-size: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+  .ctxdays .check, #wklist { margin: 4px 0; }
+  .mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 320px; margin: 8px 0; }
+  .mini .d { font-size: 14px; }
+  .mini .d.inc { box-shadow: 0 0 0 3px rgba(224,182,88,.7); }
+  .linkbtn { background: transparent; border: 0; color: var(--gold); text-decoration: underline; font: inherit; font-size: inherit; cursor: pointer; padding: 0; }
+  .nostage { border-left: 3px solid var(--gold); padding: 10px 12px; background: #0c1510; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .sampletag { display: inline-block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); border: 1px solid var(--gold-soft); border-radius: 999px; padding: 2px 9px; margin: 0 0 6px; }
+  .scopeseg { border-left: 3px solid var(--temp); padding: 6px 10px; margin: 4px 0 8px; background: #15241c; border-radius: 0 6px 6px 0; font-size: 15px; }
+  .txmore { max-height: 46vh; overflow-y: auto; }
+  .d[disabled] { cursor: default; }
+  .rmv { margin-top: 6px; }
+  .screen.flash { animation: stFlash 1.3s ease-out; }
+  @keyframes stFlash { 0% { box-shadow: 0 0 0 3px rgba(224,182,88,.95); } 100% { box-shadow: 0 0 0 3px rgba(224,182,88,0); } }
+  @media (prefers-reduced-motion: reduce) { .screen.flash { animation: none; box-shadow: 0 0 0 3px rgba(224,182,88,.7); } }
+  .wsfoot { text-align: center; font-size: 14px; margin: 6px 0 0; }
+  .wsfoot a { color: var(--muted); margin: 0 10px; }
+  .wsfoot a:hover, .wsfoot a:focus-visible { color: var(--gold); }
+</style>
+</head>
+<body>
+<nav class="homebar"><div class="in"><a class="homebtn" id="backbtn" href="index.html#therapists">← Back to EgoAgent</a><span class="brand" id="hbrand">Workspace demo</span><span class="hnav" id="hnav" hidden><a href="index.html#profile">Profile</a><a href="index.html#plan">Plan</a><a href="index.html#therapists" id="signout">Sign out</a></span></div></nav>
+<div class="wrap">
+
+  <div class="banner" id="banner"><span id="bannertxt">DEMO. Every patient, name, session and note here is fictional. Nothing is recorded, stored or sent.</span> <button class="reset" type="button" id="reset">Start the sample again</button></div>
+
+  <div class="htitle"><button class="hsay" type="button" id="pgsay" aria-pressed="false" aria-label="Read this page aloud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span class="sr">Read aloud</span></button><h1 id="h1">Your EgoAgent workspace, step by step</h1><button class="hfs" type="button" id="pgfs" aria-pressed="false" aria-label="Full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="sr">Full screen</span></button></div>
+  <p class="intro" id="intro">Watch the short tour, then open any stage below and try it. Patients never enter this workspace.</p>
+  <div class="tourwrap"><button class="watch" id="tourwatch" type="button">
+    <span class="w-thumb"><img src="egoagent_workspace_tour_v3.jpg" alt=""><span class="w-tri"></span></span>
+    <span class="w-txt"><span class="w-h">Watch how it works</span><small>47 seconds &middot; sound on</small></span>
+  </button>
+  <div class="tourbtns"><button class="diagbtn" type="button" id="dgopen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>Diagram</button></div></div>
+  <div class="fsfilm" id="fstour" hidden role="dialog" aria-modal="true" aria-label="EgoAgent workspace tour">
+    <a class="tourend" id="tourend" href="index.html#register" hidden>Meet your EgoAgent</a>
+    <video id="tourvid" src="egoagent_workspace_tour_v13.mp4" poster="egoagent_workspace_tour_v3.jpg" playsinline controls preload="none"></video>
+    <button class="fsx" id="tourclose" type="button" aria-label="Close the tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2L14 14M14 2L2 14"/></svg></button>
+  </div>
+
+  <section class="ego" id="ego" aria-label="Your EgoAgent">
+    <div class="egohead"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 58 C10 50 6 26 20 13 C30 4 46 6 52 18 C58 30 54 47 46 58 C40 40 34 30 15 20 C22 9 40 6 50 15"/></svg><strong>Your EgoAgent</strong><button class="egosay" type="button" id="egosay" aria-pressed="false" aria-label="Read your EgoAgent's words aloud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg></button><button class="egosw" type="button" id="egosw" role="switch" aria-checked="true"><i aria-hidden="true"></i><span id="egoswt">On</span></button></div>
+    <p class="offnote">Manual mode. Your EgoAgent is off and reads nothing. Turn it on again at any time with the switch.</p>
+    <div class="egobody">
+      <div class="egomsg" id="egofirst" hidden></div>
+      <p class="tag">Work that is waiting</p>
+      <ul class="egolist" id="egolist"></ul>
+      <p class="egoone" id="egoone"></p>
+      <p class="egoone" id="egotip"></p>
+      <div class="egoacts"><button class="act" type="button" id="egohow" aria-expanded="false">How I work</button><button class="act" type="button" id="egoread" aria-expanded="false">What I am reading</button></div>
+      <div class="egomsg" id="egoinfo" hidden aria-live="polite"></div>
+    </div>
+  </section>
+
+  <div class="allctl"><span class="allgrp"><button class="allbtn" type="button" id="toggleall" aria-label="Expand all stages">Expand all</button></span></div>
+  <div class="dgwrap" id="dg" hidden role="dialog" aria-modal="true" aria-labelledby="dgtitle">
+    <div class="dgcard">
+      <div class="dgin">
+      <div class="dghead"><p class="fkick">The path of a session</p><h2 id="dgtitle">Where your session goes</h2><p class="flede">From the consulting room to one private note.</p><ul class="flegend" aria-label="Colour key"><li class="k1">Your patient's side</li><li class="k2">Temporary</li><li class="k3">Kept and private</li></ul><button class="fsay" type="button" id="dgsay" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Read aloud</span></button><button class="dgclose" type="button" id="dgclose" aria-label="Close the diagram"><span class="x" aria-hidden="true">✕</span>Close</button></div>
+      <div class="flow">
+        <section class="zone z1" style="--i:1" aria-labelledby="z1h">
+          <header><span class="zn">01</span><h3 id="z1h">In the room</h3></header>
+          <ul><li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 6l3 3"/></svg></span><span class="ft"><b>Consent</b><span>Your patient agrees in writing. They never enter your workspace.</span></span></li><li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span class="ft"><b>Recording</b><span>You record the session on your phone or iPad.</span></span></li></ul>
+        </section>
+        <div class="flink l12" style="--i:2" aria-hidden="true"><span></span></div>
+        <section class="zone z2" style="--i:3" aria-labelledby="z2h">
+          <header><span class="zn">02</span><h3 id="z2h">In your workspace</h3><span class="ztag tmp">Temporary</span></header>
+          <ul><li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></span><span class="ft"><b>Transcript</b><span>Made from the recording.</span></span></li><li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="ft"><b>AI analyses</b><span>Through the perspectives you choose.</span></span></li><li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><path d="M15 19l1-3 4-4 2 2-4 4z"/></svg></span><span class="ft"><b>Your comments</b><span>Your marks, questions and thoughts.</span></span></li></ul>
+          <p class="gone"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2"/></svg><span><b>Audio</b> is deleted as soon as the transcript is made.</span></p>
+        </section>
+        <div class="flink l23" style="--i:4" aria-hidden="true"><span></span></div>
+        <section class="zone z3" style="--i:5" aria-labelledby="z3h">
+          <header><span class="zn">03</span><h3 id="z3h">Kept</h3><span class="ztag prv"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Private</span></header>
+          <div class="pnote"><b>Process note</b><span>One note for the day, saved in that patient's space.</span></div>
+          <ul class="pparts"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>The full transcript</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Every AI analysis you chose, in full</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><path d="M15 19l1-3 4-4 2 2-4 4z"/></svg>All your comments</li></ul>
+        </section>
+      </div>
+      <div class="frules" style="--i:6">
+        <p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></svg><span><b>When you save the note,</b> the working copies are deleted.</span></p>
+        <p><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span><b>If you never save,</b> they are deleted after six months.</span></p>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 1: SETTING UP -->
+  <section class="screen" id="st1">
+    <p class="label">Stage 1 of 6 · Setting up the workspace</p>
+    <h2>Set up your workspace, one step at a time.</h2>
+    <p class="muted">You will be taken through each step. Nothing is recorded yet.</p>
+
+    <div class="step"><div class="num">1</div><div><strong>Confirm who you are.</strong>
+      <div class="field"><span>First name</span><div class="input">Example: A.</div></div>
+      <div class="field"><span>Last name</span><div class="input">Example: Smith</div></div>
+      <div class="field"><span>Professional email</span><div class="input">name@practice.example</div></div></div></div>
+
+    <div class="step"><div class="num">2</div><div><strong>Confirm your professional license.</strong>
+      <p class="muted">Choose your country, then your state or province where the country has them (the label changes to match). Then choose the profession you are licensed in and enter your license or registration number exactly as it appears on your license.</p>
+
+      <div class="field"><span>Country</span>
+<span class="selw">
+        <select aria-label="Country">
+          <option>Choose your country</option>
+          <option>United States</option>
+          <option>Canada</option>
+          <option>Australia</option>
+          <option>Austria</option>
+          <option>China</option>
+          <option>France</option>
+          <option>Germany</option>
+          <option>Greece</option>
+          <option>India</option>
+          <option>Israel</option>
+          <option>Italy</option>
+          <option>Poland</option>
+          <option>Portugal</option>
+          <option>Serbia</option>
+          <option>South Africa</option>
+          <option>Spain</option>
+          <option>Sweden</option>
+          <option>Switzerland</option>
+          <option>Ukraine</option>
+          <option>United Arab Emirates</option>
+          <option>United Kingdom</option>
+        </select></span></div>
+
+      <div class="field"><span>State</span>
+<span class="selw">
+        <select aria-label="State">
+          <option>Choose your state</option>
+          <option>New York</option>
+          <option disabled>New Jersey · not yet available</option>
+          <option disabled>Connecticut · not yet available</option>
+          <option disabled>Massachusetts · not yet available</option>
+          <option disabled>Pennsylvania · not yet available</option>
+          <option disabled>Florida · not yet available</option>
+          <option disabled>California · not yet available</option>
+          <option disabled>Texas · not yet available</option>
+          <option disabled>Illinois · not yet available</option>
+          <option disabled>… all other states and DC · not yet available</option>
+        </select></span>
+        <p class="small">Only New York is open for registration now. Other states will open as each one is verified.</p></div>
+
+      <div class="field"><span>Profession</span>
+<span class="selw">
+        <select aria-label="Profession">
+          <option>Choose your profession</option>
+          <option>Physician (MD or DO)</option>
+          <option>Licensed psychologist (PhD, PsyD, or other doctorate in psychology)</option>
+          <option>Licensed clinical social worker (LCSW)</option>
+          <option>Licensed psychoanalyst</option>
+        </select></span></div>
+
+      <div class="field"><span>License or registration number</span><div class="input">Enter number</div></div>
+      <p class="small">Your license and your current New York registration are checked against the New York State Education Department's public record before the workspace opens.</p></div></div>
+
+    <div class="step"><div class="num">3</div><div><strong>Confirm the work you do.</strong>
+      <label class="check"><input type="checkbox">I treat adults in individual therapy.</label>
+      <label class="check"><input type="checkbox">I do not work in a federally assisted substance-use treatment program (42 CFR Part 2).</label></div></div>
+
+    <div class="step"><div class="num">4</div><div><strong>Sign your professional affirmation.</strong>
+      <label class="check"><input type="checkbox">Under penalty of perjury, I affirm that I hold the license named above, that it is in my name, that my registration to practice in New York is current, and that the statements above are true.</label>
+      <a class="btn" href="#">Continue</a></div></div>
+
+    <div class="step"><div class="num">5</div><div><strong>Read the patient consent form.</strong>
+      <p class="muted">This is the written consent your patient signs before anything is recorded. Preview it now.</p>
+      <a class="btn ghost" href="#">Preview the consent form</a></div></div>
+
+    <div class="step"><div class="num">6</div><div><strong>Your workspace is ready.</strong>
+      <p class="muted">Add your first patient when you are ready. Nothing is sent to any patient until you choose.</p>
+      <a class="btn" href="#">Open my workspace</a></div></div>
+  </section>
+
+  <!-- STAGE 2: PATIENTS, CALENDAR -->
+  <section class="screen" id="st2">
+    <p class="label">Stage 2 of 6 · Your patients</p>
+    <h2>One space for each patient, one calendar of the treatment.</h2>
+    <p class="muted">Choose a patient. Her calendar opens. Each session day is coloured by what is waiting there. Tap a day to open it.</p>
+    <div class="pl">
+      <div class="rail" id="rail"></div>
+      <div class="cal">
+        <div id="addform" hidden>
+          <p><strong>Add a patient</strong></p>
+          <p class="small">First name and last initial only. No date of birth, address or other details are asked.</p>
+          <div class="formrow two">
+            <div class="field"><span>First name</span><input class="inp" id="addfirst" type="text" autocomplete="off"></div>
+            <div class="field"><span>Last initial</span><input class="inp" id="addlast" type="text" maxlength="1" autocomplete="off"></div>
+          </div>
+          <div class="field"><span>How often you meet (optional)</span><input class="inp" id="addfreq" type="text" placeholder="Example: Twice a week" autocomplete="off"></div>
+          <p class="small" id="addmsg" role="alert"></p>
+          <button class="keep" type="button" id="addgo">Add the patient</button> <button class="act" type="button" id="addcancel">Cancel</button>
+        </div>
+        <div id="calempty" hidden>
+          <p><strong>Your workspace is ready.</strong></p>
+          <p class="muted">Add your first patient when you are ready. Nothing is sent to any patient until you choose.</p>
+          <button class="keep" type="button" id="emptyadd">+ Add a patient</button>
+          <p class="small" style="margin-top:14px">New here? You can open three fictional sample patients and try the whole workspace first.</p>
+          <button class="act" type="button" id="loadsample">Open the sample patients</button>
+        </div>
+        <div id="calmain">
+          <div class="calhead"><strong id="calname"></strong><span class="small">August 2026</span></div>
+          <p class="consent" id="consent"></p>
+          <div class="cact" id="cact"></div>
+          <div class="grid" id="grid"></div>
+          <div class="legend">
+            <span><span class="sw temp"></span>Waiting · temporary</span>
+            <span><span class="sw saved"></span>Process note saved</span>
+            <span><span class="sw absent"></span>Absence</span>
+          </div>
+          <div class="day box" id="day"></div>
+          <button class="recbtn" type="button" id="recopen">● Record a session</button>
+          <button class="uplbtn" type="button" id="uplopen">⤒ Upload past recordings</button>
+          <div class="upl" id="upl" hidden>
+            <p><strong>Upload past recordings for <span id="uplname"></span></strong></p>
+            <p class="small">Audio from your phone, iPad or computer. Each file is transcribed, filed to its day as a transcript waiting, and the audio is then deleted.</p>
+            <label class="check"><input type="checkbox" id="uplok">This patient consented to these recordings and to their transcription. Obtaining that consent is my responsibility.</label>
+            <div id="uplpick" class="uplpick">
+              <label class="uplfile">Choose audio files<input type="file" id="uplinput" accept="audio/*,.m4a,.mp3,.wav,.aac" multiple></label>
+              <button class="uplsample" type="button" id="uplsample">or try three sample files</button>
+            </div>
+            <div id="upllist"></div>
+            <button class="keep" type="button" id="uplgo" hidden>Transcribe and file</button>
+            <p class="small" style="margin-top:10px" id="uplnote">In this demo nothing leaves your device: the files are only listed here, never uploaded or played.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="small">Temporary items (gold) are deleted when the process note for that day is saved. Saved notes (green) stay private to you.</p>
+  </section>
+
+  <!-- STAGE 3: AFTER THE SESSION -->
+  <section class="screen" id="st3">
+    <p class="label">Stage 3 of 6 · After the session</p>
+    <h2>The session is transcribed and filed.</h2>
+    <div id="after"></div>
+  </section>
+
+  <!-- STAGE 4: ANALYSIS -->
+  <section class="screen" id="st4">
+    <p class="label">Stage 4 of 6 · Widening the view</p>
+    <h2>Choose one or more perspectives.</h2>
+    <p class="muted">Use any standard perspective, your own perspective, or a standard perspective with your own instructions added to it. Each analysis is saved as a temporary item.</p>
+    <div class="nostage" id="an-none" hidden></div>
+    <div id="an-main">
+    <div class="opt sel" id="scope">
+      <strong>What should the AI read?</strong> <span class="small" id="anday"></span>
+      <label class="check"><input type="radio" name="scope" value="one" checked>This session only</label>
+      <label class="check"><input type="radio" name="scope" value="ctx">This session in light of earlier sessions</label>
+      <div id="ctx" style="display:none;margin:6px 0 2px 26px">
+        <p class="small" style="margin:4px 0">Earlier days, read in date order, oldest first:</p>
+        <div class="ctxdays" id="ctxdays"></div>
+        <p class="small" style="margin:4px 0">Shortcuts: <button class="linkbtn" type="button" data-sc="week">This week</button> · <button class="linkbtn" type="button" data-sc="ten">Last 10</button> · <button class="linkbtn" type="button" data-sc="cal">Choose on the calendar</button></p>
+        <div id="ctxmini" hidden></div>
+        <p class="small" style="margin:10px 0 2px">From those days, bring:</p>
+        <label class="check"><input type="checkbox" checked id="bringwords"><span id="bringwordst">Her words: the transcripts kept in your notes</span></label>
+        <label class="check"><input type="checkbox" checked id="bringown">Your own thoughts, comments and questions</label>
+        <label class="check"><input type="checkbox" id="oldai">Earlier AI analyses <span class="small">(off by default, so the AI looks with a fresh eye)</span></label>
+        <div class="box" style="margin:8px 0 0" id="ctxbox"></div>
+      </div>
+      <label class="check"><input type="radio" name="scope" value="week">The whole week, analysed afresh together</label>
+      <div id="wk" style="display:none;margin:6px 0 2px 26px">
+        <p class="small" style="margin:4px 0" id="wkintro"></p>
+        <p style="margin:4px 0" id="wklist"></p>
+        <p class="small" style="margin:4px 0">Shortcuts: <button class="linkbtn" type="button" data-wk="week">This week</button> · <button class="linkbtn" type="button" data-wk="two">Last two weeks</button> · <button class="linkbtn" type="button" data-wk="cal">Choose on the calendar</button></p>
+        <div id="wkmini" hidden></div>
+        <div class="box" style="margin:8px 0 0" id="wkbox"></div>
+      </div>
+    </div>
+    <div class="opt sel"><strong>Standard perspectives</strong> <span class="small">· choose any number</span>
+        <label class="check"><input type="checkbox" class="sp" checked value="General psychoanalytic">General psychoanalytic</label>
+        <label class="check"><input type="checkbox" class="sp" value="Classical and contemporary Freudian">Classical and contemporary Freudian</label>
+        <label class="check"><input type="checkbox" class="sp" checked value="Ego psychology and modern conflict theory">Ego psychology and modern conflict theory</label>
+        <label class="check"><input type="checkbox" class="sp" value="Kleinian–Bionian">Kleinian–Bionian</label>
+        <label class="check"><input type="checkbox" class="sp" value="Object relations">Object relations</label>
+        <label class="check"><input type="checkbox" class="sp" value="Kernbergian object relations">Kernbergian object relations</label>
+        <label class="check"><input type="checkbox" class="sp" value="Transference-focused">Transference-focused</label>
+        <label class="check"><input type="checkbox" class="sp" value="Winnicottian and British Independent">Winnicottian and British Independent</label>
+        <label class="check"><input type="checkbox" class="sp" value="Self psychology">Self psychology</label>
+        <label class="check"><input type="checkbox" class="sp" value="Relational">Relational</label>
+        <label class="check"><input type="checkbox" class="sp" value="Interpersonal">Interpersonal</label>
+        <label class="check"><input type="checkbox" class="sp" value="Intersubjective">Intersubjective</label>
+        <label class="check"><input type="checkbox" class="sp" value="Attachment-based">Attachment-based</label>
+        <label class="check"><input type="checkbox" class="sp" value="Lacanian">Lacanian</label>
+      <label class="check" style="color:var(--gold);margin-top:12px"><input type="checkbox" id="neuro">Add neuropsychoanalytic integration <span class="small">(joins each perspective chosen above, or stands alone)</span></label>
+    </div>
+    <div class="opt" id="mine" hidden><strong>Your own perspectives</strong> <span class="small">· kept in your library</span><div id="mylist"></div></div>
+    <div class="opt"><strong>Standard + your instructions</strong><br><span class="small">Add instructions that widen the perspectives chosen above.</span>
+      <div class="field"><input class="inp" id="inst" type="text" placeholder="Example: attend especially to what is said about lateness and waiting." aria-label="Your added instructions"></div></div>
+    <div class="opt"><strong>Your own perspective</strong><br><span class="small">Write a perspective of your own, in your words. It is kept in your library for next time.</span>
+      <div class="field"><input class="inp" id="myname" type="text" placeholder="Example: a perspective I name “Late Winnicott, with attention to play”." aria-label="Name of your own perspective"></div>
+      <div class="field"><textarea class="ta" id="mytext" placeholder="What should this perspective attend to?" aria-label="What your own perspective attends to"></textarea></div>
+      <button class="keep" type="button" id="mykeep">Keep in my library</button> <span class="small" id="mymsg" role="status"></span></div>
+    <div class="box" id="runlist" aria-live="polite"></div>
+    <button class="btn" type="button" id="run">Run the analysis</button>
+    </div>
+  </section>
+
+  <!-- STAGE 5: PROCESS NOTE -->
+  <section class="screen wide" id="st5">
+    <p class="label">Stage 5 of 6 · Your process note</p>
+    <h2>Read, think, and save one note for the day.</h2>
+    <div class="nostage" id="note-none" hidden></div>
+    <div id="note-main">
+    <p class="muted">Work on it as on paper. On a larger screen the transcript and the analyses sit side by side; tapping a passage of an analysis lights up the lines of the transcript it reads. Tap any passage, or highlight a few words, in either one. Add your own comment, or ask a question and keep the answer. Write your own thoughts at the end. Use any of these, or none, on any day.</p>
+
+    <div class="papers">
+    <div class="paper" id="p-tx"></div>
+    <div class="paper" id="p-an"></div>
+    </div>
+
+    <div class="paper">
+      <h3>3 · Your own thoughts</h3>
+      <textarea class="ta" id="own" placeholder="Whatever comes to mind about this hour." aria-label="Your own thoughts"></textarea>
+      <h3 style="margin-top:12px">Questions to carry to the next session</h3>
+      <textarea class="ta" id="carry" placeholder="Questions for you to think about, one per line." aria-label="Questions to carry to the next session"></textarea>
+    </div>
+
+    <div class="note">
+      <p class="tag">Included in this note</p>
+      <p id="n1"></p>
+      <p id="n2"></p>
+      <p id="n3"></p>
+      <p class="small">Every question you asked is kept with its answer, beside the words it was about.</p>
+    </div>
+    <div class="box" id="savebox"></div>
+    <button class="btn" type="button" id="savenote">Save the process note</button>
+    <button class="btn ghost" type="button" id="keepedit">Keep editing</button>
+    <p class="small" id="keepmsg" role="status" hidden>Nothing was saved. The note stays open for you to work on.</p>
+    </div>
+  </section>
+
+  <!-- STAGE 6: SAVED -->
+  <section class="screen" id="st6">
+    <p class="label">Stage 6 of 6 · Saved</p>
+    <h2>The day is complete.</h2>
+    <div id="saved"></div>
+  </section>
+
+  <p style="text-align:center;margin:28px 0 8px"><a class="homebtn" id="backbtn2" href="index.html#therapists">← Back to EgoAgent</a></p>
+  <p class="wsfoot"><a href="index.html#privacy">Privacy</a><a href="index.html#terms">Terms</a><a href="index.html#contact">Contact</a></p>
+</div>
+
+<div class="dgwrap" id="rec" hidden role="dialog" aria-modal="true" aria-labelledby="rectitle">
+  <div class="dgcard"><div class="dgin">
+    <div class="dghead"><p class="fkick">The recorder</p><h2 id="rectitle">Record a session</h2><p class="flede">Sound only. You press start, and you press stop.</p><button class="fsay" type="button" id="recsay" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Read aloud</span></button><button class="dgclose" type="button" id="recclose" aria-label="Close the recorder"><span class="x" aria-hidden="true">✕</span>Close</button></div>
+    <div id="recbody"></div>
+  </div></div>
+</div>
+
+<div class="dgwrap" id="fn" hidden role="dialog" aria-modal="true" aria-labelledby="fntitle">
+  <div class="dgcard" style="justify-content:flex-start"><div class="fndoc">
+    <div class="dghead"><p class="fkick">Process note · private to you</p><h2 id="fntitle"></h2><p class="flede" id="fnsub"></p><button class="fsay" type="button" id="fnsay" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Read aloud</span></button><button class="dgclose" type="button" id="fnclose" aria-label="Close the note"><span class="x" aria-hidden="true">✕</span>Close</button></div>
+    <div id="fnbody"></div>
+  </div></div>
+</div>
+<script>
+/* ---------- prepared sample material (fictional). Nothing here comes from a live AI call. ---------- */
+var PERSP = [
+  ["GP", "General psychoanalytic", "General psychoanalytic", "it draws on whichever concepts best fit the material"],
+  ["FR", "Classical and contemporary Freudian", "Classical and contemporary Freudian", "it attends to drive and defence, unconscious fantasy, day residue, and transference as repetition"],
+  ["EGO", "Ego psychology and modern conflict theory", "Ego psychology", "it attends to defences, ego functions, adaptation, compromise formation, and unconscious conflict"],
+  ["KB", "Kleinian–Bionian", "Kleinian–Bionian", "it attends to unconscious phantasy, the positions, projective identification, container and contained, alpha function, and attacks on linking"],
+  ["OR", "Object relations", "Object relations", "it attends to the internal object world, self- and object-representations, splitting and integration, and how internal relationships are lived in the material"],
+  ["KO", "Kernbergian object relations", "Kernbergian object relations", "it attends to internalised self–object–affect dyads, identity integration versus diffusion, and primitive defences"],
+  ["TF", "Transference-focused", "Transference-focused", "it attends to the dominant object-relational dyads alive in the transference, role reversals, and where clarification, confrontation or interpretation would bear"],
+  ["WI", "Winnicottian and British Independent", "Winnicottian and British Independent", "it attends to true and false self, holding, transitional phenomena, the use of the object, and the capacity to be alone"],
+  ["SP", "Self psychology", "Self psychology", "it attends to selfobject needs, mirroring and idealising transferences, empathic ruptures and repair, and threats of fragmentation"],
+  ["RE", "Relational", "Relational", "it attends to the here-and-now interaction, enactment, and the therapist's participation"],
+  ["IP", "Interpersonal", "Interpersonal", "it attends to security operations, the interpersonal field, parataxic distortion, and what detailed inquiry would pursue"],
+  ["IS", "Intersubjective", "Intersubjective", "it attends to the co-created field, mutual influence, and the organising principles of experience shaping both participants"],
+  ["AT", "Attachment-based", "Attachment-based", "it attends to attachment strategies, internal working models, mentalization, and responses to separation and loss"],
+  ["LA", "Lacanian", "Lacanian", "it attends to the signifiers that insist in the speech, desire and the desire of the Other, and the imaginary, symbolic and real registers at work"]
+];
+var NEURO = ["NEURO", "Neuropsychoanalytic integration", "Neuropsychoanalytic integration", "it attends to the basic emotional systems at work in the material (SEEKING, RAGE, FEAR, PANIC/GRIEF), affect regulation and the bodily feeling states beneath the defences, and how memory and prediction shape the transference"];
+
+var SES = {
+  /* ===== Miriam S., Fri 14 Aug: the main sample hour ===== */
+  m14: { min: 48, turns: [
+    ["P", "I keep coming back to the drawing I ruined on Friday. I knew it was finished and I kept adding to it anyway, and then it was gone."],
+    ["T", "You knew it was finished."],
+    ["P", "Yes. The way I knew with my mother, at the end, that there was nothing more to say, and I kept talking. In the hospital I read her the same letter twice. She didn't notice, but I did, and I still cannot forgive that second reading."],
+    ["T", "What was in the letter?"],
+    ["P", "Nothing. Everything. Things I had already said better, years before, in person. I think I read it twice because the first time she didn't cry, and I wanted her to cry. That's terrible, isn't it. She was dying and I wanted my letter to be good enough to make her cry."],
+    ["T", "And instead she didn't notice."],
+    ["P", "She was looking at the window. There was scaffolding outside, they were repairing the facade the whole month she was there. She said once, before she got bad, that she liked the hammering, it meant somebody was fixing something. (pause) I hated it. Every morning at seven."],
+    ["T", "Somebody was fixing something."],
+    ["P", "And nobody was fixing her. Yes. I hear it. (pause) On Friday, with the drawing, the client had already approved it. It was done. Approved, signed off, finished. And I opened the file that night at home, at eleven, with wine, and started, quote, improving the entrance elevation. By one in the morning I had unpicked the whole facade. I saved over it. There's a backup at the office, it's not actually a catastrophe, but I sat there and I couldn't breathe."],
+    ["T", "The facade again."],
+    ["P", "(long pause) I didn't hear that until you said it. The scaffolding. Her facade. That month they finished the building and she died the same week. I remember thinking at the funeral, the building looks new and she is in the ground, and then I was ashamed of thinking about the building at all."],
+    ["T", "Ashamed the way you were ashamed of wanting the letter to make her cry?"],
+    ["P", "Maybe. Both times something in me was working on the wrong object. The building instead of her. The letter instead of... me. I don't know what I mean by that."],
+    ["P", "My husband says I sabotage things when they're done. He means it kindly, he's not wrong, but when he says it I want to scream at him, and I never scream at anyone."],
+    ["T", "What would the scream say, if it could?"],
+    ["P", "(pause) Don't close it yet. That's what it would say. Don't close it yet."],
+    ["T", "We have to stop in a minute."],
+    ["P", "Of course we do. (laughs) At least I didn't add anything this time."]
+  ], an: {
+    GP: [[0, "Ruining a drawing she knew was finished suggests a conflict around completion: what is finished can be seen, and judged."],
+         [10, "The facade returns three times: the hospital scaffolding, the drawing, and the building finished the week her mother died. Finishing seems tied to that death, so that leaving a thing unfinished may keep something alive."]],
+    FR: [[4, "Wanting the letter to make her dying mother cry points to an aggressive wish inside the mourning, and to the guilt that follows it: “That's terrible, isn't it.”"],
+         [8, "Unpicking the approved facade at night may repeat, instead of remembering, the month of repairs that could not save her mother. The repetition ends in the same breathlessness."]],
+    EGO: [[0, "Adding to a finished drawing may work as undoing: a defence that keeps the anxiety of being judged at bay."],
+          [15, "“Don't close it yet” brings the same compromise into the hour as it is about to end: the wish to keep things open, and the dread of what closing means."]],
+    KB: [[8, "Unpicking the whole facade can be heard as an attack on her own good, finished work, followed at once by panic. Damage and the wish to repair arrive together, as in the depressive position."],
+         [10, "When the two facades are linked she falls silent, and then thinks. The link is borne, not attacked, which suggests the session is working as a container for a grief that had no words."]],
+    OR: [[6, "The mother at the window, liking the hammering, is an inner figure who cannot be reached or moved: she does not cry, does not notice, and looks away."],
+         [12, "“Working on the wrong object” may describe an inner arrangement: care goes to a building or a letter because the person herself feels out of reach."]],
+    KO: [[4, "One dyad shows clearly: a daughter who must produce something good enough, facing a mother who does not respond. Shame and a hidden anger join them."],
+         [13, "With her husband the roles turn: he names what she does, and she feels the urge to scream. That she can see his kindness and feel her rage at once points to integration, not splitting."]],
+    TF: [[16, "When the therapist announces the end, the dyad comes into the room: someone closes it, and she is the one left with more to say. Her laugh covers it."],
+         [17, "“At least I didn't add anything this time” invites clarification next time: what did she hold back from adding here, and what did she expect the therapist to do with a finished hour?"]],
+    WI: [[8, "Alone at eleven at night with the file, she cannot leave the finished thing alone. It may be hard to trust that what she has made survives without her constant handling."],
+         [17, "This hour she lets the ending stand, and jokes about it. The setting held, and the therapist survived being the one who closes: a small use of the object."]],
+    SP: [[4, "The letter asks for mirroring: a response that would show her words had reached her mother. When none came, she read it again."],
+         [13, "Her husband's remark, though kind, lands as a failure of understanding, and the wish to scream marks the injury. “I couldn't breathe” suggests how close to fragmentation the unanswered need can bring her."]],
+    RE: [[9, "“The facade again” is the therapist's own link, and she takes it up. The meaning is made between the two of them, not found by one."],
+         [16, "The therapist is also the one who says “we have to stop”. Both are now inside the pattern she describes, and the ending may be worth speaking about together, not only observing."]],
+    IP: [[13, "“I never scream at anyone” reads as a security operation: anger is kept out of her dealings with people, at some cost. A detailed inquiry might ask what happens, exactly, when her husband says it."],
+         [8, "The inquiry could also slow down Friday night: what was she feeling at eleven, before she opened the file, and whom did she imagine looking at the approved drawing?"]],
+    IS: [[2, "An organising principle seems to shape her experience: what I offer is real only if the other is visibly moved by it. The letter, read twice, tests it."],
+         [10, "The long pause after “the facade again” shows the field at work: the therapist's hearing changes what she can hear in herself."]],
+    AT: [[6, "A dying mother who looks at the window and does not notice: the working model may be of a caregiver whose attention cannot be won, so the child keeps trying."],
+         [15, "“Don't close it yet” is a protest at separation, said plainly. That she can find these words, and wonder what she means, shows mentalizing holding up under the strain of loss."]],
+    LA: [[9, "“Facade” insists as a signifier: the hospital's, the drawing's, her mother's. It carries more than she intends, and she hears it only when it is handed back to her."],
+         [4, "She wanted the letter to make her mother cry: her desire aims at the desire of the Other, at being what moves her. The mother's gaze stays on the window."]],
+    NEURO: [[8, "“I couldn't breathe” has the bodily mark of the PANIC/GRIEF system, the separation-distress response. The nights of reworking look like SEEKING pressed into service to keep that feeling away."],
+            [15, "“Don't close it yet” may be a prediction learned at her mother's bedside: when things are finished, someone is lost. The end of each session tests that prediction in a setting where the loss does not follow."]]
+  }, ctx: "Earlier this week she arrived late, brought a dream of doors that would not shut, and spoke of being reviewed. Today's hour gathers these: the door she cannot close is the one on her mother's death.",
+     week: "Read as one week: lateness on Monday, the dream of doors that will not shut on Tuesday, anger at being reviewed on Wednesday, and “don't close it yet” on Friday. Each day an ending is put off, and each day a little more of the reason is said.",
+     qa: "Read alongside the rest of the hour, these words seem to carry the fear of being finished and therefore judged. The same wish appears toward you in her last line." },
+
+  /* ===== Miriam S., Wed 12 Aug ===== */
+  m12: { min: 50, turns: [
+    ["P", "They've put Daniel on my project to, quote, review the details before it goes out. Review. It's approved. It went out. There is nothing to review."],
+    ["T", "You sound angry."],
+    ["P", "I'm not angry, I'm efficient. I answered all his questions in one email, very politely, with attachments."],
+    ["T", "Very politely."],
+    ["P", "(laughs) Lethally politely. He'll never know. That's the point. Nobody ever knows."],
+    ["T", "Nobody knows you're angry. Do I?"],
+    ["P", "You know because I tell you afterwards. Never at the time. With you I'd be polite too, if you checked my work."],
+    ["T", "Have I?"],
+    ["P", "On Monday. You didn't ask about the drawing, and I thought, I'm being reviewed. You were deciding what it meant that I didn't say."],
+    ["T", "And you became polite."],
+    ["P", "I brought you a dream. That's my version of polite. (pause) I nearly didn't come today."],
+    ["T", "But you did."],
+    ["P", "I did. I think I wanted to find out whether you were annoyed."]
+  ], an: {
+    GP: [[2, "“I'm not angry, I'm efficient”: the anger is denied in the same breath that shows it. Politeness seems to be the form her anger is allowed to take."],
+         [8, "The feeling of being reviewed moves from Daniel to the therapist. What she expects from a reviewer, she now expects here."]],
+    FR: [[4, "The pleasure in “lethally” suggests the aggressive wish finds its discharge in disguise: the polite email is a compromise between the impulse and the prohibition."],
+         [8, "Being “reviewed” repeats an older scene in the transference: an authority who silently judges. The dream she brought the next day may have been an offering to that judge."]],
+    EGO: [[4, "“Lethally politely” describes reaction formation with the aggression still showing through: the opposite of anger, carrying the anger."],
+          [12, "Coming to find out whether the therapist is annoyed is reality testing of a feared consequence. She checks the fear instead of acting on it by staying away."]],
+    KB: [[8, "She felt the therapist's silence as a judging object looking into her. A persecutory anxiety takes shape around not being asked."],
+         [12, "Returning to see whether the therapist is annoyed looks like a test of the damage: has her hidden anger harmed the object, and can the object take it in and survive?"]],
+    OR: [[0, "Daniel, the reviewer, joins a line of inner figures who inspect and are not satisfied. Her finished work is never simply received."],
+         [6, "“You know because I tell you afterwards” shows a self that keeps its anger away from the other in the moment, to protect the relationship from it."]],
+    KO: [[4, "The active dyad is a quietly attacking self and another who must never find out, linked by a contempt kept under politeness."],
+         [8, "In the next breath the roles reverse: now she is the one inspected, and the therapist the silent judge. The same pair, lived from both ends."]],
+    TF: [[6, "“With you I'd be polite too” names the transference directly. It can be clarified: what, exactly, would the politeness be covering here?"],
+         [12, "Her question, whether the therapist is annoyed, opens work in the here and now: the fear that her anger has consequences in this room."]],
+    WI: [[2, "The polite, efficient email has something of a false-self solution: it complies perfectly and keeps the real reaction out of sight."],
+         [10, "Bringing a dream as “my version of polite” suggests even her material can be offered compliantly. Today's plainer speech is a more spontaneous gesture."]],
+    SP: [[0, "Having approved work “reviewed” is felt as an injury to her sense of competence. The anger answers a failure of recognition."],
+         [8, "The therapist's not asking on Monday was felt as a lapse in attunement. Saying so today begins the repair of that small rupture."]],
+    RE: [[5, "“Do I?” puts the therapist into the picture, and she answers honestly. The pattern stops being about Daniel and becomes something between the two of them."],
+         [8, "Monday's silence was the therapist's part of an enactment: she withheld, the therapist held back, and each read the other as judging. Today it is spoken instead of lived."]],
+    IP: [[4, "Politeness works as a security operation: it keeps anger out of the exchange so that no one can respond to it. “Nobody ever knows” is the cost."],
+         [8, "A detailed inquiry could ask what she saw on Monday that told her she was being reviewed: a look, a pause, a tone? Her reading of the therapist may follow an older pattern."]],
+    IS: [[8, "Two subjectivities shaped Monday: her expectation of judgement, and the therapist's choice not to press. Neither alone produced “reviewed”; it arose between them."],
+         [12, "Her wish to find out whether the therapist is annoyed tests an organising principle: that showing anger, even late, costs her the other's goodwill."]],
+    AT: [[6, "Telling the feeling “afterwards, never at the time” fits a deactivating strategy: the need is turned down while the other is present, and reported once it is safe."],
+         [12, "Coming back to check whether the therapist is annoyed is proximity-seeking after a feared rupture: she returns to see if the base still holds."]],
+    LA: [[0, "“Review” is the word that insists: she says it three times in a few lines. To be re-viewed is to be seen again, and the signifier travels from Daniel to the therapist."],
+         [10, "She “brought a dream” as politeness: a gift to the Other, offered in place of the demand she could not speak. What does she suppose the Other wants from her?"]],
+    NEURO: [[4, "The laugh at “lethally politely” lets a little RAGE show under tight control: the system is active, and its expression is inhibited and redirected into careful action."],
+            [12, "Her return to check on the therapist suggests the prediction “my anger drives people away” is being tested. A calm response is the kind of error signal that can update it."]]
+  }, ctx: "In light of Monday and Tuesday: the door she felt close on Monday, and the dream of doors that would not shut, come before today's complaint of being reviewed. Being looked at and being shut out seem to be two sides of one fear.",
+     week: "Read together, the three sessions move from keeping the therapist out, to a dream about what will not close, to anger said aloud. The anger arrives last, after the politeness and the dream.",
+     qa: "Read alongside the rest of the hour, these words seem to belong to her effort to keep anger out of sight while it is happening. Later in the hour she tests whether that anger has cost her your goodwill." },
+
+  /* ===== David K., Thu 13 Aug ===== */
+  d13: { min: 45, turns: [
+    ["P", "Sorry. Twelve minutes, I know. The meeting ran over and I didn't want to be the one to stand up first."],
+    ["T", "You stayed there, and came late here."],
+    ["P", "Better late for you than to look, to them, like I had somewhere more important to be. (pause) That sounds bad."],
+    ["T", "It sounds like you knew I'd still be here."],
+    ["P", "I assumed. Then in the lift I thought, what if the door's locked. What if you'd given the hour away."],
+    ["T", "What would that have meant?"],
+    ["P", "That I'd finally done it. Used up the patience. I keep a sort of count with people, of how much I have left."],
+    ["T", "How much do you have left with me?"],
+    ["P", "(laughs) I don't know. You don't clap and you don't leave. I can't work out the count."],
+    ["T", "It may be hard to be somewhere the count doesn't apply."],
+    ["P", "It's restful. And then it isn't. I start wondering what you're writing down."],
+    ["T", "And now the sessions are recorded."],
+    ["P", "I forgot about that, actually. Is it on? (pause) It's fine. It's just one more record of what I get wrong."]
+  ], an: {
+    GP: [[0, "He will not be the first to stand up in the meeting, and so arrives late here: the risk of displeasing is moved from the colleagues to the therapist."],
+         [6, "The “count” of patience left with each person shows how relationships are kept: as credit that can run out, with abandonment waiting at zero."]],
+    FR: [[4, "The locked door in the lift is a punishment fantasy: he has transgressed by being late and imagines the penalty before anyone delivers it."],
+         [8, "“You don't clap and you don't leave” places the therapist against the father of Monday's hour. The transference repeats the old scene and finds it does not quite fit."]],
+    EGO: [[2, "“That sounds bad” is the superego speaking at once, judging his priorities before the therapist can."],
+          [6, "Keeping count is an obsessional defence: it turns the fear of loss into bookkeeping, something he can watch and control."]],
+    KB: [[4, "In the lift, the therapist becomes an object who retaliates by locking him out. His own lateness is felt as an attack that the object will answer."],
+         [12, "The recorder is quickly made into a persecutor: “one more record of what I get wrong”. A watching, fault-finding object is projected into the device."]],
+    OR: [[6, "His inner world holds others whose patience is finite and quietly draining. He relates to people by managing how much of them he has used up."],
+         [8, "The therapist fits neither known figure, the one who claps or the one who leaves. A third kind of object is unfamiliar, and he “can't work out the count”."]],
+    KO: [[6, "The governing dyad is a self always about to be found wanting, and another who silently keeps the tally and will leave. The affect between them is dread."],
+         [2, "He also takes the other role for a moment: he keeps the therapist waiting and decides whose time matters more. Then guilt returns him to the first position."]],
+    TF: [[7, "The therapist's question brings the tally into the room. His laugh and “I don't know” show the dyad active in the transference and, for the moment, uncertain."],
+         [10, "“I start wondering what you're writing down” is the point to stay with: the restful therapist is turning into the examiner. Naming that shift as it happens would be the work."]],
+    WI: [[3, "“You knew I'd still be here”: for a moment he could take the therapist's reliability for granted, as one can with a setting that holds."],
+         [10, "“Restful, and then it isn't” describes how hard it is to rest in another's presence without having to perform for it."]],
+    SP: [[8, "A father who clapped once or left the room gave mirroring that was either thin or withdrawn. He has no measure for a steady, unremarkable interest."],
+         [12, "“One more record of what I get wrong” shows how readily his sense of himself slides toward the defective. The recording is felt as exposure, not as being attended to."]],
+    RE: [[1, "The therapist's first remark puts the lateness between them at once, without reproach. That response is part of why he can then say the unflattering thing."],
+         [11, "Bringing in the recording is the therapist's own move: it makes real the third presence in the room. How each of them feels about being recorded is now part of the work."]],
+    IP: [[0, "Not standing up first is a security operation: he avoids the anxiety of being seen to choose himself. Lateness here is where that anxiety is paid for."],
+         [6, "The “count” invites detailed inquiry: with whom is it lowest, how does he know, and what has actually happened when it ran out?"]],
+    IS: [[8, "He cannot work out the count because the therapist's stance does not confirm his organising principle, that regard is rationed and conditional."],
+         [10, "The field shifts within one sentence, from restful to watched. The therapist's writing, and now the recording, become part of what the two of them must make sense of together."]],
+    AT: [[4, "In the lift he expects the door to be locked: a working model in which a small lapse is enough for the other to withdraw."],
+         [8, "A therapist who neither claps nor leaves offers something like a secure base, and it is unfamiliar. The unease of “I can't work out the count” may be the first sign of using it."]],
+    LA: [[6, "“Count” insists: the count of patience, being held to account, the things that count. He places himself as what is counted, an entry in the Other's ledger."],
+         [12, "“Is it on?” He asks whether the Other is listening, and answers himself that it only records his faults. The recorder stands in for a gaze that judges."]],
+    NEURO: [[4, "The lift scene shows FEAR and separation distress (PANIC/GRIEF) firing ahead of any evidence: a prediction of loss generated in advance."],
+            [9, "A setting where “the count doesn't apply” produces prediction error: nothing is taken away. Restfulness followed by unease is what an old expectation feels like while it is being revised."]]
+  }, ctx: "In light of Monday and Wednesday: the father who clapped once or left the room, and David's own walking out on a resident, stand behind today's fear of a locked door. He expects to be left as he was left, and as he nearly left someone else.",
+     week: "Read as one week: the promotion that made him feel sick, the moment he became his father, and today's count of patience. The thread is the fear of being found wanting and then left, seen each day from a different side.",
+     qa: "Read alongside the rest of the hour, these words seem to carry his expectation that patience runs out and that he will be left when it does. He checks that expectation against you several times." },
+
+  /* ===== the sample session used for every new recording and uploaded file ===== */
+  s4: { min: 46, sample: true, turns: [
+    ["P", "I almost cancelled today. Nothing happened this week. I've got nothing to bring."],
+    ["T", "Nothing happened."],
+    ["P", "Work, home, work. My sister called on Sunday and I let it ring. I'll call her back. I always do, about four days later."],
+    ["T", "Four days."],
+    ["P", "Long enough that she's stopped being upset and started being worried. Then I'm doing her a favour by calling."],
+    ["T", "You wait until the feeling on her side has changed."],
+    ["P", "I never thought of it as waiting for anything. I thought I was busy. (pause) I did it to you too, didn't I. The message on Monday, saying I might not come."],
+    ["T", "And then you came."],
+    ["P", "After you'd had time to wonder. (laughs) That's not very nice of me."],
+    ["T", "It lets you arrive wanted, and not only expected."],
+    ["P", "Yes. Expected is... anyone can be expected."]
+  ], an: {
+    GP: [[0, "“Nothing to bring” opens an hour that turns out to be full. The claim of emptiness may itself be the material: a way of arriving that lowers what can be asked of the patient."],
+         [6, "The patient sees the same move made toward the therapist as toward the sister: a delay that changes how the other feels before contact is made."]],
+    FR: [[4, "Letting the sister move from upset to worried carries a quiet aggression: the other is made to feel the absence. The “favour” of calling then covers the hostile part."],
+         [6, "The Monday message repeats the pattern in the transference: the therapist, like the sister, is left to wait and wonder."]],
+    EGO: [[6, "“I thought I was busy” is a rationalisation giving way. The patient can now observe the purpose the delay serves."],
+          [8, "The laugh and “that's not very nice of me” show a mild, workable self-criticism: the superego comments without shutting the thought down."]],
+    KB: [[4, "The worry is put into the sister for four days: an unwanted feeling of being left and anxious is lodged in the other, who then carries it."],
+         [8, "With the therapist the same thing is done and then thought about. The projection is recognised, which is the start of taking the feeling back."]],
+    OR: [[4, "The inner arrangement is of one who waits and one who is waited for. The patient keeps to the second place, where the other does the longing."],
+         [10, "“Anyone can be expected” suggests a self that feels interchangeable unless it is missed. Being wanted has to be produced, because it is not assumed."]],
+    KO: [[4, "The dyad is a withholding self and a needy, worried other, with a sense of quiet control between them."],
+         [6, "It has a reverse side that is kept out of view: a self who waits by the phone for someone who does not call. The control guards against that position."]],
+    TF: [[6, "The patient brings the pattern into the room unprompted: “I did it to you too.” This is the moment to clarify what the therapist was meant to feel on Monday."],
+         [9, "The therapist's remark is a transference interpretation in plain words, and it is accepted. The next step is the feeling underneath: what it is to be merely expected."]],
+    WI: [[0, "Coming with “nothing to bring” can be a test of whether one may simply be here, without producing something for the other."],
+         [8, "The patient made the therapist wait and wonder, and the therapist is still there, unharmed and interested. The object has survived a small attack."]],
+    SP: [[10, "“Anyone can be expected” states the selfobject need exactly: to be particularly wanted, not routinely received."],
+         [4, "The four-day delay arranges for the response the patient cannot ask for directly: evidence of mattering, in the form of the sister's worry."]],
+    RE: [[7, "“And then you came” is simple and unaccusing. The therapist declines the role of the injured, waiting party, which lets the pattern be looked at together."],
+         [8, "The therapist did wonder on Monday; that is a real effect. Saying so, at some point, would make the pattern a two-person fact and not only the patient's habit."]],
+    IP: [[2, "The detail matters: about four days, every time. A detailed inquiry would ask what happens on days one, two and three, and what the patient imagines the sister is doing."],
+         [6, "“I thought I was busy” is selective inattention lifting: what was kept out of awareness is now noticed, in the therapist's presence."]],
+    IS: [[9, "“Wanted, and not only expected” is a formulation neither had before the hour. It comes out of the exchange and names an organising principle of the patient's experience."],
+         [6, "The therapist's attention to “four days” allowed the patient to see the Monday message differently. The understanding is jointly made."]],
+    AT: [[4, "Delaying contact until the other is worried looks like a way of making sure of the other's availability without showing need: the attachment system is active and disguised."],
+         [0, "Almost cancelling, then coming, repeats it with the therapist: closeness is approached by first creating distance."]],
+    LA: [[10, "The patient distinguishes being “expected” from being wanted: a place in the schedule, set against a place in the Other's desire."],
+         [4, "The four days produce a lack in the other. The patient's desire appears as the desire to be what the Other is missing."]],
+    NEURO: [[4, "The pattern seems to regulate separation distress (PANIC/GRIEF) by handing it to the other person: the sister feels the absence, and the patient feels in control."],
+            [8, "Being met without reproach is a prediction error for the expectation that contact must be earned by being missed. The laugh marks a moment of PLAY, a sign of safety in the exchange."]]
+  }, ctx: "Read in light of the earlier days you chose. In this preview every uploaded or newly recorded session uses the same sample transcript, so the earlier days read the same as this one.",
+     week: "Read together with the other days of the week. In this preview every uploaded or newly recorded session uses the same sample transcript, so the days read the same.",
+     qa: "Read alongside the rest of the hour, these words seem to belong to a way of making sure of being wanted: contact is delayed until the other person is waiting." },
+
+  /* ===== saved notes that already exist when the sample opens ===== */
+  m10: { min: 47, turns: [
+    ["P", "I'm sorry I'm late. I was parked outside for ten minutes. I don't know why I didn't come in."],
+    ["T", "You were here, and not yet here."],
+    ["P", "I did something stupid on Friday night. With a drawing. I don't want to go into it today."],
+    ["T", "All right."],
+    ["P", "(pause) You're not going to ask?"],
+    ["T", "You said not today. I'm wondering what it's like that I didn't."],
+    ["P", "Like you closed the door on it. Which is what I asked for. (laughs) I'm impossible."],
+    ["T", "You asked me to leave it, and then felt left."],
+    ["P", "Yes. Exactly that."]
+  ], an: {
+    GP: [[0, "Ten minutes in the car before coming in: an arrival that is put off. Something is being kept outside the session."],
+         [6, "She asks not to be asked, and then feels the door closed. The wish to be pursued and the wish to be left alone sit side by side."]],
+    EGO: [[2, "“I don't want to go into it today” is suppression in the open, a conscious postponing. The lateness may be its less conscious partner."],
+          [8, "Her “exactly that” shows an observing ego at work: she can step back and see the pattern once it is named."]]
+  } },
+  m11: { min: 49, turns: [
+    ["P", "I had a dream. I was in a house, my house but not mine, and every room had a door that wouldn't quite shut. I kept going round pushing them closed and they'd swing open a little."],
+    ["T", "What comes to mind about doors that won't shut?"],
+    ["P", "My mother's flat, after. I couldn't empty it. I'd go, pack one box, and leave. It took me eleven months."],
+    ["T", "Eleven months of not quite shutting it."],
+    ["P", "I told everyone it was the estate, the paperwork. It wasn't the paperwork."],
+    ["T", "And yesterday you said I had closed a door."],
+    ["P", "(pause) I did say that. I didn't think of it. In the dream I'm the one pushing them shut, though."],
+    ["T", "And they don't stay shut."],
+    ["P", "No. Maybe I don't push very hard."]
+  ], an: {
+    GP: [[0, "The dream shows doors that will not quite shut, and a dreamer who keeps trying. Closing is wished for and prevented in the same image."],
+         [2, "The association goes straight to her mother's flat, emptied over eleven months. Not finishing appears as a way of not parting."]],
+    EGO: [[4, "“It wasn't the paperwork” drops a rationalisation she had used with everyone, perhaps herself included."],
+          [8, "“Maybe I don't push very hard” is a new piece of self-observation: she begins to see her own hand in what stays open."]]
+  } },
+  d10: { min: 44, turns: [
+    ["P", "They announced it on Friday. Head of the unit. Everyone clapped. I went to the bathroom and felt sick."],
+    ["T", "Sick at the applause."],
+    ["P", "My father used to clap when I got something right. One clap. Like closing a book."],
+    ["T", "And if you got it wrong?"],
+    ["P", "Nothing. He'd just leave the room. I'd rather he had shouted."],
+    ["T", "So applause is the sound just before someone leaves."],
+    ["P", "(pause) I never put it like that. But I did spend the weekend waiting for somebody to take it back."]
+  ], an: {
+    GP: [[0, "Success brings nausea, not pleasure: the promotion seems to carry a danger as well as a reward."],
+         [4, "A father who left the room when the boy was wrong: being found wanting is tied to being left."]],
+    SP: [[2, "The single clap is a thin kind of mirroring: approval that ends the exchange instead of joining it."],
+         [6, "Waiting for someone to “take it back” suggests a sense of worth that does not yet hold without continued confirmation."]]
+  } },
+  d12: { min: 46, turns: [
+    ["P", "I was short with a resident yesterday. She'd made a small mistake and I just walked out of the room."],
+    ["T", "You walked out."],
+    ["P", "I heard myself do it. The door, the whole thing. I stood in the corridor thinking, that's him."],
+    ["T", "Your father's exit."],
+    ["P", "I went back in. I said I was sorry, I was tired. That wasn't true, I wasn't tired."],
+    ["T", "What was true?"],
+    ["P", "That for a second I couldn't stand her not knowing. As if it was contagious."]
+  ], an: {
+    GP: [[0, "He does to the resident what was done to him: the father's exit, repeated from the other side."],
+         [6, "“As if it was contagious”: her not knowing touches his own fear of being found not to know."]],
+    SP: [[2, "He catches the repetition as it happens and feels shame, not justification, which leaves room for repair."],
+         [4, "Going back in is the repair his father did not make. The false reason, “I was tired”, shows how hard the true one is to say."]]
+  } }
+};
+
+/* the sample workspace as a returning therapist finds it: fictional patients, calendar set to Fri 14 Aug 2026 */
+function samplePatients() {
+  return {
+    m: { name: "Miriam S.", pos: "her", freq: "Four times a week", code: "7K3F-9Q2M", consent: { st: "signed", date: "28 Jul 2026" }, days: {
+      5: { k: "absent", why: "Cancelled, justified", ex: "Flight delayed, called ahead." },
+      10: { k: "saved", sid: "m10", an: [{ key: "GP" }, { key: "EGO" }], when: "10 Aug, 8:50 pm",
+            marks: { tx: { 5: [{ t: "c", text: "I felt the pull to ask, and did not. Restraint, or a small retaliation for the lateness?" }] }, an: {} },
+            own: "Late for the first time in months. The Friday event is being held back. No need to chase it.", carry: "What is the drawing?", later: [] },
+      11: { k: "saved", sid: "m11", an: [{ key: "GP" }, { key: "EGO" }], when: "11 Aug, 9:15 pm",
+            marks: { tx: { 0: [{ t: "q", text: "What is the day residue here?", ans: "Yesterday's hour ended with the door “closed” on the Friday drawing. The dream of doors that will not shut may be working on that.", read: "Read for this answer: the transcript of Tue 11 Aug and your saved note of Mon 10 Aug, in full. Left out: earlier AI analyses." }] }, an: {} },
+            own: "The dream follows yesterday's “closed the door”. The flat: eleven months to empty it.", carry: "Did the drawing get finished?", later: [] },
+      12: { k: "temp", sid: "m12", an: [{ key: "GP" }, { key: "EGO" }] },
+      14: { k: "temp", sid: "m14", an: [] }
+    } },
+    d: { name: "David K.", pos: "his", freq: "Three times a week", code: "4T8W-2HXC", consent: { st: "signed", date: "4 Aug 2026" }, days: {
+      10: { k: "saved", sid: "d10", an: [{ key: "GP" }, { key: "SP" }], when: "10 Aug, 9:40 pm", marks: { tx: {}, an: {} },
+            own: "First recorded session. He looked at the device twice.", carry: "What did he do when his father left the room?", later: [] },
+      12: { k: "saved", sid: "d12", an: [{ key: "GP" }, { key: "SP" }], when: "12 Aug, 10:05 pm",
+            marks: { tx: { 4: [{ t: "c", text: "He repaired it within minutes. Compare Monday: the father never came back in." }] }, an: {} },
+            own: "He caught himself in the act. The shame was bearable enough to go back into the room.", carry: "“Contagious”: whose not-knowing?", later: [] },
+      13: { k: "temp", sid: "d13", an: [] }
+    } },
+    a: { name: "Anna L.", pos: "her", freq: "", code: "9M2P-6RJD", consent: { st: "sent", date: "13 Aug 2026" }, days: {} }
+  };
+}
+</script>
+<script>
+(function(){
+'use strict';
+/* ============================================================
+   EgoAgent workspace (v305). One page, two ways in:
+   - ?view=demo  the public demo ("See how it works"): sample patients, nothing kept
+   - signed in   the working space: opened from the registration door or from sign-in
+   Everything is fictional sample material. Nothing is recorded, uploaded, stored on a server or sent.
+   ============================================================ */
+var Q=new URLSearchParams(location.search), DEMO=Q.get('view')==='demo', WORD=DEMO?'demo':'preview';
+var SKEY=DEMO?'ea-demo':'ea-ws', HERE=DEMO?'egoagent_workspace.html?view=demo':'egoagent_workspace.html?in=1';
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function sget(k){try{var v=sessionStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function sset(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function sdel(k){try{sessionStorage.removeItem(k);}catch(e){}}
+function each(list,fn){Array.prototype.forEach.call(list,fn);}
+
+/* ---------- who is here ---------- */
+var SAMPLE_ME={first:'A.',last:'Smith',email:'a.smith@practice.example',country:'United States',state:'New York',prof:'Physician (MD or DO)',lic:'123456',kind:'returning',sample:true,'in':true};
+var me=null;
+if(!DEMO){
+  me=sget('ea-auth');
+  if(!me||!me['in']){
+    if(Q.has('in')&&!sset('ea-probe',1)){ me=SAMPLE_ME; }            /* storage is blocked: the preview still opens */
+    else { location.replace('index.html#signin'); return; }           /* the working space opens only after the door */
+  }
+}
+function drName(){ var m=me||SAMPLE_ME; var doc=/^(Physician|Licensed psychologist)/.test(m.prof||''); return (doc?'Dr. ':'')+((m.first||'')+' '+(m.last||'')).trim(); }
+
+/* ---------- the calendar of the sample: August 2026, today is Friday 14 ---------- */
+var TODAY=14, YEAR=2026, MONTH=7;
+var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var NUMW=['no','one','two','three','four','five','six','seven','eight','nine','ten'];
+function wd(n){return new Date(YEAR,MONTH,n).getDay();}
+function dlabel(n){return DOW[wd(n)]+' '+n+' Aug';}
+function dshort(n){return n+' Aug';}
+function delDate(n){var d=new Date(YEAR,MONTH+6,n);return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();}
+function weekSpan(n){var mon=n-((wd(n)+6)%7);return [mon,mon+6];}
+
+/* ---------- state ---------- */
+function fresh(kind){
+  var none=kind==='new';
+  return {v:1,kind:kind,pts:none?{}:samplePatients(),order:none?[]:['m','d','a'],cur:none?null:'m',W:none?null:{p:'m',n:14},ego:{on:true,seen:false},lib:[],seq:0};
+}
+var S=sget(SKEY)||null;
+if(!S||S.v!==1) S=fresh(DEMO?'sample':(me.kind==='new'?'new':'sample'));
+function save(){ sset(SKEY,S); }
+function plan(){ var p=sget('ea-plan'); if(p) return p; return (DEMO||S.kind!=='new')?{active:true,since:'28 Jul 2026'}:{active:false}; }
+/* a consent signed on the patient's page comes back here */
+(function(){
+  var c=sget('ea-consent')||{}, sg=Q.get('signed'), mode=DEMO?'d':'w';
+  Object.keys(S.pts).forEach(function(id){ var p=S.pts[id], r=c[p.code];
+    if(p.consent.st!=='signed'&&((r&&r.st==='signed'&&r.m===mode)||sg===p.code)) p.consent={st:'signed',date:(r&&r.date)||'14 Aug 2026'}; });
+  sdel('ea-from'); save();
+})();
+function P(id){return S.pts[id||S.cur];}
+function Wd(){return (S.W&&S.pts[S.W.p])?S.pts[S.W.p].days[S.W.n]||null:null;}
+function Wp(){return S.W?S.pts[S.W.p]:null;}
+function possess(p,cap){var w=(p&&p.pos)||"the patient's";return cap?w.charAt(0).toUpperCase()+w.slice(1):w;}
+function nwords(sid){return SES[sid].turns.reduce(function(a,t){return a+t[1].split(/\s+/).length+1;},0);}
+var PK={}, BYNAME={}; PERSP.forEach(function(p){PK[p[0]]=p;BYNAME[p[1]]=p[0];}); PK.NEURO=NEURO;
+function aname(a,short){ if(a.mine) return a.mine.name; var p=PK[a.key], n=short?p[2]:p[1]; if(a.neuro&&a.key!=='NEURO') n+=' + neuropsychoanalytic integration'; return n; }
+function aid(a){ return (a.mine?'my:'+a.mine.name:a.key)+(a.neuro&&a.key!=='NEURO'?'+N':''); }
+function toast(t){ var o=document.querySelector('.toast'); if(o) o.remove(); var d=document.createElement('div'); d.className='toast'; d.setAttribute('role','status'); d.textContent=t; document.body.appendChild(d); setTimeout(function(){ if(d.parentNode) d.remove(); },6000); }
+function hush(){ try{ window.speechSynthesis&&window.speechSynthesis.cancel(); }catch(e){} each(document.querySelectorAll('[data-saying]'),function(b){ b.removeAttribute('data-saying'); b.setAttribute('aria-pressed','false'); if(b.dataset.idleAria) b.setAttribute('aria-label',b.dataset.idleAria); var l=b.querySelector('span'); if(l&&b.dataset.idle!=null) l.textContent=b.dataset.idle; }); }
+function sayAll(btn,parts){
+  if(!('speechSynthesis' in window)){ toast('This browser cannot read aloud.'); return; }
+  if(btn.getAttribute('aria-pressed')==='true'){ hush(); return; }
+  hush(); parts=parts.filter(Boolean); if(!parts.length) return;
+  var lab=btn.querySelector('span'); if(lab){ btn.dataset.idle=lab.textContent; lab.textContent='Stop reading'; }
+  if(btn.getAttribute('aria-label')){ btn.dataset.idleAria=btn.getAttribute('aria-label'); btn.setAttribute('aria-label','Stop reading'); }
+  btn.setAttribute('aria-pressed','true'); btn.setAttribute('data-saying','1');
+  parts.forEach(function(t,i){ var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.95; if(i===parts.length-1) u.onend=hush; window.speechSynthesis.speak(u); });
+}
+window.addEventListener('pagehide',hush);
+
+/* ---------- the two ways in look a little different ---------- */
+if(DEMO) document.title='EgoAgent Workspace Demo';
+if(!DEMO){
+  document.title='EgoAgent · Your workspace'; document.body.classList.add('work');
+  $('backbtn').hidden=true; $('hnav').hidden=false; $('hbrand').textContent='Your workspace';
+  $('bannertxt').textContent='PREVIEW. Every patient, name, session and note here is fictional. Nothing is recorded, stored or sent. The calendar is set to Friday 14 August 2026.';
+  $('h1').textContent='Your EgoAgent workspace';
+  $('intro').textContent='Open any stage below. Patients never enter this workspace.';
+  $('uplnote').textContent='In this preview nothing leaves your device: the files are only listed here, never uploaded or played.';
+  var b2=$('backbtn2'); b2.textContent='Sign out'; b2.id='signout2';
+  each([$('signout'),b2],function(a){ a.addEventListener('click',function(){ var m=sget('ea-auth'); if(m){ m['in']=false; sset('ea-auth',m); } }); });
+}
+(function(){ var armed=false, b=$('reset');
+  b.onclick=function(){
+    if(!armed){ armed=true; b.textContent='Tap again to start the sample over'; setTimeout(function(){ armed=false; b.textContent='Start the sample again'; },5000); return; }
+    sdel(SKEY); sdel('ea-consent'); if(!DEMO){ sdel('ea-plan'); sdel('ea-pend'); } location.href=HERE;
+  };
+})();
+
+/* ---------- the stages fold and unfold (one button: Expand all / Collapse all) ---------- */
+var secs=[].slice.call(document.querySelectorAll('section.screen'));
+secs.forEach(function(sec){
+  var label=sec.querySelector(':scope > .label'), h2=sec.querySelector(':scope > h2');
+  var head=document.createElement('button'); head.type='button'; head.className='shead'; head.setAttribute('aria-expanded','false');
+  var txt=document.createElement('span'); txt.className='stext'; txt.appendChild(label); txt.appendChild(h2);
+  var chev=document.createElement('span'); chev.className='chev'; chev.setAttribute('aria-hidden','true');
+  head.appendChild(txt); head.appendChild(chev);
+  var body=document.createElement('div'); body.className='sbody';
+  while(sec.firstChild) body.appendChild(sec.firstChild);
+  sec.appendChild(head); sec.appendChild(body);
+  head.onclick=function(){ setOpen(sec,!sec.classList.contains('open')); };
+});
+function setOpen(sec,o){ sec.classList.toggle('open',o); sec.querySelector('.shead').setAttribute('aria-expanded',o?'true':'false'); syncAll(); }
+function syncAll(){ var b=$('toggleall'); var allOpen=secs.every(function(x){return x.classList.contains('open');}); b.textContent=allOpen?'Collapse all':'Expand all'; b.setAttribute('aria-label',allOpen?'Collapse all stages':'Expand all stages'); }
+$('toggleall').onclick=function(){ var o=this.textContent==='Expand all'; secs.forEach(function(sec){ setOpen(sec,o); }); };
+function openStage(i,scroll){ var sec=$('st'+i); setOpen(sec,true); if(scroll){ sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash'); setTimeout(function(){ sec.classList.remove('flash'); },1400); try{ sec.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ sec.scrollIntoView(); } var h=sec.querySelector('.shead'); try{ h.focus({preventScroll:true}); }catch(e){} } }
+document.addEventListener('click',function(e){ var g=e.target.closest&&e.target.closest('[data-go]'); if(!g) return; var v=g.getAttribute('data-go'); if(v==='rec'){ openRec(); return; } if(v==='add'){ openAdd(); openStage(2,true); return; } openStage(+v,true); });
+function nostage(text,btns){ return '<p>'+text+'</p>'+(btns||[]).map(function(b){return '<button class="btn'+(b[2]?' ghost':'')+'" type="button" data-go="'+b[1]+'">'+b[0]+'</button>';}).join(' '); }
+
+/* ============================================================ STAGE 1: setting up ============================================================ */
+(function(){
+  var st=$('st1'), body=st.querySelector('.sbody');
+  var as=body.querySelectorAll('a.btn'), cont=as[0], prev=as[1], opn=as[2];
+  function swap(a,id){ var b=document.createElement('button'); b.type='button'; b.className=a.className; b.id=id; b.textContent=a.textContent; a.replaceWith(b); return b; }
+  cont=swap(cont,'s1cont'); prev=swap(prev,'s1prev'); opn=swap(opn,'s1open');
+  var steps=body.querySelectorAll('.step');
+  cont.onclick=function(){ try{ steps[4].scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} prev.focus(); };
+  prev.onclick=function(){ var c=sget('ea-consent')||{}; c.PREVIEW={name:'Miriam S.',st:'preview',dr:drName(),longdate:'August 14, 2026',m:DEMO?'d':'w'}; sset('ea-consent',c); sset('ea-from',HERE); location.href='index.html#consent/PREVIEW'; };
+  opn.onclick=function(){ openStage(2,true); };
+  if(DEMO) return;
+  /* signed in: the same six steps, now showing what registration recorded */
+  var intro=body.querySelector('.muted'); if(intro) intro.textContent='Done at registration. Shown here as your record of it.';
+  var ins=body.querySelectorAll('.step .input'), sels=body.querySelectorAll('.step select'), cks=body.querySelectorAll('.step input[type=checkbox]');
+  var vals=[me.first||'',me.last||'',me.email||''];
+  each(ins,function(d,i){ if(i<3) d.textContent=vals[i]||'not given'; else d.textContent=(me.lic||'not given')+(me.sample?' (sample)':''); d.style.color='#FFFFFF'; });
+  function setSel(s,v){ var hit=false; each(s.options,function(o){ if(o.text===v){ o.selected=true; hit=true; } }); if(!hit&&v){ var o=document.createElement('option'); o.text=v; o.selected=true; s.add(o); } s.disabled=true; }
+  setSel(sels[0],me.country||'United States'); setSel(sels[1],me.state||'New York'); setSel(sels[2],me.prof||'');
+  each(cks,function(c){ c.checked=true; c.disabled=true; });
+  cont.hidden=true;
+  var p=plan(), last=steps[5].querySelector('.muted');
+  if(last) last.innerHTML='Your plan: Individual practice · $20 per month. '+(p.active?'Active'+(p.since?' since '+p.since:'')+'.':'It begins when you invite your first patient.')+' <a href="index.html#plan" style="color:var(--gold)">Open your plan</a>';
+})();
+
+/* ============================================================ STAGE 2: patients, calendar ============================================================ */
+var rail=$('rail'), grid=$('grid'), dayBox=$('day'), picked=null, adding=false;
+function railLine(p){ var c=p.consent.st; if(c==='signed') return (p.freq?p.freq+' · ':'')+'consent signed'; return c==='sent'?'Consent sent, not yet signed':'Consent form not sent yet'; }
+function drawRail(){
+  rail.innerHTML='<p class="tag">Patients</p>';
+  S.order.forEach(function(id){ var p=S.pts[id], b=document.createElement('button'); b.type='button'; b.className='pt'+(id===S.cur?' on':''); b.dataset.p=id;
+    b.innerHTML=esc(p.name)+'<span class="small">'+esc(railLine(p))+'</span>'; b.onclick=function(){ selectPatient(id); }; rail.appendChild(b); });
+  var a=document.createElement('button'); a.type='button'; a.className='add'; a.id='addopen'; a.textContent='+ Add a patient'; a.onclick=openAdd; rail.appendChild(a);
+}
+function selectPatient(id){ S.cur=id; picked=null; adding=false; save(); drawPatients(); }
+function consentLine(p){ var c=p.consent;
+  if(c.st==='signed') return '✓ Consent signed '+c.date+' · recording allowed';
+  if(c.st==='sent') return 'Consent sent '+c.date+', not yet signed · nothing can be recorded until it is signed';
+  return 'Consent form not sent yet · nothing can be recorded until it is signed'; }
+function noteConsent(p,st){ var c=sget('ea-consent')||{}; c[p.code]={name:p.name,st:st,dr:drName(),date:'14 Aug 2026',longdate:'August 14, 2026',m:DEMO?'d':'w'}; sset('ea-consent',c); }
+function drawConsent(){
+  var p=P(), c=$('consent'), box=$('cact'); c.textContent=consentLine(p); c.style.color=p.consent.st==='signed'?'':'#c98a3d'; box.innerHTML='';
+  if(p.consent.st==='signed') return;
+  if(p.consent.st==='none'&&!plan().active){
+    box.innerHTML='<div class="planbox"><strong>Your plan begins when you invite your first patient.</strong><br>Individual practice · $20 per month. <span class="small">The price is a placeholder.</span><br><a class="btn" id="planstart" href="index.html#plan">Start the plan</a></div>';
+    $('planstart').onclick=function(){ sset('ea-pend',{send:S.cur}); save(); };
+    return;
+  }
+  var sent=p.consent.st==='sent', link='egoagent.ai/i/'+p.code;
+  var mail='mailto:?subject='+encodeURIComponent('EgoAgent: information and consent form')+'&body='+encodeURIComponent('Here is the page that explains EgoAgent, and the consent form to read and sign if you agree:\n\nhttps://'+link);
+  box.innerHTML='<p class="invite">Invitation link for '+esc(p.name)+': <code>'+link+'</code></p>'+
+    '<a class="act" id="csmail" href="'+mail+'">'+(sent?'Send it again by email':'Send it by email')+'</a>'+
+    '<button class="act" type="button" id="cscopy">Copy the link</button>'+
+    (sent?'<a class="act ask" id="csopen" href="index.html#consent/'+p.code+'">Open the consent form the patient receives</a>':'')+
+    '<a class="act" id="cspage" href="index.html#everyone">Preview the patient page</a>'+
+    '<p class="small">'+(sent?'When the patient signs, this line turns green and recording is allowed.':'The link opens the patient page, then the consent form. EgoAgent sends nothing by itself: use your own email, or copy the link.')+'</p>';
+  function markSent(){ if(p.consent.st!=='sent'){ p.consent={st:'sent',date:'14 Aug 2026'}; } noteConsent(p,'sent'); save(); setTimeout(function(){ drawPatients(); drawEgo(); },60); }
+  $('csmail').addEventListener('click',markSent);
+  $('cscopy').onclick=function(){ try{ navigator.clipboard&&navigator.clipboard.writeText('https://'+link).catch(function(){}); }catch(e){} toast('Link copied: https://'+link); markSent(); };
+  if($('csopen')) $('csopen').addEventListener('click',function(){ noteConsent(p,'sent'); sset('ea-from',HERE); save(); });
+  $('cspage').addEventListener('click',function(){ sset('ea-invited',{dr:drName()}); sset('ea-from',HERE); });
+}
+function drawGrid(){
+  var p=P(); $('calname').textContent=p.name; drawConsent(); grid.innerHTML='';
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(function(w){ var e=document.createElement('div'); e.className='dow'; e.textContent=w; grid.appendChild(e); });
+  for(var i=0;i<5;i++){ var e=document.createElement('div'); e.className='d blank'; grid.appendChild(e); }
+  for(var n=1;n<=31;n++){
+    var b=document.createElement('button'); b.type='button'; b.className='d'; b.textContent=n; b.dataset.n=n;
+    var x=p.days[n], st='nothing filed'; if(x){ b.className+=' '+x.k; st=x.k==='saved'?'process note saved':(x.k==='temp'?'waiting':'absence'); }
+    if(n>TODAY){ b.className+=' future'; b.disabled=true; st='not yet'; } if(n===TODAY){ b.className+=' today'; st+=', today'; }
+    if(n===picked) b.className+=' picked';
+    b.setAttribute('aria-label',dlabel(n)+', '+st); b.onclick=(function(k){ return function(){ showDay(k); }; })(n); grid.appendChild(b);
+  }
+  if(picked) showDay(picked,true);
+  else dayBox.innerHTML='<strong>Tap a day.</strong><br><span class="small">'+(p.consent.st!=='signed'?'Nothing can be recorded for '+esc(p.name)+' until the consent form is signed.':'Coloured days open their documents. An empty past day can be marked as an absence.')+'</span>';
+}
+function showDay(n,quiet){
+  var p=P(), x=p.days[n], lab=dlabel(n), h; picked=n;
+  each(grid.querySelectorAll('.picked'),function(q){ q.classList.remove('picked'); }); var cell=grid.querySelector('[data-n="'+n+'"]'); if(cell) cell.classList.add('picked');
+  if(x&&x.k==='absent'){
+    h='<strong>'+lab+'</strong><br><span class="chip" style="color:#e39a90;border-color:#c0574a">'+esc(x.why)+'</span> '+(x.ex?'“'+esc(x.ex)+'”':'marked by you')+'<br><button class="act rmv" type="button" id="dayrm">Remove this mark</button>';
+  } else if(x&&x.k==='saved'){
+    h='<strong>'+lab+'</strong><br><span class="chip final">Process note saved</span> private to you<br><button class="btn" type="button" id="dayopen">Open the note</button>';
+  } else if(x&&x.k==='temp'){
+    var s=SES[x.sid]; h='<strong>'+lab+'</strong><br>';
+    if(x.an.length) h+='<span class="chip temp">Transcript</span> '+s.min+' minutes · temporary<br><span class="chip temp">Analysis ready</span> '+x.an.map(function(a){return esc(aname(a,true));}).join(' + ')+' · temporary<br>';
+    else h+='<span class="chip temp">Transcript waiting</span> '+s.min+' minutes'+(x.src==='uploaded'?' · from an uploaded recording':'')+' · temporary<br>'+(x.src==='uploaded'?'<span class="small">The audio file was deleted after transcription.</span><br>':'');
+    h+='<button class="btn" type="button" id="dayopen">Open this day</button>';
+  } else if(p.consent.st!=='signed'){
+    h='<strong>'+lab+'</strong><br><span class="small">No consent yet, so nothing can be filed here.</span>';
+  } else {
+    h='<strong>'+lab+' · no session filed</strong><br>';
+    if(n===TODAY) h+='<button class="btn" type="button" id="dayrec">● Record today\'s session</button><br>';
+    h+='<span class="small">Mark this day as an absence?</span><br>'+
+      '<button class="choice" type="button" data-k="No-show">No-show</button><button class="choice" type="button" data-k="Cancelled, justified">Cancelled, justified</button><button class="choice" type="button" data-k="Cancelled, not justified">Cancelled, not justified</button>'+
+      '<div class="field"><span>Short explanation (optional)</span><input class="inp" id="absex" type="text" placeholder="Example: called the morning of the session" autocomplete="off"></div>';
+  }
+  dayBox.innerHTML=h;
+  var o=$('dayopen'); if(o) o.onclick=function(){ openDay(S.cur,n); };
+  var r=$('dayrm'); if(r) r.onclick=function(){ delete p.days[n]; save(); drawGrid(); showDay(n); drawEgo(); };
+  var rc=$('dayrec'); if(rc) rc.onclick=function(){ openRec(S.cur); };
+  each(dayBox.querySelectorAll('.choice'),function(c){ c.onclick=function(){ var ex=$('absex').value.trim(); p.days[n]={k:'absent',why:c.dataset.k,ex:ex}; save(); drawGrid(); showDay(n); }; });
+}
+function openDay(id,n){
+  var was=S.W?S.W.p:null; S.cur=id; S.W={p:id,n:n}; picked=n; ctxSel=null; wkSel=null; save(); drawAll();
+  if(was&&was!==id&&S.ego.on) egoSay('I have closed '+S.pts[was].name+'\'s notes. For anything clinical I now read '+S.pts[id].name+' only.');
+  var x=S.pts[id].days[n]; openStage(x.k==='saved'?6:(x.an.length?5:3),true);
+}
+/* add a patient */
+function openAdd(){ adding=true; drawPatients(); $('addfirst').value=''; $('addlast').value=''; $('addfreq').value=''; $('addmsg').textContent=''; try{ $('addfirst').focus(); }catch(e){} }
+$('addcancel').onclick=function(){ adding=false; drawPatients(); };
+$('emptyadd').onclick=openAdd;
+$('addgo').onclick=function(){
+  var f=$('addfirst').value.trim().replace(/\s+/g,' '), l=$('addlast').value.trim().charAt(0).toUpperCase(), fr=$('addfreq').value.trim();
+  if(!f||!/\p{L}/u.test(l)){ $('addmsg').textContent='Please give a first name and one letter for the last initial.'; (f?$('addlast'):$('addfirst')).focus(); return; }
+  var A='ABCDEFGHJKMNPQRSTUVWXYZ23456789', code=''; for(var i=0;i<8;i++){ if(i===4) code+='-'; code+=A.charAt(Math.floor(Math.random()*A.length)); }
+  var id='n'+(++S.seq); S.pts[id]={name:f.charAt(0).toUpperCase()+f.slice(1)+' '+l+'.',freq:fr,code:code,consent:{st:'none'},days:{}};
+  S.order.push(id); S.cur=id; adding=false; picked=null; save(); drawAll();
+};
+$('loadsample').onclick=function(){ var sp=samplePatients(); ['m','d','a'].forEach(function(id){ if(!S.pts[id]){ S.pts[id]=sp[id]; S.order.push(id); } }); S.cur='m'; if(!S.W) S.W={p:'m',n:14}; save(); drawAll(); };
+function drawPatients(){
+  drawRail();
+  var none=!S.order.length;
+  $('addform').hidden=!adding; $('calempty').hidden=adding||!none; $('calmain').hidden=adding||none;
+  if(!adding&&!none){ if(!S.cur||!S.pts[S.cur]) S.cur=S.order[0]; drawGrid(); resetUpl(); }
+}
+/* upload past recordings (the files are only listed, never uploaded or played) */
+var upl=$('upl'), uok=$('uplok'), pickBox=$('uplpick'), ulist=$('upllist'), ugo=$('uplgo'), uinput=$('uplinput'), files=[];
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function resetUpl(){ files=[]; ulist.innerHTML=''; ugo.hidden=true; uok.checked=false; pickBox.classList.remove('on'); var p=P(); $('uplname').textContent=p.name;
+  if(p.consent.st!=='signed'){ uok.disabled=true; uok.parentElement.style.opacity=.5; ulist.innerHTML='<p class="small">'+esc(p.name)+' has not signed the consent form, so nothing can be uploaded.</p>'; }
+  else { uok.disabled=false; uok.parentElement.style.opacity=1; } }
+function showList(){
+  ulist.innerHTML=files.map(function(f,i){ return '<div class="uplrow"><strong>'+esc(f.name)+'</strong> <span class="small">· '+f.size+'</span><br><span class="small">Session date</span> <input type="date" data-i="'+i+'" value="'+f.date+'" aria-label="Session date for '+esc(f.name)+'"></div>'; }).join('');
+  each(ulist.querySelectorAll('input[type=date]'),function(d){ d.onchange=function(){ files[+d.dataset.i].date=d.value; }; });
+  ugo.hidden=!files.length;
+}
+$('uplopen').onclick=function(){ upl.hidden=!upl.hidden; this.setAttribute('aria-expanded',upl.hidden?'false':'true'); if(!upl.hidden) resetUpl(); };
+uok.onchange=function(){ pickBox.classList.toggle('on',uok.checked); };
+uinput.onchange=function(){ files=[].map.call(uinput.files,function(f){ var mb=f.size/1048576; return {name:f.name,size:(mb>=1?mb.toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'),date:iso(new Date(f.lastModified))}; }); uinput.value=''; showList(); };
+$('uplsample').onclick=function(){ files=[{name:'Session recording 3 Aug.m4a',size:'38.2 MB',date:'2026-08-03'},{name:'Session recording 4 Aug.m4a',size:'41.7 MB',date:'2026-08-04'},{name:'Session recording 7 Aug.m4a',size:'39.5 MB',date:'2026-08-07'}]; showList(); };
+ugo.onclick=function(){
+  var p=P(), out=[];
+  files.forEach(function(f){
+    var d=new Date((f.date||'2026-08-01')+'T12:00:00'), label=DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear();
+    if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY&&!p.days[d.getDate()]){
+      p.days[d.getDate()]={k:'temp',sid:'s4',an:[],src:'uploaded'};
+      out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted</span></div>');
+    } else if(d.getFullYear()===YEAR&&d.getMonth()===MONTH&&d.getDate()<=TODAY){
+      out.push('<div class="uplrow">'+esc(f.name)+'<br><span class="small">Not filed: '+label+' already has an entry on the calendar. Change the date and try again.</span></div>');
+    } else {
+      out.push('<div class="uplrow">✓ '+esc(f.name)+'<br><span class="small">Filed to '+label+' · transcript waiting · audio deleted. In this '+WORD+' the calendar shows August 2026 up to the 14th only.</span></div>');
+    }
+  });
+  save(); drawGrid(); drawScope(); drawEgo(); ulist.innerHTML=out.join(''); ugo.hidden=true; files=[];
+};
+
+/* ============================================================ THE RECORDER ============================================================ */
+var rec=$('rec'), recBody=$('recbody'), R={p:null,ph:'idle',t:0,tick:null,timers:[]};
+function recWhy(id){ var p=S.pts[id]; if(p.consent.st!=='signed') return 'consent not signed'; if(p.days[TODAY]) return 'today is already filed'; return ''; }
+function recStop(){ if(R.tick){ clearInterval(R.tick); R.tick=null; } R.timers.forEach(clearTimeout); R.timers=[]; }
+function mmss(t){ return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function openRec(pid){
+  recStop(); var ok=S.order.filter(function(id){ return !recWhy(id); });
+  R.p=(pid&&!recWhy(pid))?pid:(ok[0]||null); R.ph='idle'; R.t=0; R.from=document.activeElement;
+  var o=document.querySelector('.toast'); if(o) o.remove();
+  rec.hidden=false; document.body.style.overflow='hidden'; drawRec(); $('recclose').focus();
+}
+function closeRec(){ recStop(); hush(); rec.hidden=true; document.body.style.overflow=''; if(R.from&&R.from.focus){ try{ R.from.focus(); }catch(e){} } }
+$('recclose').onclick=closeRec;
+$('recsay').onclick=function(){ var c=recBody.cloneNode(true); each(c.querySelectorAll('select,button,svg'),function(x){ x.remove(); }); var w=document.createElement('div'); w.style.cssText='position:absolute;left:-9999px;top:0;width:600px'; w.appendChild(c); document.body.appendChild(w);
+  var parts=['Record a session. Sound only. You press start, and you press stop.'].concat(R.p?['Patient: '+S.pts[R.p].name+'.']:[]).concat(c.innerText.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean)); w.remove(); sayAll(this,parts); };
+rec.addEventListener('click',function(e){ if(e.target===rec) closeRec(); });
+function drawRec(){
+  var h='';
+  if(!S.order.length||!R.p){
+    h='<p><strong>No patient can be recorded right now.</strong></p>'+(S.order.length?'<ul>'+S.order.map(function(id){ return '<li>'+esc(S.pts[id].name)+': '+recWhy(id)+'</li>'; }).join('')+'</ul>':'<p class="muted">There is no patient in the workspace yet.</p>')+
+      '<p class="muted">A session can be recorded once a patient has signed the consent form, once a day. To try the recorder again, add a patient or start the sample again.</p><button class="recbig plain" type="button" id="recdone">Close</button>';
+    recBody.innerHTML=h; $('recdone').onclick=closeRec; return;
+  }
+  var p=S.pts[R.p];
+  h+='<div class="field"><span>Patient</span><span class="selw"><select id="recp" aria-label="Patient to record"'+(R.ph==='idle'?'':' disabled')+'>'+S.order.map(function(id){ var w=recWhy(id); return '<option value="'+id+'"'+(id===R.p?' selected':'')+(w?' disabled':'')+'>'+esc(S.pts[id].name)+(w?' · '+w:'')+'</option>'; }).join('')+'</select></span></div>';
+  h+='<p class="recstat">✓ Consent signed '+esc(p.consent.date)+' · recording allowed · '+dlabel(TODAY)+'</p>';
+  h+='<div class="rectime" id="rect" aria-live="off">'+mmss(R.t)+'</div>';
+  if(R.ph==='idle') h+='<button class="recbig" type="button" id="recstart">● Start recording</button>';
+  if(R.ph==='on') h+='<p class="recstat recon" role="status"><span class="recdot"></span>Recording · sound only</p><button class="recbig stop" type="button" id="recstopb">■ Stop</button>';
+  if(R.ph==='stopped') h+='<p class="recstat" role="status">Recording stopped. Nothing has been sent yet.</p><button class="recbig" type="button" id="recsend">Process and send</button><button class="recbig plain" type="button" id="recdiscard">Discard this recording</button>';
+  if(R.ph==='proc'||R.ph==='done') h+='<ul class="recsteps" id="recsteps" aria-live="polite"><li>Transcribing the recording</li><li>Transcript filed to '+esc(p.name)+', '+dlabel(TODAY)+'</li><li>Sound file deleted</li></ul>';
+  if(R.ph==='done') h+='<button class="recbig" type="button" id="rectx">Open the transcript</button><button class="recbig plain" type="button" id="recdone">Close</button>';
+  h+='<p class="small" style="text-align:center;margin-top:14px">In this '+WORD+' no sound is captured and the microphone is never switched on. A prepared sample session of 46 minutes is used.</p>';
+  recBody.innerHTML=h;
+  var sel=$('recp'); if(sel) sel.onchange=function(){ R.p=sel.value; drawRec(); };
+  if($('recstart')) $('recstart').onclick=function(){ R.ph='on'; R.t=0; drawRec(); R.tick=setInterval(function(){ R.t++; var e=$('rect'); if(e) e.textContent=mmss(R.t); },1000); $('recstopb').focus(); };
+  if($('recstopb')) $('recstopb').onclick=function(){ recStop(); R.ph='stopped'; drawRec(); $('recsend').focus(); };
+  if($('recdiscard')) $('recdiscard').onclick=function(){ R.ph='idle'; R.t=0; drawRec(); toast('The recording was discarded. Nothing was kept.'); };
+  if($('recsend')) $('recsend').onclick=function(){
+    R.ph='proc'; drawRec();
+    [0,1,2].forEach(function(i){ R.timers.push(setTimeout(function(){ var li=$('recsteps').children[i]; li.classList.add('ok');
+      if(i===2){ var q=S.pts[R.p]; q.days[TODAY]={k:'temp',sid:'s4',an:[],src:'recorded'}; var was=S.W?S.W.p:null; S.cur=R.p; S.W={p:R.p,n:TODAY}; picked=TODAY; ctxSel=null; wkSel=null; save(); drawAll(); R.ph='done'; drawRec(); each($('recsteps').children,function(x){x.classList.add('ok');}); $('rectx').focus(); }
+    },700*(i+1))); });
+  };
+  if($('rectx')) $('rectx').onclick=function(){ closeRec(); openStage(3,true); };
+  if($('recdone')) $('recdone').onclick=closeRec;
+}
+$('recopen').onclick=function(){ openRec(S.cur); };
+
+/* ============================================================ STAGE 3: after the session ============================================================ */
+function turnHTML(t){ return '<p><span class="who">'+t[0]+':</span> '+esc(t[1])+'</p>'; }
+function drawAfter(){
+  var box=$('after'), d=Wd();
+  if(!d||d.k==='absent'){ box.innerHTML='<div class="nostage">'+nostage('No transcript is open. Tap a coloured day on the calendar, record a session, or upload a past recording.',[['Go to the calendar',2],['Record a session','rec',1]])+'</div>'; return; }
+  var p=Wp(), s=SES[d.sid], n=S.W.n, lab=dlabel(n);
+  if(d.k==='saved'){ box.innerHTML='<p class="tag">'+esc(p.name)+' · '+lab+'</p><p class="muted">The process note for '+lab+' is saved. The transcript is now part of that note, and the separate transcript file is deleted.</p><button class="btn" type="button" data-go="6">Open the saved note</button> <button class="btn ghost" type="button" data-go="2">Back to the calendar</button>'; return; }
+  var more=s.turns.length>2;
+  box.innerHTML='<p class="tag">'+esc(p.name)+' · '+lab+'</p>'+
+    '<p class="muted">When you press stop, the recording is transcribed and the sound file is deleted. The transcript is filed in '+esc(p.name)+'\'s space as a temporary item.</p>'+
+    (s.sample?'<span class="sampletag">Prepared sample transcript</span><p class="small">In this '+WORD+' every newly recorded or uploaded session becomes this same sample transcript.</p>':'')+
+    '<div class="transcript">'+s.turns.slice(0,2).map(turnHTML).join('')+'<div id="txrest" class="txmore" hidden>'+s.turns.slice(2).map(turnHTML).join('')+'</div>'+
+    '<p class="small"><span id="txdots">'+(more?'… ':'')+'</span>'+nwords(d.sid)+' words · '+s.min+' minutes · status: <span class="chip temp">temporary</span></p></div>'+
+    (more?'<button class="act" type="button" id="txtoggle" aria-expanded="false">Show the whole transcript</button>':'')+
+    '<div class="box">The sound file is already gone. The transcript waits here until you save the process note for this day.</div>'+
+    '<div class="box" style="border-left-color: var(--temp)"><strong>Deleted automatically on '+delDate(n)+'</strong><br><span class="small">If no process note is saved within six months, this transcript is deleted on its own. This period is set in one place for the whole workspace.</span></div>'+
+    '<button class="btn" type="button" data-go="4">Choose perspectives</button> <button class="btn ghost" type="button" data-go="5">'+(d.an.length?'Open the process note':'Go straight to the note')+'</button>';
+  var tg=$('txtoggle'); if(tg) tg.onclick=function(){ var r=$('txrest'), o=r.hidden; r.hidden=!o; $('txdots').textContent=o?'':'… '; tg.textContent=o?'Show less of the transcript':'Show the whole transcript'; tg.setAttribute('aria-expanded',o?'true':'false'); };
+}
+
+/* ============================================================ STAGE 4: the analysis ============================================================ */
+var ctxSel=null, wkSel=null, runBox=$('runlist');
+function material(n){ var p=Wp(), x=p.days[n]; return x&&(x.k==='saved'||x.k==='temp'); }
+function earlierDays(){ var out=[]; if(!S.W) return out; for(var n=1;n<S.W.n;n++){ if(material(n)) out.push(n); } return out; }
+function thisWeek(incl){ var sp=weekSpan(S.W.n), out=[]; for(var n=Math.max(1,sp[0]);n<=S.W.n;n++){ if(n===S.W.n){ if(incl) out.push(n); } else if(material(n)) out.push(n); } return out; }
+function dayKind(n){ var x=Wp().days[n]; return x.k==='saved'?'process note':(x.an.length?'transcript and analysis, note not yet saved':'transcript, note not yet saved'); }
+function listDays(a){ return a.map(function(n,i){ return (i===a.length-1)?dlabel(n):DOW[wd(n)]+' '+n; }).join(' · '); }
+function mini(el,days,sel,locked,onchange){
+  el.innerHTML='<p class="small" style="margin:6px 0 2px">Tap a coloured day to add or remove it.</p>'; var g=document.createElement('div'); g.className='mini'; el.appendChild(g);
+  for(var i=0;i<5;i++){ var e=document.createElement('div'); e.className='d blank'; g.appendChild(e); }
+  for(var n=1;n<=TODAY;n++){ var b=document.createElement('button'); b.type='button'; b.textContent=n; var has=days.indexOf(n)>=0||n===locked, x=Wp().days[n];
+    b.className='d'+(x?' '+x.k:'')+(sel.indexOf(n)>=0?' inc':''); b.setAttribute('aria-label',dlabel(n)+(has?(sel.indexOf(n)>=0?', included':', not included'):', nothing to read')); b.setAttribute('aria-pressed',sel.indexOf(n)>=0?'true':'false');
+    if(!has||n===locked) b.disabled=true;
+    b.onclick=(function(k){ return function(){ var j=sel.indexOf(k); if(j>=0) sel.splice(j,1); else { sel.push(k); sel.sort(function(a,b){return a-b;}); } onchange(); }; })(n);
+    g.appendChild(b); }
+}
+function drawScope(){
+  var d=Wd(), ok=d&&d.k==='temp';
+  $('an-none').hidden=!!ok; $('an-main').hidden=!ok;
+  if(!ok){ $('an-none').innerHTML=(d&&d.k==='saved')?nostage('The note for '+dlabel(S.W.n)+' is already saved, so nothing more is analysed for that day.',[['Open the saved note',6],['Go to the calendar',2,1]]):nostage('No transcript is open. Open a day with a transcript first, then choose perspectives here.',[['Go to the calendar',2],['Record a session','rec',1]]); return; }
+  var p=Wp(), n=S.W.n, early=earlierDays();
+  if(!ctxSel) ctxSel=thisWeek(false);
+  if(!wkSel) wkSel=thisWeek(true);
+  $('anday').textContent='· analysing '+dlabel(n)+' · '+p.name;
+  $('bringwordst').textContent=possess(p,true)+' words: the transcripts kept in your notes';
+  $('ctxdays').innerHTML=early.length?early.map(function(k){ return '<label class="check"><input type="checkbox" class="cd" value="'+k+'"'+(ctxSel.indexOf(k)>=0?' checked':'')+'>'+dlabel(k)+' · '+dayKind(k)+'</label>'; }).join(''):'<p class="small">There are no earlier days with material for '+esc(p.name)+' yet, so this session is read alone.</p>';
+  each(document.querySelectorAll('.cd'),function(c){ c.onchange=function(){ ctxSel=[].filter.call(document.querySelectorAll('.cd'),function(x){return x.checked;}).map(function(x){return +x.value;}); drawScopeMini(); upd(); }; });
+  $('ctxbox').textContent='Only '+dlabel(n)+' is analysed. The earlier days are read as background, not analysed again.';
+  var c=wkSel.length, all=c===1?'Only this session is filed so far':(c===2?'Both sessions':'All '+(NUMW[c]||c)+' sessions');
+  $('wkintro').textContent=all+(c===1?':':', read again from '+possess(p)+' own words, in date order, and analysed as one:');
+  $('wklist').textContent=listDays(wkSel);
+  var same=thisWeek(true).join()===wkSel.join();
+  $('wkbox').textContent=(same?'A new reading of the whole week.':'A new reading of these sessions together.')+' New sessions often show patterns that single sessions could not. Counts as '+c+' session'+(c===1?'':'s')+' in your plan.';
+  drawScopeMini(); drawMine(); upd();
+}
+function drawScopeMini(){
+  if(!$('ctxmini').hidden) mini($('ctxmini'),earlierDays(),ctxSel,null,function(){ drawScope(); });
+  if(!$('wkmini').hidden) mini($('wkmini'),earlierDays(),wkSel,S.W.n,function(){ drawScope(); });
+}
+each(document.querySelectorAll('[data-sc]'),function(b){ b.onclick=function(){ var k=b.dataset.sc;
+  if(k==='week'){ ctxSel=thisWeek(false); $('ctxmini').hidden=true; } else if(k==='ten'){ ctxSel=earlierDays().slice(-10); $('ctxmini').hidden=true; } else { $('ctxmini').hidden=!$('ctxmini').hidden; }
+  drawScope(); }; });
+each(document.querySelectorAll('[data-wk]'),function(b){ b.onclick=function(){ var k=b.dataset.wk, n=S.W.n;
+  if(k==='week'){ wkSel=thisWeek(true); $('wkmini').hidden=true; } else if(k==='two'){ var from=weekSpan(n)[0]-7; wkSel=earlierDays().filter(function(x){return x>=from;}).concat([n]); $('wkmini').hidden=true; } else { $('wkmini').hidden=!$('wkmini').hidden; }
+  drawScope(); }; });
+function drawMine(){
+  var box=$('mine'), list=$('mylist'); box.hidden=!S.lib.length;
+  list.innerHTML=S.lib.map(function(m,i){ return '<label class="check"><input type="checkbox" class="mp" value="'+i+'"'+(m.on?' checked':'')+'>'+esc(m.name)+' <span class="small">· yours</span></label>'; }).join('');
+  each(list.querySelectorAll('.mp'),function(c){ c.onchange=function(){ S.lib[+c.value].on=c.checked; save(); upd(); }; });
+}
+$('mykeep').onclick=function(){
+  var n=$('myname').value.trim(), t=$('mytext').value.trim(), msg=$('mymsg');
+  if(!n||!t){ msg.textContent='Give your perspective a name, and say what it attends to.'; (n?$('mytext'):$('myname')).focus(); return; }
+  S.lib=S.lib.filter(function(m){return m.name!==n;}); S.lib.push({name:n,text:t,on:true}); save();
+  $('myname').value=''; $('mytext').value=''; msg.textContent='Kept in your library, and selected.'; drawMine(); upd();
+};
+function chosen(){
+  var keys=[].filter.call(document.querySelectorAll('.sp'),function(c){return c.checked;}).map(function(c){return BYNAME[c.value];});
+  var neuro=$('neuro').checked, mode=document.querySelector('input[name=scope]:checked').value, inst=$('inst').value.trim();
+  var list=keys.map(function(k){ return {key:k,neuro:neuro}; });
+  if(!keys.length&&neuro) list=[{key:'NEURO'}];
+  S.lib.forEach(function(m){ if(m.on) list.push({mine:{name:m.name,text:m.text}}); });
+  var early=earlierDays(), days=mode==='ctx'?ctxSel.slice():(mode==='week'?wkSel.slice():[]);
+  if(mode==='ctx'&&!days.length) mode='one';
+  if(mode==='week'&&days.length<2) mode='one';
+  list.forEach(function(a){ a.mode=mode; a.days=days; if(inst&&!a.mine) a.inst=inst; if(mode==='ctx') a.oldai=$('oldai').checked; });
+  return {list:list,mode:mode,days:days};
+}
+function upd(){
+  var d=Wd(); if(!d||d.k!=='temp') return;
+  var c=chosen(), n=S.W.n, mode=document.querySelector('input[name=scope]:checked').value;
+  $('ctx').style.display=mode==='ctx'?'block':'none'; $('wk').style.display=mode==='week'?'block':'none';
+  var had=d.an.length?'<span class="small">Already run for this day: '+d.an.map(function(a){return esc(aname(a,true));}).join(', ')+'.</span><br>':'';
+  if(!c.list.length){ runBox.innerHTML=had+'<span class="small">Choose at least one perspective.</span>'; return; }
+  var how=c.mode==='week'?' · '+DOW[wd(c.days[0])]+' '+c.days[0]+' to '+dlabel(n)+', read afresh together':(c.mode==='ctx'?' · reading '+dshort(n)+' in light of '+c.days.map(dshort).join(', '):' · '+dshort(n)+' alone');
+  runBox.innerHTML=had+c.list.map(function(a,i){ return 'Analysis '+(i+1)+' of '+c.list.length+' · '+esc(aname(a))+how+' · <span class="chip temp" data-i="'+i+'">temporary</span>'; }).join('<br>');
+}
+each(document.querySelectorAll('.sp, #neuro, input[name=scope], #oldai'),function(c){ c.addEventListener('change',upd); });
+$('inst').addEventListener('input',upd);
+$('run').onclick=function(){
+  var d=Wd(), btn=this; if(!d||d.k!=='temp') return;
+  var c=chosen();
+  if(!c.list.length){ upd(); runBox.style.borderLeftColor='#c0574a'; setTimeout(function(){ runBox.style.borderLeftColor=''; },1600); toast('Choose at least one perspective first.'); return; }
+  btn.disabled=true; btn.textContent='Analysing…';
+  var chips=runBox.querySelectorAll('.chip'), i=0;
+  (function step(){
+    if(i<chips.length){ chips[i].textContent='ready'; chips[i].className='chip final'; i++; setTimeout(step,350); return; }
+    c.list.forEach(function(a){ var k=aid(a); d.an=d.an.filter(function(x){return aid(x)!==k;}); d.an.push(a); });
+    save(); btn.disabled=false; btn.textContent='Run the analysis'; drawAll(); openStage(5,true);
+  })();
+};
+
+/* ============================================================ STAGE 5: the process note ============================================================ */
+function marksOf(d){ if(!d.marks) d.marks={tx:{},an:{}}; return d.marks; }
+function hi(text,marks){ var h=esc(text); (marks||[]).forEach(function(m){ if(!m.quote) return; var q=esc(m.quote), i=h.indexOf(q); if(i>=0) h=h.slice(0,i)+'<mark class="'+(m.t==='q'?'q':'c')+'">'+q+'</mark>'+h.slice(i+q.length); }); return h; }
+function boxes(marks){ return (marks||[]).map(function(m){ var q=m.quote?'<span class="quote">“'+esc(m.quote)+'”</span>':'';
+  return m.t==='c'?'<div class="cmt">'+q+'<strong>Your comment:</strong> '+esc(m.text)+'</div>':'<div class="qa">'+q+'<strong>Your question:</strong> '+esc(m.text)+'<span class="small"><strong>Answer:</strong> '+esc(m.ans)+'</span>'+(m.read?'<span class="small">'+esc(m.read)+'</span>':'')+'</div>'; }).join(''); }
+function txHTML(d,ro){ var s=SES[d.sid], mk=marksOf(d).tx, n=S.W.n;
+  return '<h3>1 · The transcript</h3><span class="small">'+dlabel(n)+' · '+s.min+' minutes · verbatim'+(s.sample?' · prepared sample':'')+'</span>'+
+    s.turns.map(function(t,i){ return '<div class="seg" data-p="tx" data-k="'+i+'"'+(ro?'':' tabindex="0" role="button"')+'><span class="who">'+t[0]+':</span> '+hi(t[1],mk[i])+'</div>'+boxes(mk[i]); }).join(''); }
+function anHTML(d,ro){ var s=SES[d.sid], mk=marksOf(d).an;
+  var h='<h3>2 · The analyses</h3><span class="small">Another perspective, like a colleague\'s consultation</span>';
+  if(!d.an.length) return h+'<div class="nostage"><p>No analysis has been run for this day. You can save a note without one.</p>'+(ro?'':'<button class="btn" type="button" data-go="4">Choose perspectives</button>')+'</div>';
+  h+='<br><span class="sampletag" style="margin:8px 4px 0">Prepared sample text</span>';
+  d.an.forEach(function(a){ var k=aid(a), segs=[];
+    h+='<p class="tag" style="margin:12px 4px 2px">'+esc(aname(a,true))+'</p>';
+    if(a.mode==='ctx'||a.mode==='week') h+='<div class="scopeseg"><span class="small">'+(a.mode==='ctx'?'In light of '+a.days.map(dshort).join(', ')+(a.oldai?', with the earlier AI analyses':''):'The sessions of '+a.days.map(dshort).join(', ')+', read afresh together')+'</span><br>'+esc(a.mode==='ctx'?s.ctx:s.week)+'</div>';
+    if(a.mine){ h+='<div class="seg" data-p="an" data-k="'+esc(k)+':0"'+(ro?'':' tabindex="0" role="button"')+'>'+hi('In this '+WORD+' a perspective you write yourself has no prepared text. On the real site the AI writes this analysis from your own words: “'+a.mine.text+'”',mk[k+':0'])+'</div>'+boxes(mk[k+':0']); return; }
+    segs=(s.an[a.key]||[]).slice(); if(a.neuro&&a.key!=='NEURO') segs=segs.concat(s.an.NEURO||[]);
+    segs.forEach(function(g,i){ var id=k+':'+i; h+='<div class="seg" data-p="an" data-k="'+esc(id)+'" data-ref="'+g[0]+'"'+(ro?'':' tabindex="0" role="button"')+'>'+hi(g[1],mk[id])+'</div>'+boxes(mk[id]); });
+    if(a.inst) h+='<p class="small" style="margin:2px 4px 6px">Your added instruction: “'+esc(a.inst)+'”. In this '+WORD+' the prepared text does not change with it; on the real site the AI follows it.</p>';
+  });
+  return h; }
+function countMarks(m){ var c=0,q=0; Object.keys(m).forEach(function(k){ m[k].forEach(function(x){ if(x.t==='q') q++; else c++; }); }); return [c,q]; }
+function updNote(){
+  var d=Wd(); if(!d||d.k!=='temp') return; var mk=marksOf(d);
+  function pl(k,w){return k+' '+w+(k===1?'':'s');}
+  function line(m){ var x=countMarks(m); if(!x[0]&&!x[1]) return ': no marks yet.'; return ': '+pl(x[0],'comment')+', '+pl(x[1],'question')+' with '+(x[1]===1?'its answer':'answers')+'.'; }
+  $('n1').textContent='1. The full transcript, with your marks on it'+line(mk.tx);
+  $('n2').textContent=d.an.length?'2. The analyses, with your marks on them'+line(mk.an):'2. No analyses: none were run for this day.';
+  var own=(d.own||'').trim(), carry=(d.carry||'').trim(), cq=carry?carry.split(/\n+/).filter(function(x){return x.trim();}).length:0;
+  $('n3').textContent='3. Your own thoughts'+(own?'':' (none yet)')+' and '+cq+' question'+(cq===1?'':'s')+' to carry.';
+}
+function drawNote(){
+  var d=Wd(), ok=d&&d.k==='temp'; $('note-none').hidden=!!ok; $('note-main').hidden=!ok;
+  if(!ok){ $('note-none').innerHTML=(d&&d.k==='saved')?nostage('The note for '+dlabel(S.W.n)+' is saved. What was saved is never changed; later thoughts are added below it.',[['Open the saved note',6],['Go to the calendar',2,1]]):nostage('No day is open. Open a day with a transcript to work on its note.',[['Go to the calendar',2],['Record a session','rec',1]]); return; }
+  var tx=$('p-tx'), an=$('p-an'), st=tx.scrollTop, sa=an.scrollTop;
+  tx.innerHTML=txHTML(d); an.innerHTML=anHTML(d); tx.scrollTop=st; an.scrollTop=sa;
+  $('own').value=d.own||''; $('carry').value=d.carry||'';
+  var c=d.an.length, n=S.W.n;
+  $('savebox').innerHTML='<strong>Save as the process note for '+dshort(n)+'?</strong><br>When you save, the temporary items are deleted: the transcript'+(c===0?' as a separate file':(c===1?' and the analysis as separate files':(c===2?' and both analyses as separate files':' and all '+(NUMW[c]||c)+' analyses as separate files')))+'. What remains is this single note, with everything above in it, kept private to you.';
+  $('keepmsg').hidden=true; updNote();
+}
+$('own').addEventListener('input',function(){ var d=Wd(); if(d){ d.own=this.value; save(); updNote(); } });
+$('carry').addEventListener('input',function(){ var d=Wd(); if(d){ d.carry=this.value; save(); updNote(); } });
+function closeActs(){ each(document.querySelectorAll('#note-main .acts, #note-main .draft'),function(e){ e.remove(); }); each(document.querySelectorAll('.seg.on'),function(e){ e.classList.remove('on'); }); }
+function lastBox(seg){ var x=seg; while(x.nextElementSibling&&(x.nextElementSibling.classList.contains('cmt')||x.nextElementSibling.classList.contains('qa'))) x=x.nextElementSibling; return x; }
+function answerFor(seg){
+  var d=Wd(), s=SES[d.sid], t;
+  if(seg.dataset.p==='an'){ var k=seg.dataset.k.replace(/:\d+$/,''), a=null; d.an.forEach(function(x){ if(aid(x)===k) a=x; });
+    if(a&&a.mine) t='This passage belongs to a perspective you wrote yourself. In this '+WORD+' it has no prepared text to explain.';
+    else { var key=(a&&a.key)||'GP', pr=PK[key], i=+seg.dataset.k.split(':').pop(), base=(s.an[key]||[]).length; if(a&&a.neuro&&key!=='NEURO'&&i>=base) pr=NEURO;
+      var nm=/^(KB|KO|WI|LA)$/.test(pr[0])?pr[1]:pr[1].charAt(0).toLowerCase()+pr[1].slice(1);
+      t='This passage comes from the '+nm+' reading: '+pr[3]+'. It is one possible reading, offered for you to weigh against your own sense of the hour.'; } }
+  else t=s.qa;
+  return 'Prepared sample reply. '+t;
+}
+function readLine(){
+  var d=Wd(), n=S.W.n, parts=['the transcript of '+dlabel(n)], days=[], old=false;
+  if(d.an.length) parts.push('the '+(d.an.length===1?'analysis':'analyses')+' you ran for it');
+  d.an.forEach(function(a){ (a.days||[]).forEach(function(k){ if(k!==n&&days.indexOf(k)<0) days.push(k); }); if(a.oldai) old=true; });
+  days.sort(function(a,b){return a-b;});
+  if(days.length) parts.push('what you kept of '+days.map(dlabel).join(', ')+', word for word');
+  return 'Read for this answer: '+parts.join('; ')+'. Left out: '+(old&&days.length?'nothing you chose to include':'earlier AI analyses, and every other patient')+'.';
+}
+function openSeg(seg,range){
+  closeActs(); seg.classList.add('on');
+  var d=Wd(), quote=range?range.toString().replace(/\s+/g,' ').trim():'';
+  var a=document.createElement('div'); a.className='acts';
+  a.innerHTML=(quote?'<span class="small">Highlighted: “'+esc(quote)+'”</span>':'')+'<button class="act" type="button">Add a comment</button><button class="act ask" type="button">'+(S.ego.on?'Ask a question':'Ask a question (turns your EgoAgent on)')+'</button>';
+  seg.after(a);
+  function draft(kind){
+    if(kind==='q'&&!S.ego.on){ setEgo(true); }
+    var box=document.createElement('div'); box.className=(kind==='c'?'cmt':'qa')+' draft';
+    box.innerHTML=(quote?'<span class="quote">“'+esc(quote)+'”</span>':'')+'<textarea class="ta" placeholder="'+(kind==='c'?'Your comment':'Your question to your EgoAgent')+'" aria-label="'+(kind==='c'?'Your comment':'Your question')+'"></textarea><button class="keep" type="button">'+(kind==='c'?'Keep':'Ask')+'</button> <button class="act" type="button">Cancel</button>';
+    a.remove(); seg.classList.remove('on'); lastBox(seg).after(box);
+    var ta=box.querySelector('textarea'); ta.focus();
+    box.querySelector('.act').onclick=function(){ box.remove(); };
+    box.querySelector('.keep').onclick=function(){
+      var v=ta.value.trim()||(kind==='c'?'(empty comment)':'What do these words suggest?'), mk=marksOf(d)[seg.dataset.p], key=seg.dataset.k, m={t:kind,text:v};
+      if(quote) m.quote=quote; if(kind==='q'){ m.ans=answerFor(seg); m.read=readLine(); }
+      (mk[key]=mk[key]||[]).push(m); save(); drawNote();
+    };
+  }
+  a.querySelector('.act').onclick=function(){ draft('c'); };
+  a.querySelector('.act.ask').onclick=function(){ draft('q'); };
+}
+function segClick(seg){
+  var txs=$('p-tx').querySelectorAll('.seg'); each(txs,function(t){ t.classList.remove('linked'); });
+  if(seg.dataset.p==='an'){
+    if(seg.dataset.ref!==undefined){ var t=txs[+seg.dataset.ref]; if(t){ t.classList.add('linked'); var col=$('p-tx'); if(col.scrollHeight>col.clientHeight){ try{ col.scrollTo({top:t.offsetTop-col.offsetTop-40,behavior:'smooth'}); }catch(e){ col.scrollTop=t.offsetTop-col.offsetTop-40; } } } } }
+  var sel=window.getSelection(), r=null;
+  if(sel&&!sel.isCollapsed&&sel.rangeCount){ var rr=sel.getRangeAt(0); if(seg.contains(rr.commonAncestorContainer)) r=rr.cloneRange(); }
+  if(!r&&seg.classList.contains('on')){ closeActs(); return; }
+  openSeg(seg,r);
+}
+['p-tx','p-an'].forEach(function(id){
+  $(id).addEventListener('click',function(e){ var seg=e.target.closest('.seg'); if(seg&&this.contains(seg)) segClick(seg); });
+  $(id).addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('seg')){ e.preventDefault(); segClick(e.target); } });
+});
+$('keepedit').onclick=function(){ $('keepmsg').hidden=false; try{ $('own').focus(); }catch(e){} };
+$('savenote').onclick=function(){
+  var d=Wd(); if(!d||d.k!=='temp') return;
+  d.k='saved'; d.when=dshort(S.W.n)+', 9:40 pm'; d.later=[]; d.own=$('own').value; d.carry=$('carry').value;
+  save(); drawAll(); openStage(6,true); toast('Saved. The note is kept; the temporary items are deleted.');
+};
+
+/* ============================================================ STAGE 6: saved ============================================================ */
+var LTIMES=['7:15 am','8:02 pm','6:50 am'];
+function drawSaved(){
+  var box=$('saved'), d=Wd();
+  if(!d||d.k!=='saved'){ box.innerHTML='<div class="nostage">'+((d&&d.k==='temp')?nostage('The note for '+dlabel(S.W.n)+' is not saved yet. It is saved in Stage 5.',[['Go to the note',5],['Go to the calendar',2,1]]):nostage('No saved note is open. Tap a green day on the calendar to open its note.',[['Go to the calendar',2]]))+'</div>'; return; }
+  var p=Wp(), n=S.W.n, h='<p class="tag">'+esc(p.name)+' · '+dlabel(n)+'</p>';
+  h+='<div class="row"><div>Process note, '+n+' Aug 2026</div><span class="chip" style="color:#FFFFFF;border:2px solid #C4553F;background:rgba(196,85,63,.20);font-weight:600;box-shadow:0 0 12px rgba(196,85,63,.35)">Saved, private</span></div>';
+  h+='<div class="row"><div>Transcript, '+n+' Aug 2026</div><span class="chip wait">Deleted</span></div>';
+  d.an.forEach(function(a){ h+='<div class="row"><div>Analysis, '+esc(aname(a,true))+'</div><span class="chip wait">Deleted</span></div>'; });
+  h+='<p class="small">On '+esc(p.name)+'\'s calendar, '+dshort(n)+' now shows green.</p>';
+  h+='<div class="note" style="margin-top:14px"><p class="tag">Process note · '+n+' Aug 2026 · saved '+esc(d.when||dshort(n))+'</p>'+
+     '<p class="small">The transcript and analyses with your marks, your thoughts, and your questions to carry. <button class="linkbtn" type="button" id="fnopen">Open the full note</button></p>'+
+     '<div id="later">'+(d.later||[]).map(function(l){ return '<div class="cmt" style="margin:8px 0"><strong>Added '+esc(l.when)+':</strong> '+esc(l.text)+'</div>'; }).join('')+'</div>'+
+     '<h3>Add a later thought</h3><p class="small">Something that came to you that night, or before the next session. It is added below the note with its date. What you saved is never changed.</p>'+
+     '<textarea class="ta" id="latertxt" aria-label="A later thought" placeholder="Example: I dreamt about the drawing. Was I the one who couldn\'t let the session end?"></textarea>'+
+     '<button class="keep" id="laterbtn" type="button">Add to this note</button> <span class="small" id="latermsg" role="status"></span></div>';
+  h+='<p class="small">Your process note is kept for the treatment, under the same protection as your own process notes. Its retention period is set in one place for the whole workspace.</p>';
+  h+='<button class="btn ghost" type="button" data-go="2">Back to the calendar</button>';
+  box.innerHTML=h;
+  $('fnopen').onclick=openNote;
+  $('laterbtn').onclick=function(){ var t=$('latertxt'), v=t.value.trim(); if(!v){ $('latermsg').textContent='Write the thought first.'; t.focus(); return; }
+    d.later=d.later||[]; var i=d.later.length; d.later.push({when:(Math.max(n+1,TODAY)+i)+' Aug 2026, '+LTIMES[i%3],text:v}); save(); drawSaved(); try{ $('latertxt').focus(); }catch(e){} };
+}
+/* the full note, read only */
+var fn=$('fn');
+function openNote(){
+  var d=Wd(); if(!d) return; var p=Wp(), n=S.W.n;
+  $('fntitle').textContent=p.name+' · '+dlabel(n)+' 2026'; $('fnsub').textContent='Saved '+(d.when||dshort(n))+'. What was saved is never changed.';
+  var own=(d.own||'').trim(), carry=(d.carry||'').trim();
+  $('fnbody').innerHTML='<div class="paper">'+txHTML(d,true)+'</div><div class="paper">'+anHTML(d,true)+'</div>'+
+    '<div class="paper"><h3>3 · Your own thoughts</h3><p>'+(own?esc(own).replace(/\n/g,'<br>'):'<span class="small">None written.</span>')+'</p><h3 style="margin-top:12px">Questions to carry to the next session</h3><p>'+(carry?esc(carry).replace(/\n/g,'<br>'):'<span class="small">None written.</span>')+'</p></div>'+
+    ((d.later||[]).length?'<div class="paper"><h3>Added later</h3>'+d.later.map(function(l){ return '<div class="cmt" style="margin:8px 0"><strong>Added '+esc(l.when)+':</strong> '+esc(l.text)+'</div>'; }).join('')+'</div>':'');
+  var o=document.querySelector('.toast'); if(o) o.remove();
+  fn.hidden=false; document.body.style.overflow='hidden'; fn.scrollTop=0; $('fnclose').focus();
+}
+function closeNote(){ hush(); fn.hidden=true; document.body.style.overflow=''; var b=$('fnopen'); if(b) b.focus(); }
+$('fnclose').onclick=closeNote;
+$('fnsay').onclick=function(){ var c=$('fnbody').cloneNode(true); each(c.querySelectorAll('button,svg'),function(x){x.remove();}); var w=document.createElement('div'); w.style.cssText='position:absolute;left:-9999px;top:0;width:600px'; w.appendChild(c); document.body.appendChild(w);
+  var parts=[$('fntitle').textContent+'. '+$('fnsub').textContent].concat(c.innerText.split(/\n+/).map(function(x){return x.trim();}).filter(Boolean)); w.remove(); sayAll(this,parts); };
+
+/* ============================================================ YOUR EGOAGENT (simple form) ============================================================ */
+var ego=$('ego'), firstWords=!S.ego.seen, infoKind=null, tipN=(S.ego.tip=(S.ego.tip||0)+1)-1;
+function notices(){
+  var out=[], oldest=null;
+  S.order.forEach(function(id){ var p=S.pts[id];
+    Object.keys(p.days).map(Number).sort(function(a,b){return a-b;}).forEach(function(n){ var x=p.days[n]; if(x.k!=='temp') return;
+      out.push({t:p.name+', '+dlabel(n)+': '+(x.an.length?'the analyses are ready and the note is not saved yet.':'a transcript is waiting to become a process note.'),b:'Open it',f:function(){ openDay(id,n); }});
+      if(!oldest||n<oldest.n) oldest={n:n,name:p.name}; });
+    if(p.consent.st==='sent') out.push({t:p.name+' has not signed the consent form. Nothing can be recorded until it is signed.',b:'Show',f:function(){ selectPatient(id); openStage(2,true); }});
+    if(p.consent.st==='none') out.push({t:p.name+': the consent form has not been sent yet.',b:'Show',f:function(){ selectPatient(id); openStage(2,true); }}); });
+  if(oldest) out.push({t:'The oldest waiting transcript ('+oldest.name+', '+dlabel(oldest.n)+') is deleted on '+delDate(oldest.n)+' if no note is saved.'});
+  if(!S.order.length) out.push({t:'Your workspace is empty. Add your first patient when you are ready. Nothing is sent to any patient until you choose.',b:'Add a patient',f:function(){ openAdd(); openStage(2,true); }});
+  if(!out.length) out.push({t:'Nothing is waiting. Every session has its note.'});
+  return out;
+}
+var HOW=['I read the full text of your saved process notes every time. I keep no shortened memory of them, so nothing is summarised away.',
+  'By default I read past days without the earlier AI analyses. They are one tap away, in Stage 4.',
+  'For the work itself I look across the whole workspace: what is waiting, what is about to be deleted, which consent forms are unsigned.',
+  'For anything clinical I open one patient\'s notes at a time, inside that patient\'s space. I never mix two patients.',
+  'I speak first only about the work. I never open with an interpretation. I speak about the ideas in an analysis only when you ask.',
+  'When you speak to me, your words are kept as text in that day\'s note. The sound is deleted, the same as session audio.',
+  'You can turn me off at any time and work in manual mode.'];
+function readingNow(){ var d=Wd(); if(!d||!S.W) return ['No patient\'s notes are open, so I am reading nothing clinical. I see only the list of work that is waiting.'];
+  var p=Wp(); return ['Open now: '+p.name+', '+dlabel(S.W.n)+'. No other patient is being read.', d.k==='absent'?'That day is an absence, so there is nothing to read.':readLine().replace('Read for this answer: ','If you ask me about this day I read: ')]; }
+function egoSay(t){ infoKind='say'; var box=$('egoinfo'); box.hidden=false; box.innerHTML='<p>'+esc(t)+'</p>'; $('egohow').setAttribute('aria-expanded','false'); $('egoread').setAttribute('aria-expanded','false'); }
+function drawEgo(){
+  var on=S.ego.on; ego.classList.toggle('off',!on); $('egosw').setAttribute('aria-checked',on?'true':'false'); $('egoswt').textContent=on?'On':'Off';
+  $('egosw').setAttribute('aria-label','Your EgoAgent is '+(on?'on. Turn it off to work in manual mode.':'off. Turn it on.'));
+  $('egosay').hidden=!on;
+  var f=$('egofirst'); f.hidden=!firstWords;
+  if(firstWords) f.innerHTML='<p><strong>First: the switch on this card turns me off.</strong> Then you work in manual mode and I read nothing. You can turn me on again at any time.</p><p>I am your EgoAgent. I mind the work in this space, and I speak about the ideas in an analysis only when you ask.</p>';
+  var ul=$('egolist'); ul.innerHTML='';
+  notices().forEach(function(x){ var li=document.createElement('li'), s=document.createElement('span'); s.textContent=x.t; li.appendChild(s);
+    if(x.b){ var b=document.createElement('button'); b.type='button'; b.className='act'; b.textContent=x.b; b.setAttribute('aria-label',x.b+': '+x.t); b.onclick=x.f; li.appendChild(b); } ul.appendChild(li); });
+  $('egotip').textContent='A reminder of how I work: '+HOW[tipN%HOW.length];
+  var d=Wd(); $('egoone').textContent='For anything clinical I read one patient at a time. '+((d&&S.W)?'Open now: '+Wp().name+', '+dlabel(S.W.n)+'.':'No patient\'s notes are open.');
+  if(infoKind==='read') showInfo('read',true);
+  if(!S.ego.seen){ S.ego.seen=true; save(); }
+}
+function showInfo(kind,keep){
+  var box=$('egoinfo'); if(!keep&&infoKind===kind&&!box.hidden){ box.hidden=true; infoKind=null; }
+  else { infoKind=kind; box.hidden=false; var l=kind==='how'?HOW:readingNow(); box.innerHTML='<p class="tag" style="margin:0 0 4px">'+(kind==='how'?'How I work':'What I am reading')+'</p>'+l.map(function(t){return '<p>'+esc(t)+'</p>';}).join(''); }
+  $('egohow').setAttribute('aria-expanded',infoKind==='how'&&!box.hidden?'true':'false'); $('egoread').setAttribute('aria-expanded',infoKind==='read'&&!box.hidden?'true':'false');
+}
+$('egohow').onclick=function(){ showInfo('how'); };
+$('egoread').onclick=function(){ showInfo('read'); };
+function setEgo(on){ S.ego.on=on; save(); hush(); drawEgo(); if(on) toast('Your EgoAgent is on.'); else toast('Manual mode. Your EgoAgent is off and reads nothing.'); }
+$('egosw').onclick=function(){ setEgo(!S.ego.on); };
+$('egosay').onclick=function(){ var parts=[]; if(!$('egofirst').hidden) parts.push($('egofirst').innerText); parts.push('Work that is waiting.'); each($('egolist').querySelectorAll('li span'),function(s){ parts.push(s.textContent); }); parts.push($('egoone').textContent); if(!$('egoinfo').hidden) parts.push($('egoinfo').innerText); sayAll(this,parts); };
+
+/* ============================================================ the diagram, the tour, read aloud, full screen ============================================================ */
+(function(){ var dg=$('dg'), op=$('dgopen'), cl=$('dgclose');
+  function open(){ dg.hidden=false; document.body.style.overflow='hidden'; cl.focus(); }
+  function close(){ hush(); dg.hidden=true; document.body.style.overflow=''; op.focus(); }
+  op.onclick=open; cl.onclick=close; dg.addEventListener('click',function(e){ if(e.target===dg) close(); });
+  var SCRIPT=['Where your session goes. From the consulting room to one private note.',
+    'Step one: in the room. Consent. Your patient agrees in writing, and never enters your workspace. Recording. You record the session on your phone or iPad.',
+    'Step two: in your workspace. Everything here is temporary.',
+    'The transcript is made from the recording. The audio is deleted as soon as the transcript is made.',
+    'AI analyses are made through the perspectives you choose. Your comments are your marks, questions and thoughts.',
+    'Step three: kept, and private. The process note is one note for the day, saved in that patient\'s space.',
+    'It holds the full transcript, every AI analysis you chose, in full, and all your comments.',
+    'When you save the note, the working copies are deleted. If you never save, they are deleted after six months.'];
+  $('dgsay').onclick=function(){ sayAll(this,SCRIPT.slice()); };
+  window.__closeDg=function(){ if(!dg.hidden) close(); };
+})();
+(function(){
+  var w=$('tourwatch'), o=$('fstour'), v=$('tourvid'), x=$('tourclose'), te=$('tourend'); if(!w||!o||!v) return;
+  if(!DEMO&&te){ te.remove(); te=null; }                                  /* signed in: no invitation to register at the end of the tour */
+  var autoClose=null; function stopAuto(){ if(autoClose){ clearTimeout(autoClose); autoClose=null; } }
+  function open(){ hush(); v.removeAttribute('controls'); o.hidden=false; document.body.style.overflow='hidden'; try{ v.currentTime=0; }catch(e){} var r=v.play(); if(r&&r.catch) r.catch(function(){}); x.focus(); }
+  function close(){ stopAuto(); if(te) te.hidden=true; try{ v.pause(); }catch(e){} try{ if(v.webkitDisplayingFullscreen) v.webkitExitFullscreen(); }catch(e){} o.hidden=true; document.body.style.overflow=''; try{ v.currentTime=0; }catch(e){} w.focus(); }
+  w.addEventListener('click',open);
+  v.addEventListener('click',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); });
+  v.addEventListener('touchend',function(){ if(!v.hasAttribute('controls')) v.setAttribute('controls',''); },{passive:true});
+  x.addEventListener('click',close);
+  v.addEventListener('ended',function(){ v.removeAttribute('controls'); if(te) te.hidden=false; stopAuto(); autoClose=setTimeout(function(){ autoClose=null; if(!o.hidden) close(); },6000); });
+  if(te) te.addEventListener('click',stopAuto);
+  v.addEventListener('timeupdate',function(){ if(te&&te.hidden&&v.duration&&v.currentTime>=v.duration-2.6) te.hidden=false; });
+  v.addEventListener('play',function(){ stopAuto(); if(te) te.hidden=true; });
+  v.addEventListener('webkitendfullscreen',function(){ if(v.ended&&te) te.hidden=false; });
+  window.__closeTour=function(){ if(!o.hidden) close(); };
+})();
+document.addEventListener('keydown',function(e){ if(e.key!=='Escape') return;
+  if(!rec.hidden) closeRec(); else if(!fn.hidden) closeNote(); else { window.__closeDg&&window.__closeDg(); window.__closeTour&&window.__closeTour(); } });
+/* read this page aloud: the heading, the introduction, your EgoAgent's words, every stage title, and the full text of any stage that is open */
+$('pgsay').onclick=function(){
+  function clean(t){ return String(t||'').replace(/\s*·\s*/g,': ').replace(/[ \t]+/g,' ').trim(); }
+  var out=[clean($('h1').innerText),clean($('intro').innerText)];
+  if(S.ego.on){ out.push('Your EgoAgent. Work that is waiting.'); each($('egolist').querySelectorAll('li span'),function(s){ out.push(clean(s.textContent)); }); }
+  secs.forEach(function(sec){
+    var l=sec.querySelector('.label'), h=sec.querySelector('h2'); out.push(clean((l?l.textContent+'. ':'')+(h?h.textContent:'')));
+    if(sec.classList.contains('open')){
+      var c=sec.querySelector('.sbody').cloneNode(true); each(c.querySelectorAll('select,button,svg,script,style,[aria-hidden="true"],[hidden]'),function(n){ n.remove(); });
+      var wrap=document.createElement('div'); wrap.style.cssText='position:absolute;left:-9999px;top:0;width:600px'; wrap.appendChild(c); document.body.appendChild(wrap);
+      clean(c.innerText).split(/\n+/).forEach(function(x){ x=clean(x); if(x&&!/^\d+$/.test(x)) out.push(x); }); wrap.remove();
+    } });
+  sayAll(this,out);
+};
+['tourwatch','dgopen','recopen'].forEach(function(id){ var x=$(id); if(x) x.addEventListener('click',function(){ if($('pgsay').getAttribute('aria-pressed')==='true') hush(); }); });
+(function(){ var b=$('pgfs'), de=document.documentElement;
+  function on(){ return document.fullscreenElement||document.webkitFullscreenElement; }
+  function sync(){ b.setAttribute('aria-pressed',on()?'true':'false'); b.setAttribute('aria-label',on()?'Leave full screen':'Full screen'); }
+  b.onclick=function(){ var req=de.requestFullscreen||de.webkitRequestFullscreen, tip='On an iPhone, full screen works from the Home Screen: tap Share, then Add to Home Screen.';
+    if(!req){ toast(tip); return; }
+    if(on()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); return; }
+    try{ var r=req.call(de); if(r&&r.catch) r.catch(function(){ toast(tip); }); }catch(e){ toast(tip); } };
+  document.addEventListener('fullscreenchange',sync); document.addEventListener('webkitfullscreenchange',sync);
+})();
+
+each(document.querySelectorAll('.wsfoot a[href^="index.html"]'),function(a){ a.addEventListener('click',function(){ sset('ea-from',HERE); }); });
+
+/* ============================================================ draw everything ============================================================ */
+function drawAll(){ drawPatients(); drawAfter(); drawScope(); drawNote(); drawSaved(); drawEgo(); }
+drawAll(); syncAll();
+(function(){
+  var pend=sget('ea-pend');
+  if(!DEMO){ openStage(2,false); }
+  if(pend&&pend.send&&S.pts[pend.send]){ S.cur=pend.send; sdel('ea-pend'); save(); drawPatients(); if(plan().active){ openStage(2,true); toast('Your plan is active. You can now send the consent form.'); } }
+  if(Q.get('signed')) openStage(2,false);
+})();
+if(DEMO){ var g=document.createElement('script'); g.src='egoagent_guide_v305.js'; g.defer=true; document.body.appendChild(g); }
+})();
+</script>
+</body>
+</html>
