@@ -1058,13 +1058,13 @@ summary > h3.q > span{font:inherit}
 
 /* audit item 16: waiting list for places not open yet (preview) */
 .r-wl{margin:.1em 0 1em;min-width:0;max-width:100%}
-.door fieldset{min-width:0}
+.door fieldset:has(#wl){min-width:0}
 #wl-open{min-height:44px;text-align:left;white-space:normal}
 .r-wlbox{margin:.5em 0 0;padding:.9em 1em 1em;border:1px solid var(--rline2);border-radius:.8em;min-width:0}
 .r-wlbox[hidden],.r-wldone[hidden]{display:none}
 .r-wlnote{margin:0 0 .8em;font-size:.9em;line-height:1.45}
 .r-wlbox .btn{margin-top:.5em;min-height:44px;white-space:normal;max-width:100%}
-.r-wldone{margin:.5em 0 0;min-width:0}
+.r-wldone{margin:.5em 0 0;min-width:0;box-sizing:border-box}
 .r-wldone p,.r-wlbox .r-msg{overflow-wrap:anywhere}
 </style>
 </head>
@@ -1361,13 +1361,13 @@ summary > h3.q > span{font:inherit}
             <button type="button" class="r-fill" id="wl-open" aria-expanded="false" aria-controls="wl-box">Not in New York? Join the waiting list</button>
             <div class="r-wlbox" id="wl-box" hidden>
               <p class="r-wlnote">On the real site, you leave your email here, and we write to you once, when registration opens where you practice. In this preview, nothing is sent or stored.</p>
-              <div class="f" id="wl-place-f" hidden><label for="wl-place" id="wl-place-lab">State</label><span class="selw"><select id="wl-place"></select></span></div>
+              <div class="f" id="wl-place-f" hidden><label for="wl-place" id="wl-place-lab">Where you practice</label><span class="selw"><select id="wl-place"></select></span></div>
               <div class="f"><label for="wl-em">Email</label><input id="wl-em" type="email" autocomplete="email" maxlength="254"></div>
               <button type="button" class="btn" id="wl-go">Join the waiting list</button>
               <p class="r-msg" id="wl-msg" role="alert" hidden></p>
             </div>
             <div class="r-outcome r-wldone" id="wl-done" hidden>
-              <h2 id="wl-done-h" tabindex="-1">Preview only: nothing was sent.</h2>
+              <h2 id="wl-done-h" tabindex="-1"></h2>
               <p id="wl-done-t"></p>
               <button type="button" class="btn" id="wl-close">Close</button>
             </div>
@@ -2485,47 +2485,48 @@ summary > h3.q > span{font:inherit}
 })();
 </script>
 <script>
-/* audit item 16: waiting list for places not open yet. A preview: the address is not sent and not stored.
-   It is shown once in the answer, and wiped from the page when the answer closes or the country changes. */
+/* audit item 16: waiting list for places not open yet. A preview: the address is not sent and not stored,
+   and it is never written into the page: the answer does not repeat it. */
 (function(){
   var $=function(i){ return document.getElementById(i); };
   var open=$('wl-open'); if(!open) return;
-  var box=$('wl-box'), done=$('wl-done'), c=$('lcountry'), pf=$('wl-place-f'), ps=$('wl-place'), lab=$('wl-place-lab'), em=$('wl-em'), msg=$('wl-msg'), go=$('wl-go'), out=$('wl-done-t');
-  var US=["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"], CA=["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"], THE={'United States':1,'United Kingdom':1,'United Arab Emirates':1}, kind='', last=0, until=0;
+  var box=$('wl-box'), done=$('wl-done'), c=$('lcountry'), pf=$('wl-place-f'), ps=$('wl-place'), em=$('wl-em'), msg=$('wl-msg'), go=$('wl-go'), head=$('wl-done-h'), out=$('wl-done-t'), cls=$('wl-close');
+  var US=["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"], CA=["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"], THE={'United States':1,'United Kingdom':1,'United Arab Emirates':1}, kind='', tOpen=0, tDone=0;
   function nm(n){ return (THE[n]?'the ':'')+n; }
-  /* for half a second after the answer appears, a stray second tap does nothing */
-  ['pointerdown','mousedown','touchstart','click'].forEach(function(t){ document.addEventListener(t,function(e){ if(Date.now()<until){ e.preventDefault(); e.stopPropagation(); } },{capture:true,passive:false}); });
-  function quick(){ var n=Date.now(), q=(n-last<450); last=n; return q; }   /* a second tap right after the first is ignored */
   function wipe(){ em.value=''; em.dispatchEvent(new Event('input',{bubbles:true})); }
-  function hideDone(){ done.hidden=true; out.textContent=''; }
-  function fill(k,label,ph,names){ if(kind===k) return; kind=k; lab.textContent=label;
-    ps.innerHTML='<option value="" selected disabled>'+ph+'</option>'+names.map(function(n){ return '<option>'+n+'</option>'; }).join(''); }
-  function sync(){ var v=c.value;
-    if(v==='United States'){ fill('US','State','Choose your state',US); pf.hidden=false; }
-    else if(v==='Canada'){ fill('CA','Province or territory','Choose one',CA); pf.hidden=false; }
-    else { pf.hidden=true; } }
-  function quiet(){ msg.hidden=true; msg.textContent=''; }
-  function say(t,el){ msg.hidden=false; msg.textContent=''; setTimeout(function(){ msg.textContent=t; try{ var r=msg.getBoundingClientRect(), hd=document.querySelector('header.top'), off=hd?hd.getBoundingClientRect().bottom:0; if(r.bottom>innerHeight-8) window.scrollBy(0,r.bottom-innerHeight+16); else if(r.top<off+8) window.scrollBy(0,r.top-off-16); }catch(e){} },30); if(el){ try{ el.focus({preventScroll:true}); }catch(e){} } }
-  function good(a){ return a.length<=254 && a.indexOf('..')<0 && /^[^\s@<>()\[\]\\,;:"]+@[^\s@<>()\[\]\\,;:".]+(\.[^\s@<>()\[\]\\,;:".]+)+$/.test(a); }
-  function send(){ if(box.hidden) return; var v=c.value, mail=em.value.replace(/[\u200B-\u200D\uFEFF]/g,'').trim();
+  function hideDone(){ done.hidden=true; done.style.minHeight=''; head.textContent=''; out.textContent=''; }
+  function fill(k,ph,names){ kind=k; ps.innerHTML='<option value="" selected disabled>'+ph+'</option>'+names.map(function(n){ return '<option>'+n+'</option>'; }).join(''); }
+  function sync(fresh){ var v=c.value, k=(v==='United States'?'US':(v==='Canada'?'CA':''));
+    if(k&&(fresh||kind!==k)) fill(k,k==='US'?'Choose your state':'Choose your province or territory',k==='US'?US:CA);
+    pf.hidden=!k; }
+  function quiet(){ msg.hidden=true; msg.textContent=''; [ps,em].forEach(function(el){ el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); }); }
+  function say(t,el){ quiet(); msg.hidden=false; if(el){ el.setAttribute('aria-invalid','true'); el.setAttribute('aria-describedby','wl-msg'); try{ el.focus({preventScroll:true}); }catch(e){} }
+    setTimeout(function(){ msg.textContent=t; try{ var hd=document.querySelector('header.top'), off=hd?hd.getBoundingClientRect().bottom:0, r=msg.getBoundingClientRect();
+      if(r.bottom>innerHeight-8) window.scrollBy(0,r.bottom-innerHeight+16); else if(r.top<off+8) window.scrollBy(0,r.top-off-16);
+      if(el){ var q=el.getBoundingClientRect(); if(q.top<off+8) window.scrollBy(0,q.top-off-16); } }catch(e){} },30); }
+  function good(a){ try{ return a.length<=254 && new RegExp('^[^\\s@<>()\\[\\]\\\\,;:"/?#.]+(\\.[^\\s@<>()\\[\\]\\\\,;:"/?#.]+)*@([\\p{L}\\p{N}]([\\p{L}\\p{N}-]*[\\p{L}\\p{N}])?\\.)+\\p{L}{2,}$','u').test(a); }catch(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a); } }
+  function tidy(a){ try{ return a.replace(new RegExp('[\\p{Cf}\\p{Cc}]','gu'),'').trim(); }catch(e){ return a.trim(); } }
+  function send(){ if(box.hidden) return; var v=c.value, mail=tidy(em.value);
     if(!v) return say('Choose your country above first.');
     if(!pf.hidden&&!ps.value) return say(kind==='US'?'Choose your state.':'Choose your province or territory.',ps);
     if(!mail) return say('Enter your email address.',em);
     if(!good(mail)) return say('That does not look like an email address. Check it and try again.',em);
-    var place=pf.hidden?nm(v):ps.value;
-    out.textContent='On the real site, you would now be on the waiting list for '+place+'. We would write once to '+mail+' when registration opens there. The address would be used for nothing else.';
-    quiet(); wipe(); box.hidden=true; open.setAttribute('aria-expanded','false'); done.hidden=false;
-    until=Date.now()+500;
-    try{ var h=$('wl-done-h'); h.focus({preventScroll:true}); var hd=document.querySelector('header.top'), off=hd?hd.getBoundingClientRect().bottom:0, r=done.getBoundingClientRect();
-      if(r.top<off+8||r.bottom>innerHeight) window.scrollTo(0, window.scrollY+r.top-Math.max(0,off)-16); }catch(e){} }
-  c.addEventListener('change',function(){ sync(); quiet(); hideDone(); });
+    var place=pf.hidden?nm(v):ps.value, tall=box.getBoundingClientRect().height;
+    head.textContent='Preview only: nothing was sent.';
+    out.textContent='On the real site, you would now be on the waiting list for '+place+'. We would write to you once, at the address you gave, when registration opens there. The address would be used for nothing else.';
+    quiet(); wipe(); box.hidden=true; open.setAttribute('aria-expanded','false');
+    done.style.minHeight=Math.ceil(tall)+'px'; done.hidden=false; tDone=Date.now();   /* the answer takes the box's place and height, so nothing below moves under a finger */
+    try{ head.focus({preventScroll:true}); var hd=document.querySelector('header.top'), off=hd?hd.getBoundingClientRect().bottom:0, r=head.getBoundingClientRect();
+      if(r.top<off+8) window.scrollBy(0,r.top-off-16); else if(r.bottom>innerHeight-8) window.scrollBy(0,r.bottom-innerHeight+16); }catch(e){} }
+  c.addEventListener('change',function(){ sync(true); quiet(); hideDone(); });
   ps.addEventListener('change',quiet); em.addEventListener('input',quiet);
-  open.addEventListener('click',function(){ if(quick()) return; var show=box.hidden; hideDone(); box.hidden=!show; open.setAttribute('aria-expanded',show?'true':'false');
-    if(show){ sync(); quiet(); var main=$('em'); if(!em.value&&main&&main.value){ em.value=main.value; em.dispatchEvent(new Event('input',{bubbles:true})); } } });
-  go.addEventListener('click',function(){ if(quick()) return; send(); });
+  /* a second tap of a double tap (a pointer click, never a key) is ignored on the two buttons it could undo */
+  open.addEventListener('click',function(e){ var n=Date.now(); if(e.detail>0&&n-tOpen<400) return; tOpen=n; var show=box.hidden; hideDone(); box.hidden=!show; open.setAttribute('aria-expanded',show?'true':'false');
+    if(show){ sync(false); quiet(); var main=$('em'); if(!em.value&&main&&main.value){ em.value=main.value; em.dispatchEvent(new Event('input',{bubbles:true})); } } });
+  go.addEventListener('click',send);
   [em,ps].forEach(function(el){ el.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); send(); } }); });
-  $('wl-close').addEventListener('click',function(){ hideDone(); wipe(); try{ open.focus(); }catch(e){} });
-  addEventListener('pageshow',function(){ if(box.hidden) wipe(); if(done.hidden) out.textContent=''; });
+  cls.addEventListener('click',function(e){ if(e.detail>0&&Date.now()-tDone<450) return; hideDone(); wipe(); try{ open.focus(); }catch(err){} });
+  addEventListener('pageshow',function(){ if(box.hidden) wipe(); });
 })();
 </script>
 </body>
